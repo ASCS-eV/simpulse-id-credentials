@@ -18,3 +18,7 @@ The participant VC and one admin VC are issued by an ASCS admin and contain the 
 Additional credentials detail the specific types of memberships. They are all signed by an ASCS admin and reference the participant DID.
 
 A participant can create arbitrary many user credentials without approval. The user VCs are issued by the participant's admin and contain the participant DID in the issuer field.
+
+## Tooling
+
+jsonld-cli seems decent for json schema validation.
