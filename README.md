@@ -16,7 +16,7 @@ The manifest files are provided to render an identity card in a SSI wallet like 
 
 ## Todos
 
-The context json files need to be hosted at <https://schema.ascs.digital/AscsUserCredential/v1>.
+The context json files need to be hosted at <https://schema.ascs.digital/SimpulseId/v1>.
 All terms need to be hosted as .pdf files at <https://media.ascs.digital/terms/>.
 
 ## Resources
