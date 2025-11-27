@@ -1,18 +1,19 @@
 @prefix simpulseid: <https://schema.ascs.digital/SimpulseIdCredentials/v1#> .
-@prefix lf:         <https://schema.ascs.digital/legalForm/v1#> .
+@prefix lf:         <https://schema.ascs.digital/SimpulseIdOntology/v1/legalForm#> .
 @prefix gx:         <https://w3id.org/gaia-x/2411#> .
 @prefix schema:     <https://schema.org/> .
 @prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl:        <http://www.w3.org/2002/07/owl#> .
 @prefix skos:       <http://www.w3.org/2004/02/skos/core#> .
+@prefix vcard:      <http://www.w3.org/2006/vcard/ns#> .
 
 #################################################################
 # Ontology header
 #################################################################
 
 simpulseid: a owl:Ontology ;
-    rdfs:comment "SimpulseID credential ontology for participants, memberships, users and administrators in the ASCS / ENVITED ecosystem, aligned with Gaia-X and schema.org."@en .
+    rdfs:comment "SimpulseID credential ontology for participants, memberships, users and administrators in the ASCS / ENVITED ecosystem, aligned with Gaia-X and schema.org. Addresses follow the Gaia-X gx:Address shape using vCard properties."@en .
 
 #################################################################
 # Core classes
@@ -21,7 +22,7 @@ simpulseid: a owl:Ontology ;
 simpulseid:Participant a owl:Class ;
     rdfs:subClassOf gx:LegalPerson ,
                     schema:Organization ;
-    rdfs:comment "Participant entity representing a legal person or organization, compliant with mandatory Gaia-X standards for gx:LegalPerson."@en .
+    rdfs:comment "Participant entity representing a legal person or organization, compliant with mandatory Gaia-X standards for gx:LegalPerson. Uses gx:headquartersAddress and gx:legalAddress, whose range is gx:Address with vCard street-address, postal-code, locality and region and gx:countryCode."@en .
 
 simpulseid:AscsBaseMembership a owl:Class ;
     rdfs:subClassOf schema:ProgramMembership ;
@@ -34,7 +35,7 @@ simpulseid:AscsEnvitedMembership a owl:Class ;
 simpulseid:Administrator a owl:Class ;
     rdfs:subClassOf gx:NaturalPerson ,
                     schema:Person ;
-    rdfs:comment "Administrator entity representing a natural person, compliant with mandatory Gaia-X standards for gx:NaturalPerson."@en .
+    rdfs:comment "Administrator entity representing a natural person, compliant with mandatory Gaia-X standards for gx:NaturalPerson. May reference a gx:Address via schema:address."@en .
 
 simpulseid:User a owl:Class ;
     rdfs:subClassOf gx:NaturalPerson ,
@@ -61,7 +62,7 @@ simpulseid:legalForm a owl:ObjectProperty ;
     rdfs:range  simpulseid:LegalForm ;
     rdfs:comment "Legal form of the participant entity, pointing to a SKOS concept in the SimpulseID LegalForm scheme."@en .
 
-# FULL legal form list
+# FULL legal form list (synchronized with legalForm-v1.jsonld)
 
 lf:LLC a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
@@ -85,44 +86,44 @@ lf:NonprofitCorporation a skos:Concept , simpulseid:LegalForm ;
 
 lf:GmbH a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
-    skos:prefLabel "Gesellschaft mit beschränkter Haftung"@de ;
-    skos:prefLabel "Limited liability company (GmbH)"@en ;
+    skos:prefLabel "Gesellschaft mit beschränkter Haftung"@de ,
+                   "Limited liability company (GmbH)"@en ;
     skos:notation "GmbH" .
 
 lf:AG a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
-    skos:prefLabel "Aktiengesellschaft"@de ;
-    skos:prefLabel "Stock corporation (AG)"@en ;
+    skos:prefLabel "Aktiengesellschaft"@de ,
+                   "Stock corporation (AG)"@en ;
     skos:notation "AG" .
 
 lf:Einzelunternehmen a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
-    skos:prefLabel "Einzelunternehmen"@de ;
-    skos:prefLabel "Sole proprietorship"@en ;
+    skos:prefLabel "Einzelunternehmen"@de ,
+                   "Sole proprietorship"@en ;
     skos:notation "Einzelunternehmen" .
 
 lf:GbR a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
-    skos:prefLabel "Gesellschaft bürgerlichen Rechts"@de ;
-    skos:prefLabel "Civil-law partnership (GbR)"@en ;
+    skos:prefLabel "Gesellschaft bürgerlichen Rechts"@de ,
+                   "Civil-law partnership (GbR)"@en ;
     skos:notation "GbR" .
 
 lf:OHG a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
-    skos:prefLabel "Offene Handelsgesellschaft"@de ;
-    skos:prefLabel "General partnership (OHG)"@en ;
+    skos:prefLabel "Offene Handelsgesellschaft"@de ,
+                   "General partnership (OHG)"@en ;
     skos:notation "OHG" .
 
 lf:KG a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
-    skos:prefLabel "Kommanditgesellschaft"@de ;
-    skos:prefLabel "Limited partnership (KG)"@en ;
+    skos:prefLabel "Kommanditgesellschaft"@de ,
+                   "Limited partnership (KG)"@en ;
     skos:notation "KG" .
 
 lf:UG a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
-    skos:prefLabel "Unternehmergesellschaft (haftungsbeschränkt)"@de ;
-    skos:prefLabel "Entrepreneurial company (UG)"@en ;
+    skos:prefLabel "Unternehmergesellschaft (haftungsbeschränkt)"@de ,
+                   "Entrepreneurial company (UG)"@en ;
     skos:notation "UG" .
 
 lf:SoleTrader a skos:Concept , simpulseid:LegalForm ;
@@ -198,15 +199,21 @@ simpulseid:memberOf a owl:ObjectProperty ;
     rdfs:comment "Alias for schema:memberOf used in SimpulseID membership credentials."@en .
 
 #################################################################
-# Terms and conditions (Participant + Memberships)
+# Terms and conditions (Participant + Memberships + Users)
 #################################################################
 
-simpulseid:TermsAndConditions a owl:ObjectProperty ;
-    rdfs:domain simpulseid:Participant ;
-    rdfs:range  gx:TermsAndConditions ;
-    rdfs:comment "Reference from a Participant to the terms and conditions for using the SimpulseID application."@en .
+simpulseid:termsAndConditions a owl:ObjectProperty ;
+    rdfs:domain simpulseid:Participant ,
+                simpulseid:AscsBaseMembership ,
+                simpulseid:AscsEnvitedMembership ,
+                simpulseid:Administrator ,
+                simpulseid:User ;
+    rdfs:range gx:TermsAndConditions ;
+    rdfs:comment "Reference from SimpulseID credential subjects to terms and conditions resources, which are represented as instances of gx:TermsAndConditions (e.g. documents or web resources describing conditions for participation, membership or data processing)."@en .
 
-simpulseid:membershipTermsAndConditions a owl:ObjectProperty ;
-    rdfs:domain simpulseid:AscsBaseMembership , simpulseid:AscsEnvitedMembership ;
-    rdfs:range  gx:TermsAndConditions ;
-    rdfs:comment "Reference from membership credential subjects to applicable membership terms and conditions."@en .
+#################################################################
+# Address note (linking to Gaia-X / vCard)
+#################################################################
+
+gx:Address a owl:Class ;
+    rdfs:comment "Gaia-X Address class. In SimpulseID credentials, gx:Address instances are expected to use vCard properties vcard:street-address, vcard:postal-code, vcard:locality and vcard:region together with gx:countryCode to represent the full postal address and country subdivision (e.g. DE-BY for Bavaria) in line with Gaia-X specifications."@en .

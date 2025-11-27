@@ -1,0 +1,370 @@
+{
+    "@context": {
+        "@version": 1.1,
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "simpulseid": "https://schema.ascs.digital/SimpulseIdCredentials/v1#",
+        "@vocab": "https://schema.ascs.digital/SimpulseIdOntology/v1/legalForm#"
+    },
+    "@id": "simpulseid:LegalForm",
+    "@type": [
+        "skos:ConceptScheme"
+    ],
+    "skos:prefLabel": {
+        "@value": "SimpulseID Legal Form Vocabulary",
+        "@language": "en"
+    },
+    "skos:hasTopConcept": [
+        "LLC",
+        "Corporation",
+        "LimitedPartnership",
+        "NonprofitCorporation",
+        "GmbH",
+        "AG",
+        "Einzelunternehmen",
+        "GbR",
+        "OHG",
+        "KG",
+        "UG",
+        "SoleTrader",
+        "UnincorporatedAssociation",
+        "Partnership",
+        "Trust",
+        "LimitedCompany",
+        "LLP",
+        "CIC",
+        "CIO",
+        "CooperativeSociety",
+        "BenCom",
+        "other"
+    ],
+    "@graph": [
+        {
+            "@id": "LLC",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Limited Liability Company",
+                "@language": "en"
+            },
+            "skos:notation": "LLC"
+        },
+        {
+            "@id": "Corporation",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Corporation",
+                "@language": "en"
+            },
+            "skos:notation": "Corporation"
+        },
+        {
+            "@id": "LimitedPartnership",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Limited Partnership",
+                "@language": "en"
+            },
+            "skos:notation": "LimitedPartnership"
+        },
+        {
+            "@id": "NonprofitCorporation",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Nonprofit Corporation",
+                "@language": "en"
+            },
+            "skos:notation": "NonprofitCorporation"
+        },
+        {
+            "@id": "GmbH",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": [
+                {
+                    "@value": "Gesellschaft mit beschränkter Haftung",
+                    "@language": "de"
+                },
+                {
+                    "@value": "Limited liability company (GmbH)",
+                    "@language": "en"
+                }
+            ],
+            "skos:notation": "GmbH"
+        },
+        {
+            "@id": "AG",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": [
+                {
+                    "@value": "Aktiengesellschaft",
+                    "@language": "de"
+                },
+                {
+                    "@value": "Stock corporation (AG)",
+                    "@language": "en"
+                }
+            ],
+            "skos:notation": "AG"
+        },
+        {
+            "@id": "Einzelunternehmen",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": [
+                {
+                    "@value": "Einzelunternehmen",
+                    "@language": "de"
+                },
+                {
+                    "@value": "Sole proprietorship",
+                    "@language": "en"
+                }
+            ],
+            "skos:notation": "Einzelunternehmen"
+        },
+        {
+            "@id": "GbR",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": [
+                {
+                    "@value": "Gesellschaft bürgerlichen Rechts",
+                    "@language": "de"
+                },
+                {
+                    "@value": "Civil-law partnership (GbR)",
+                    "@language": "en"
+                }
+            ],
+            "skos:notation": "GbR"
+        },
+        {
+            "@id": "OHG",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": [
+                {
+                    "@value": "Offene Handelsgesellschaft",
+                    "@language": "de"
+                },
+                {
+                    "@value": "General partnership (OHG)",
+                    "@language": "en"
+                }
+            ],
+            "skos:notation": "OHG"
+        },
+        {
+            "@id": "KG",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": [
+                {
+                    "@value": "Kommanditgesellschaft",
+                    "@language": "de"
+                },
+                {
+                    "@value": "Limited partnership (KG)",
+                    "@language": "en"
+                }
+            ],
+            "skos:notation": "KG"
+        },
+        {
+            "@id": "UG",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": [
+                {
+                    "@value": "Unternehmergesellschaft (haftungsbeschränkt)",
+                    "@language": "de"
+                },
+                {
+                    "@value": "Entrepreneurial company (UG)",
+                    "@language": "en"
+                }
+            ],
+            "skos:notation": "UG"
+        },
+        {
+            "@id": "SoleTrader",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Sole Trader",
+                "@language": "en"
+            },
+            "skos:notation": "SoleTrader"
+        },
+        {
+            "@id": "UnincorporatedAssociation",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Unincorporated Association",
+                "@language": "en"
+            },
+            "skos:notation": "UnincorporatedAssociation"
+        },
+        {
+            "@id": "Partnership",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Partnership",
+                "@language": "en"
+            },
+            "skos:notation": "Partnership"
+        },
+        {
+            "@id": "Trust",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Trust",
+                "@language": "en"
+            },
+            "skos:notation": "Trust"
+        },
+        {
+            "@id": "LimitedCompany",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Limited Company",
+                "@language": "en"
+            },
+            "skos:notation": "LimitedCompany"
+        },
+        {
+            "@id": "LLP",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Limited Liability Partnership",
+                "@language": "en"
+            },
+            "skos:notation": "LLP"
+        },
+        {
+            "@id": "CIC",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Community Interest Company (CIC)",
+                "@language": "en"
+            },
+            "skos:notation": "CIC"
+        },
+        {
+            "@id": "CIO",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Charitable Incorporated Organisation (CIO)",
+                "@language": "en"
+            },
+            "skos:notation": "CIO"
+        },
+        {
+            "@id": "CooperativeSociety",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Co-operative Society",
+                "@language": "en"
+            },
+            "skos:notation": "CooperativeSociety"
+        },
+        {
+            "@id": "BenCom",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Community Benefit Society (BenCom)",
+                "@language": "en"
+            },
+            "skos:notation": "BenCom"
+        },
+        {
+            "@id": "other",
+            "@type": [
+                "skos:Concept",
+                "simpulseid:LegalForm"
+            ],
+            "skos:inScheme": "simpulseid:LegalForm",
+            "skos:prefLabel": {
+                "@value": "Other / unspecified legal form",
+                "@language": "en"
+            },
+            "skos:notation": "other"
+        }
+    ]
+}

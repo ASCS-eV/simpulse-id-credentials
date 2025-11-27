@@ -1,0 +1,36 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1"
+    ],
+    "id": "did:web:did.identity.ascs.digital:users:ascs:admin-a1b2c3d4",
+    "controller": "did:web:did.identity.ascs.digital:participants:ascs",
+    "verificationMethod": [
+        {
+            "id": "did:web:did.identity.ascs.digital:users:ascs:admin-a1b2c3d4#ascs-tezos-key-1",
+            "type": "EcdsaSecp256k1VerificationKey2019",
+            "controller": "did:web:did.identity.ascs.digital:participants:ascs",
+            "blockchainAccountId": "tezos:NetXnHfVqm9iesp:tz1bpeJArd7apJyTUryfXH1SD6w8GL6Gwhj8"
+        },
+        {
+            "id": "did:web:did.identity.ascs.digital:users:ascs:admin-a1b2c3d4#ascs-etherlink-key-1",
+            "type": "EcdsaSecp256k1VerificationKey2019",
+            "controller": "did:web:did.identity.ascs.digital:participants:ascs",
+            "blockchainAccountId": "eip155:42793:0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+        }
+    ],
+    "authentication": [
+        "did:web:did.identity.ascs.digital:users:ascs:admin-a1b2c3d4#ascs-tezos-key-1",
+        "did:web:did.identity.ascs.digital:users:ascs:admin-a1b2c3d4#ascs-etherlink-key-1"
+    ],
+    "assertionMethod": [
+        "did:web:did.identity.ascs.digital:users:ascs:admin-a1b2c3d4#ascs-tezos-key-1",
+        "did:web:did.identity.ascs.digital:users:ascs:admin-a1b2c3d4#ascs-etherlink-key-1"
+    ],
+    "proof": {
+        "type": "EcdsaSecp256k1Signature2019",
+        "created": "2025-08-06T10:05:00Z",
+        "verificationMethod": "did:web:did.identity.ascs.digital:users:ascs:admin-a1b2c3d4#ascs-etherlink-key-1",
+        "proofPurpose": "assertionMethod",
+        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_ASCS_ADMIN"
+    }
+}
