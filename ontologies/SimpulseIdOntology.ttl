@@ -1,0 +1,212 @@
+@prefix simpulseid: <https://schema.ascs.digital/SimpulseIdCredentials/v1#> .
+@prefix lf:         <https://schema.ascs.digital/legalForm/v1#> .
+@prefix gx:         <https://w3id.org/gaia-x/2411#> .
+@prefix schema:     <https://schema.org/> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:        <http://www.w3.org/2002/07/owl#> .
+@prefix skos:       <http://www.w3.org/2004/02/skos/core#> .
+
+#################################################################
+# Ontology header
+#################################################################
+
+simpulseid: a owl:Ontology ;
+    rdfs:comment "SimpulseID credential ontology for participants, memberships, users and administrators in the ASCS / ENVITED ecosystem, aligned with Gaia-X and schema.org."@en .
+
+#################################################################
+# Core classes
+#################################################################
+
+simpulseid:Participant a owl:Class ;
+    rdfs:subClassOf gx:LegalPerson ,
+                    schema:Organization ;
+    rdfs:comment "Participant entity representing a legal person or organization, compliant with mandatory Gaia-X standards for gx:LegalPerson."@en .
+
+simpulseid:AscsBaseMembership a owl:Class ;
+    rdfs:subClassOf schema:ProgramMembership ;
+    rdfs:comment "ASCS e.V. base membership entity. A revoked membership credential means no base membership status."@en .
+
+simpulseid:AscsEnvitedMembership a owl:Class ;
+    rdfs:subClassOf schema:ProgramMembership ;
+    rdfs:comment "ASCS e.V. ENVITED membership entity. A revoked membership credential means no Envited membership status."@en .
+
+simpulseid:Administrator a owl:Class ;
+    rdfs:subClassOf gx:NaturalPerson ,
+                    schema:Person ;
+    rdfs:comment "Administrator entity representing a natural person, compliant with mandatory Gaia-X standards for gx:NaturalPerson."@en .
+
+simpulseid:User a owl:Class ;
+    rdfs:subClassOf gx:NaturalPerson ,
+                    schema:Person ;
+    rdfs:comment "User entity representing a natural person, compliant with mandatory Gaia-X standards for gx:NaturalPerson."@en .
+
+simpulseid:BaseMembershipProgram a owl:Class ;
+    rdfs:subClassOf schema:Program ;
+    rdfs:comment "Definition of the ASCS e.V. Base Membership program as a schema:Program."@en .
+
+simpulseid:EnvitedMembershipProgram a owl:Class ;
+    rdfs:subClassOf schema:Program ;
+    rdfs:comment "Definition of the ASCS e.V. ENVITED Membership program as a schema:Program."@en .
+
+#################################################################
+# LegalForm concept scheme and property
+#################################################################
+
+simpulseid:LegalForm a owl:Class , skos:ConceptScheme ;
+    rdfs:comment "Code list (SKOS concept scheme) of legal forms used in SimpulseID credentials."@en .
+
+simpulseid:legalForm a owl:ObjectProperty ;
+    rdfs:domain simpulseid:Participant ;
+    rdfs:range  simpulseid:LegalForm ;
+    rdfs:comment "Legal form of the participant entity, pointing to a SKOS concept in the SimpulseID LegalForm scheme."@en .
+
+# FULL legal form list
+
+lf:LLC a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Limited Liability Company"@en ;
+    skos:notation "LLC" .
+
+lf:Corporation a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Corporation"@en ;
+    skos:notation "Corporation" .
+
+lf:LimitedPartnership a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Limited Partnership"@en ;
+    skos:notation "LimitedPartnership" .
+
+lf:NonprofitCorporation a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Nonprofit Corporation"@en ;
+    skos:notation "NonprofitCorporation" .
+
+lf:GmbH a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Gesellschaft mit beschränkter Haftung"@de ;
+    skos:prefLabel "Limited liability company (GmbH)"@en ;
+    skos:notation "GmbH" .
+
+lf:AG a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Aktiengesellschaft"@de ;
+    skos:prefLabel "Stock corporation (AG)"@en ;
+    skos:notation "AG" .
+
+lf:Einzelunternehmen a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Einzelunternehmen"@de ;
+    skos:prefLabel "Sole proprietorship"@en ;
+    skos:notation "Einzelunternehmen" .
+
+lf:GbR a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Gesellschaft bürgerlichen Rechts"@de ;
+    skos:prefLabel "Civil-law partnership (GbR)"@en ;
+    skos:notation "GbR" .
+
+lf:OHG a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Offene Handelsgesellschaft"@de ;
+    skos:prefLabel "General partnership (OHG)"@en ;
+    skos:notation "OHG" .
+
+lf:KG a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Kommanditgesellschaft"@de ;
+    skos:prefLabel "Limited partnership (KG)"@en ;
+    skos:notation "KG" .
+
+lf:UG a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Unternehmergesellschaft (haftungsbeschränkt)"@de ;
+    skos:prefLabel "Entrepreneurial company (UG)"@en ;
+    skos:notation "UG" .
+
+lf:SoleTrader a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Sole Trader"@en ;
+    skos:notation "SoleTrader" .
+
+lf:UnincorporatedAssociation a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Unincorporated Association"@en ;
+    skos:notation "UnincorporatedAssociation" .
+
+lf:Partnership a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Partnership"@en ;
+    skos:notation "Partnership" .
+
+lf:Trust a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Trust"@en ;
+    skos:notation "Trust" .
+
+lf:LimitedCompany a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Limited Company"@en ;
+    skos:notation "LimitedCompany" .
+
+lf:LLP a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Limited Liability Partnership"@en ;
+    skos:notation "LLP" .
+
+lf:CIC a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Community Interest Company (CIC)"@en ;
+    skos:notation "CIC" .
+
+lf:CIO a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Charitable Incorporated Organisation (CIO)"@en ;
+    skos:notation "CIO" .
+
+lf:CooperativeSociety a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Co-operative Society"@en ;
+    skos:notation "CooperativeSociety" .
+
+lf:BenCom a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Community Benefit Society (BenCom)"@en ;
+    skos:notation "BenCom" .
+
+lf:other a skos:Concept , simpulseid:LegalForm ;
+    skos:inScheme simpulseid:LegalForm ;
+    skos:prefLabel "Other / unspecified legal form"@en ;
+    skos:notation "other" .
+
+#################################################################
+# Membership-related properties
+#################################################################
+
+simpulseid:baseMembership a owl:ObjectProperty ;
+    rdfs:domain simpulseid:AscsEnvitedMembership ;
+    rdfs:range  simpulseid:AscsBaseMembership ;
+    rdfs:comment "Reference from an Envited membership to the corresponding base membership credential instance."@en .
+
+simpulseid:member a owl:ObjectProperty ;
+    owl:equivalentProperty schema:member ;
+    rdfs:comment "Alias for schema:member used in SimpulseID Issuer / membership credentials."@en .
+
+simpulseid:memberOf a owl:ObjectProperty ;
+    owl:equivalentProperty schema:memberOf ;
+    rdfs:comment "Alias for schema:memberOf used in SimpulseID membership credentials."@en .
+
+#################################################################
+# Terms and conditions (Participant + Memberships)
+#################################################################
+
+simpulseid:TermsAndConditions a owl:ObjectProperty ;
+    rdfs:domain simpulseid:Participant ;
+    rdfs:range  gx:TermsAndConditions ;
+    rdfs:comment "Reference from a Participant to the terms and conditions for using the SimpulseID application."@en .
+
+simpulseid:membershipTermsAndConditions a owl:ObjectProperty ;
+    rdfs:domain simpulseid:AscsBaseMembership , simpulseid:AscsEnvitedMembership ;
+    rdfs:range  gx:TermsAndConditions ;
+    rdfs:comment "Reference from membership credential subjects to applicable membership terms and conditions."@en .
