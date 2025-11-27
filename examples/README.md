@@ -1,24 +1,142 @@
-# Notes on the Examples
+# SimpulseID Credential Examples
 
-Notes and comments:
+This folder contains **reference examples** for all Verifiable Credentials used in the  
+ENVITED Ecosystem operated by ASCS e.V.
 
-- While participants use did:web in this example, a ledger based method that does not rely on just one unchangeable address would make more sense in the long term for resilience and transparency. This would need a smart contract that lets administrators propose changes to their DID document that must be accepted by the TA.
-- While users use did:pkh:tezos in this example, a move to a fully ledger-based, Ethereum-compatible DID method seems advisable for the future.
-- Since administrator changes must be accepted by the TA, he can keep track of at least one main contact for any given participant.
-- Since we have no existing revocation smart contract right now, the revocation entry instead refers to the base DID document of the maintainer of the revocation registry. We assume, that a service entry in the DID document points to the registry. The fragment syntax is up to DID specification.
+These examples demonstrate:
 
-## Participant DIDs
+- the JSON-LD structure using the public contexts in `/contexts`
+- the semantics defined in `/ontologies`
+- correct use of did:web identifiers for:
+  - participants (organizations)
+  - ASCS programs (base membership, ENVITED membership)
+  - users and administrators (opaque non-PII identifiers)
+- correct Gaia-X–compatible modelling of addresses, legal forms, and terms & conditions
+- revocation status entries using the Harbour Credentials context
 
-The participant DID documents need to be managed by ASCS because the ASCS must control what keys are listed in there as signing keys. However, it is important that these private keys never are in the hands of the ASCS, but instead always are with the respective participant admins.
+The examples serve as a canonical blueprint for services integrating with  
+**https://identity.ascs.digital/**.
 
-## Issuance
+---
 
-The participant VC and one admin VC are issued by an ASCS admin and contain the ASCS DID as part of the issuer field. The admin VC is connected to the participant by referencing the participant DID.
+## Structure of the Examples
 
-Additional credentials detail the specific types of memberships. They are all signed by an ASCS admin and reference the participant DID.
+### 1. Verifiable Credentials
 
-A participant can create arbitrary many user credentials without approval. The user VCs are issued by the participant's admin and contain the participant DID in the issuer field.
+Each credential in this folder uses:
 
-## Tooling
+- `https://www.w3.org/ns/credentials/v2` (VC Data Model v2)
+- `SimpulseIdCredentials.json` (main context)
+- `HarbourCredentials.json` (credential status)
+- `harbour:CRSetEntry` with `statusPurpose: "revocation"`
 
-jsonld-cli seems decent for json schema validation.
+Types included:
+
+- **Participant Credential**  
+  Identity of an organization (e.g., BMW), aligned with Gaia-X `gx:LegalPerson`.
+
+- **ASCS Base Membership Credential**  
+  Proof of base membership in ASCS e.V.
+
+- **ENVITED Membership Credential**  
+  Extends the base membership and links to a program DID.
+
+- **Administrator Credential**  
+  Natural person with elevated rights, issued and controlled by ASCS.
+
+- **User Credential**  
+  Natural person affiliated with a participant, issued by the participant’s admin.
+
+All credentials use **did:web subject identifiers** for users and admins:
+
+- opaque  
+- non-PII  
+- key-rotation capable  
+- hosted under:  
+  `https://did.identity.ascs.digital/users/...`
+
+---
+
+## 2. did:web Documents
+
+Examples under `examples/did-web/` illustrate:
+
+- Participant DIDs controlled by organizations  
+  (`did:web:did.identity.ascs.digital:participants:ascs`, `participants:bmw`, …)
+
+- Program DIDs controlled by ASCS  
+  (`did:web:did.identity.ascs.digital:programs:ascs-base-membership`, …)
+
+- User and Administrator DIDs:  
+  Opaque, privacy-preserving identifiers that *only* expose verification keys.
+
+Each DID document supports:
+
+- Tezos account (did:pkh)
+- Etherlink/EVM account (`blockchainAccountId: eip155:42793:...`)
+- Key rotation (through verificationMethod lists)
+
+No DID document contains personal data.
+
+---
+
+## 3. Wallet Rendering Manifests
+
+The manifests in `/manifests` define how SSI wallets such as **Altme** render cards using the  
+Decentralized Identity Foundation **Wallet Rendering Specification**.
+
+Each manifest:
+
+- references the correct SimpulseID credential type  
+- defines which properties appear on the card  
+- includes human-readable fallback titles  
+- is issued by the ASCS organizational DID (`did:web:did.identity.ascs.digital:participants:ascs`)
+
+---
+
+## 4. Notes on Issuance Model
+
+### Participant Credentials  
+Issued by ASCS upon onboarding of an organization into the ENVITED ecosystem.
+
+### Program Membership Credentials  
+Base membership and ENVITED membership are issued by ASCS.
+
+### Administrator Credentials  
+Issued by ASCS to individuals acting on behalf of ASCS or participants.
+
+### User Credentials  
+Issued by participant administrators to individuals.  
+These credentials use an opaque user DID under `did.identity.ascs.digital` to support:
+
+- privacy (no PII in DID)
+- key rotation
+- multi-chain keys (Tezos + Etherlink)
+
+---
+
+## 5. Revocation
+
+Example credentials reference a `credentialStatus` entry:
+
+- `harbour:CRSetEntry`
+- `statusPurpose: "revocation"`
+- `id` pointing to a `did:web` revocation registry fragment
+
+The DID document for the registry includes a **service endpoint** pointing to the actual registry.
+
+---
+
+## 6. Tooling
+
+You may use:
+
+- **jsonld-cli** for JSON-LD normalization and checking
+- **didkit** for signing / verifying VC Data Model v2 credentials
+- **jq** for inspection and debugging
+- **JSON Schema** for linting examples where applicable
+
+---
+
+This folder is meant as a **reference implementation** for developers integrating  
+SimpulseID credentials into ENVITED applications and services.

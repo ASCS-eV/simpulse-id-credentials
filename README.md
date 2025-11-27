@@ -1,37 +1,183 @@
-# DEMIM Credentials
+# SimpulseID Credentials for the ENVITED Ecosystem
 
-## Content
+This repository contains the **Verifiable Credential (VC)** building blocks used by  
+[https://identity.ascs.digital/](https://identity.ascs.digital/)  
+to manage identities and memberships in the **ENVITED Ecosystem** of the  
+_Automotive Solution Center for Simulation e.V. (ASCS e.V.)_.
 
-A public repository containing examples for (verifiable) credentials, associated json-ld context definitions and json manifests. The crendetials are used in the [Decentralized Digital Membership Management](https://identity.ascs.digital).
-The DID of issuers and subjects and the UUIDs of the credentials have been aligned with the content of the following example [revocation registry](https://better-call.dev/ghostnet/KT1PZFXebyGvRFG8enbuVL9nrvTi4krYqeKt/storage.)
+The repository provides:
 
-## Examples
+- JSON-LD **contexts** for all SimpulseID credential types
+- Example **Verifiable Credentials** (VC v2, OIDC4VP-ready)
+- Example **did:web** DID documents for participants, programs, users, and admins
+- **Wallet manifests** for card rendering in SSI wallets (e.g. Altme)
+- RDF/OWL **ontologies** and SKOS vocabularies aligning with the Gaia-X Trust Framework and ENVITED Ecosystem Specifications (EVES)
 
-There are two types of json-ld examples for the credentials. The member credentials and the user credential. The member credential is used to e.g. register a company with an application like e.g. [Simpulse](https://simpulse.de) for creating the company profile with minimal validated information. The user credential is used in asc(s ecosystem applications to set initial rights and roles.
-The examples are once given with an external context definition and also with the attributes defined inline in the credential context itself. This is necessary as third-party libraries like [didkit](https://github.com/spruceid/didkit) do not allow external context loading due to security implications.
+All of this is intended to be **publicly hostable** and consumable by wallets, verifiers and services in the ENVITED ecosystem.
 
-## Manifests
+---
 
-The manifest files are provided to render an identity card in a SSI wallet like e.g. [altme](https://altme.io) according to the identity foundation [wallet rendering specification](https://identity.foundation/wallet-rendering/).
+## Repository structure
 
-## Todos
+### `contexts/`
 
-The context json files need to be hosted at <https://schema.ascs.digital/SimpulseId/v1>.
-All terms need to be hosted as .pdf files at <https://media.ascs.digital/terms/>.
+JSON-LD context documents used by SimpulseID credentials, for example:
 
-## Resources
+- `SimpulseIdCredentials.json` – main context for:
+  - `simpulseid:Participant`
+  - `simpulseid:AscsBaseMembership`
+  - `simpulseid:AscsEnvitedMembership`
+  - `simpulseid:Administrator`
+  - `simpulseid:User`
+- `HarbourCredentials.json` – additional context for status / revocation information
+- SKOS / code list contexts (e.g. legal form vocabulary)
 
-* [Implementation Guide](https://www.w3.org/TR/vc-imp-guide/#creating-new-credential-types)
-* [w3c credentials v1](https://www.w3.org/2018/credentials/v1)
-* [w3c vc-json-schema](https://w3c.github.io/vc-json-schema/)
-* [json schema specification](https://json-schema.org/specification)
-* [public schemas](https://schema.org/)
-* [transform tools](https://transform.tools/)
-* [json-ld best practices](https://w3c.github.io/json-ld-bp/?specStatus=ED)
-* [version 4 uuid](https://www.uuidgenerator.net/version4)
-* [module: pkh-tezos](https://did.js.org/docs/api/modules/pkh_tezos/)
-* [did-pkh-method-draft](https://github.com/w3c-ccg/did-pkh/blob/main/did-pkh-method-draft.md)
-* [Multiassets](https://multiformats.io/)
-* [Content Identifier (CID)](https://docs.ipfs.tech/concepts/content-addressing/#what-is-a-cid)
-* [POC Content Identifier](https://github.com/GAIA-X4PLC-AAD/poc-ipfs-content-identifier)
-* [GaiaX Credential Format](https://docs.gaia-x.eu/technical-committee/identity-credential-access-management/24.07/credential_format/#verifiable-credential)
+These files are meant to be hosted under:
+
+- `https://schema.ascs.digital/...`
+
+and are referenced from the example credentials via their `@context` arrays.
+
+---
+
+### `examples/`
+
+Example **Verifiable Credentials** that show how the contexts and ontologies are intended to be used.
+
+Typical credential subjects include:
+
+- **Participant** – organizational identity (e.g. BMW)
+- **ASCS Base Membership** – base membership in ASCS e.V.
+- **ASCS ENVITED Membership** – ENVITED program membership, linked to base membership
+- **Administrator** – natural person with administrative rights in ENVITED / ASCS
+- **User** – natural person with initial roles/rights in ENVITED ecosystem applications
+
+Each VC uses:
+
+- `https://www.w3.org/ns/credentials/v2` (VC Data Model v2)
+- SimpulseID context from this repo
+- Harbour context for `credentialStatus`
+- `harbour:CRSetEntry` + `statusPurpose: "revocation"` for revocation status
+- `gx:*` terms to stay compatible with the **Gaia-X Credential Format** and Trust Framework
+
+#### `examples/did-web/`
+
+Example **did:web DID documents** that correspond to identifiers used in the credentials, e.g.:
+
+- Participants (`did:web:did.identity.ascs.digital:participants:...`)
+- Programs (`did:web:did.identity.ascs.digital:programs:...`)
+- Users & administrators (`did:web:did.identity.ascs.digital:users:...`)
+
+These demonstrate:
+
+- How organizational DIDs (ASCS, ENVITED programs, participants) are modelled
+- How user/admin DIDs are defined _without leaking personal data_
+- How to support key rotation and multiple chains (e.g. Tezos + Etherlink/EVM) via `blockchainAccountId`
+
+In production, these DID documents are intended to be hosted under:
+
+- `https://did.identity.ascs.digital/...`
+
+---
+
+### `manifests/`
+
+Wallet **rendering manifests** for each credential type, following the  
+[Decentralized Identity Foundation Wallet Rendering specification](https://identity.foundation/wallet-rendering/).
+
+They are used by wallets like **Altme** to:
+
+- Render credential “cards” with titles, subtitles and key properties
+- Show important fields such as:
+  - organization name, legal form, VAT ID
+  - membership program and hosting organization
+  - user/admin name, email, affiliation
+  - links to terms & conditions and privacy policies
+- Map `credentialSubject` properties and dates (`issuanceDate`, `expirationDate`) to UI elements
+
+Each manifest references:
+
+- A SimpulseID schema / type (e.g. `simpulseid:Participant`)
+- The issuer DID of the manifest (typically an ASCS did:web)
+
+---
+
+### `ontologies/`
+
+RDF/OWL ontologies and vocabularies that define the **formal semantics** of SimpulseID types and properties, aligned with:
+
+- **Gaia-X Trust Framework 24.11**
+- **ENVITED Ecosystem Specifications (EVES)**
+- **schema.org** and **vCard** where appropriate
+
+Key elements include:
+
+- `SimpulseIdOntology.ttl`
+
+  - Classes:
+    - `simpulseid:Participant` ⊑ `gx:LegalPerson`, `schema:Organization`
+    - `simpulseid:AscsBaseMembership`, `simpulseid:AscsEnvitedMembership` ⊑ `schema:ProgramMembership`
+    - `simpulseid:Administrator`, `simpulseid:User` ⊑ `gx:NaturalPerson`, `schema:Person`
+    - Program classes for base and ENVITED memberships
+  - Properties:
+    - `simpulseid:legalForm` → SKOS `simpulseid:LegalForm` concepts
+    - `simpulseid:termsAndConditions` → `gx:TermsAndConditions` resources
+    - `simpulseid:baseMembership` linking ENVITED membership to base membership
+  - Address modelling:
+    - `gx:Address` with **vCard** properties:
+      - `vcard:street-address`
+      - `vcard:postal-code`
+      - `vcard:locality`
+      - `vcard:region`
+    - `gx:countryCode` for ISO country codes
+
+- Legal form SKOS vocabulary (e.g. `legalForm-v1.jsonld`)
+  - Code list of legal forms (`AG`, `GmbH`, `LLC`, `BenCom`, etc.)
+  - Used via `simpulseid:LegalForm` and `simpulseid:legalForm` in credentials
+
+These ontologies are the **ground truth** for what the JSON-LD contexts and examples mean at RDF level.
+
+---
+
+## Intended usage within `https://identity.ascs.digital/`
+
+The artifacts in this repository are used by the **ENVITED Ecosystem identity services** to:
+
+- Issue and verify **Gaia-X compatible** Verifiable Credentials
+- Support **self-sovereign identity** login flows via the **SSI-to-OIDC bridge**
+- Provide consistent semantics for:
+  - ENVITED participants (organizations)
+  - ASCS base memberships
+  - ENVITED program memberships
+  - Administrative and user roles
+- Render credential cards in SSI wallets for a smooth UX
+
+Typical flow:
+
+1. A participant (organization) is onboarded and receives a **Participant VC**.
+2. The organization receives **ASCS base membership** and optionally **ENVITED membership** credentials.
+3. Individual administrators and users receive **Admin/User VCs**, bound to opaque did:web identifiers under `did.identity.ascs.digital`.
+4. Wallets like Altme use the **contexts** and **manifests** from this repo to display these credentials.
+5. Services behind `identity.ascs.digital` use the **ontologies** and **Gaia-X compatible structures** to perform trust and membership checks.
+
+---
+
+## References
+
+Some relevant specifications and resources:
+
+- W3C Verifiable Credentials Data Model v2  
+  <https://www.w3.org/TR/vc-data-model-2.0/>
+- W3C Verifiable Credential Vocabulary (VC v2)  
+  <https://www.w3.org/ns/credentials/v2>
+- Gaia-X Credential Format & Trust Framework (24.11)  
+  <https://docs.gaia-x.eu/technical-committee/identity-credential-access-management/>
+- DIF Wallet Rendering specification  
+  <https://identity.foundation/wallet-rendering/>
+- JSON-LD 1.1 & best practices  
+  <https://json-ld.org/>  
+  <https://w3c.github.io/json-ld-bp/>
+- JSON Schema  
+  <https://json-schema.org/specification>
+- schema.org  
+  <https://schema.org/>
