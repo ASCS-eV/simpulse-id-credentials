@@ -7,6 +7,7 @@
 @prefix owl:        <http://www.w3.org/2002/07/owl#> .
 @prefix skos:       <http://www.w3.org/2004/02/skos/core#> .
 @prefix vcard:      <http://www.w3.org/2006/vcard/ns#> .
+@prefix vc:         <https://www.w3.org/ns/credentials#> .
 
 #################################################################
 # Ontology header
@@ -49,6 +50,89 @@ simpulseid:BaseMembershipProgram a owl:Class ;
 simpulseid:EnvitedMembershipProgram a owl:Class ;
     rdfs:subClassOf schema:Program ;
     rdfs:comment "Definition of the ASCS e.V. ENVITED Membership program as a schema:Program."@en .
+
+#################################################################
+# Issuer role
+#################################################################
+
+simpulseid:Issuer a owl:Class ;
+    rdfs:subClassOf gx:LegalPerson ,
+                    schema:Organization ;
+    rdfs:comment "Issuer entity representing an organization authorized to issue SimpulseID credentials. In practice, issuers are also SimpulseID Participants and are expected to reference their member organization via schema:member / simpulseid:member."@en .
+
+#################################################################
+# Credential classes (for use in VC.type)
+#################################################################
+
+simpulseid:ParticipantCredential a owl:Class ;
+    rdfs:subClassOf vc:VerifiableCredential ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:credentialSubject ;
+        owl:allValuesFrom simpulseid:Participant
+    ] ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:issuer ;
+        owl:allValuesFrom simpulseid:Issuer
+    ] ;
+    rdfs:comment "Verifiable Credential asserting that the credentialSubject is a SimpulseID Participant and that the credential is issued by a SimpulseID Issuer."@en .
+
+simpulseid:AscsBaseMembershipCredential a owl:Class ;
+    rdfs:subClassOf vc:VerifiableCredential ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:credentialSubject ;
+        owl:allValuesFrom simpulseid:AscsBaseMembership
+    ] ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:issuer ;
+        owl:allValuesFrom simpulseid:Issuer
+    ] ;
+    rdfs:comment "Verifiable Credential asserting that the credentialSubject holds an ASCS e.V. base membership, issued by a SimpulseID Issuer."@en .
+
+simpulseid:AscsEnvitedMembershipCredential a owl:Class ;
+    rdfs:subClassOf vc:VerifiableCredential ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:credentialSubject ;
+        owl:allValuesFrom simpulseid:AscsEnvitedMembership
+    ] ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:issuer ;
+        owl:allValuesFrom simpulseid:Issuer
+    ] ;
+    rdfs:comment "Verifiable Credential asserting that the credentialSubject holds an ASCS e.V. ENVITED membership, issued by a SimpulseID Issuer. Revocation of this credential implies loss of Envited membership status."@en .
+
+simpulseid:AdministratorCredential a owl:Class ;
+    rdfs:subClassOf vc:VerifiableCredential ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:credentialSubject ;
+        owl:allValuesFrom simpulseid:Administrator
+    ] ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:issuer ;
+        owl:allValuesFrom simpulseid:Issuer
+    ] ;
+    rdfs:comment "Verifiable Credential asserting that the credentialSubject acts as a SimpulseID Administrator for a given Participant or membership context, issued by a SimpulseID Issuer."@en .
+
+simpulseid:UserCredential a owl:Class ;
+    rdfs:subClassOf vc:VerifiableCredential ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:credentialSubject ;
+        owl:allValuesFrom simpulseid:User
+    ] ;
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty vc:issuer ;
+        owl:allValuesFrom simpulseid:Issuer
+    ] ;
+    rdfs:comment "Verifiable Credential asserting that the credentialSubject is a SimpulseID User associated with a Participant or membership, issued by a SimpulseID Issuer."@en .
 
 #################################################################
 # LegalForm concept scheme and property
@@ -181,14 +265,16 @@ lf:other a skos:Concept , simpulseid:LegalForm ;
     skos:prefLabel "Other / unspecified legal form"@en ;
     skos:notation "other" .
 
+
 #################################################################
 # Membership-related properties
 #################################################################
 
-simpulseid:baseMembership a owl:ObjectProperty ;
+# Subject → credential link (Envited membership subject → Base membership credential VC)
+simpulseid:baseMembershipCredential a owl:ObjectProperty ;
     rdfs:domain simpulseid:AscsEnvitedMembership ;
-    rdfs:range  simpulseid:AscsBaseMembership ;
-    rdfs:comment "Reference from an Envited membership to the corresponding base membership credential instance."@en .
+    rdfs:range  simpulseid:AscsBaseMembershipCredential ;
+    rdfs:comment "Reference from an Envited membership subject to the underlying ASCS Base Membership credential (VC), identified by its id (e.g. a UUID URN)."@en .
 
 simpulseid:member a owl:ObjectProperty ;
     owl:equivalentProperty schema:member ;
