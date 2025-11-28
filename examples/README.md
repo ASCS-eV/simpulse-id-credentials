@@ -15,7 +15,7 @@ These examples demonstrate:
 - revocation status entries using the Harbour Credentials context
 
 The examples serve as a canonical blueprint for services integrating with  
-**https://identity.ascs.digital/**.
+**<https://identity.ascs.digital/>**.
 
 ---
 
@@ -97,15 +97,19 @@ Each manifest:
 ## 4. Notes on Issuance Model
 
 ### Participant Credentials  
+
 Issued by ASCS upon onboarding of an organization into the ENVITED ecosystem.
 
 ### Program Membership Credentials  
+
 Base membership and ENVITED membership are issued by ASCS.
 
 ### Administrator Credentials  
+
 Issued by ASCS to individuals acting on behalf of ASCS or participants.
 
 ### User Credentials  
+
 Issued by participant administrators to individuals.  
 These credentials use an opaque user DID under `did.identity.ascs.digital` to support:
 

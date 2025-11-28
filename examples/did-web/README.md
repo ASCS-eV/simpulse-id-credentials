@@ -20,8 +20,8 @@ did:web:did.identity.ascs.digital:programs:ascs-envited-membership
 
 They must be hosted at:
 
-<https://did.identity.ascs.digital/programs/ascs-base-membership/did.json>
-<https://did.identity.ascs.digital/programs/ascs-envited-membership/did.json>
+* <https://did.identity.ascs.digital/programs/ascs-base-membership/did.json>
+* <https://did.identity.ascs.digital/programs/ascs-envited-membership/did.json>
 
 The example files in this folder show:
 
@@ -41,13 +41,13 @@ Only update:
 Additional did:web examples in this folder illustrate:
 
 - Participant DIDs  
-  (`did:web:did.identity.ascs.digital:participants/...`)
+  (`did:web:did.identity.ascs.digital:participants/<participant-id>`)
 
 - Administrator DIDs  
   (`did:web:did.identity.ascs.digital:users/ascs/admin-<opaque-id>`)
 
 - User DIDs  
-  (`did:web:did.identity.ascs.digital:users/<participant>/u-<opaque-id>`)
+  (`did:web:did.identity.ascs.digital:users/<participant-id>/u-<opaque-id>`)
 
 These documents contain:
 

@@ -7,11 +7,15 @@ they map to the SimpulseID ontology, Gaia-X definitions, schema.org and vCard.
 
 All contexts in this folder are intended to be hosted under:
 
+```txt
 <https://schema.ascs.digital/name/v1>
+```
 
 with the following MIME type:
 
+```txt
 Content-Type: application/ld+json
+```
 
 Hosting contexts in this way ensures:
 
@@ -75,7 +79,9 @@ Each entry is a `skos:Concept` inside the `simpulseid:LegalForm` concept scheme.
 
 Credentials reference these IRIs like:
 
+```txt
 <https://schema.ascs.digital/SimpulseIdOntology/v1/legalForm#AG>
+```
 
 ---
 
@@ -130,7 +136,9 @@ SimpulseID credentials correctly.
 
 These contexts directly reference terms defined in:
 
+```txt
 /ontologies/SimpulseIdOntology.ttl
+```
 
 and the legal form code list.
 
