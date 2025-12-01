@@ -14,40 +14,49 @@
 #################################################################
 
 simpulseid: a owl:Ontology ;
-    rdfs:comment "SimpulseID credential ontology for participants, memberships, users and administrators in the ASCS / ENVITED ecosystem, aligned with Gaia-X and schema.org. Addresses follow the Gaia-X gx:Address shape using vCard properties."@en .
+    rdfs:label "SimpulseID Credential Ontology"@en ;
+    rdfs:comment "SimpulseID credential ontology for participants, memberships, users, and administrators in the ASCS / ENVITED ecosystem, aligned with Gaia-X and schema.org. Addresses follow the Gaia-X gx:Address shape using vCard properties."@en ;
+    owl:versionInfo "1.1" .
 
 #################################################################
 # Core classes
 #################################################################
 
 simpulseid:Participant a owl:Class ;
+    rdfs:label "Participant"@en ;
     rdfs:subClassOf gx:LegalPerson ,
                     schema:Organization ;
-    rdfs:comment "Participant entity representing a legal person or organization, compliant with mandatory Gaia-X standards for gx:LegalPerson. Uses gx:headquartersAddress and gx:legalAddress, whose range is gx:Address with vCard street-address, postal-code, locality and region and gx:countryCode."@en .
+    rdfs:comment "Participant entity representing a legal person or organization, compliant with mandatory Gaia-X standards for gx:LegalPerson. Uses gx:headquartersAddress and gx:legalAddress, whose range is gx:Address with vCard street-address, postal-code, locality, region, and gx:countryCode."@en .
 
 simpulseid:AscsBaseMembership a owl:Class ;
+    rdfs:label "ASCS Base Membership"@en ;
     rdfs:subClassOf schema:ProgramMembership ;
     rdfs:comment "ASCS e.V. base membership entity. A revoked membership credential means no base membership status."@en .
 
 simpulseid:AscsEnvitedMembership a owl:Class ;
+    rdfs:label "ASCS ENVITED Membership"@en ;
     rdfs:subClassOf schema:ProgramMembership ;
-    rdfs:comment "ASCS e.V. ENVITED membership entity. A revoked membership credential means no Envited membership status."@en .
+    rdfs:comment "ASCS e.V. ENVITED membership entity. A revoked membership credential means no ENVITED membership status."@en .
 
 simpulseid:Administrator a owl:Class ;
+    rdfs:label "Administrator"@en ;
     rdfs:subClassOf gx:NaturalPerson ,
                     schema:Person ;
-    rdfs:comment "Administrator entity representing a natural person, compliant with mandatory Gaia-X standards for gx:NaturalPerson. May reference a gx:Address via schema:address."@en .
+    rdfs:comment "Administrator entity representing a natural person with elevated permissions in the SimpulseID ecosystem, compliant with Gaia-X standards for gx:NaturalPerson. May reference a gx:Address via schema:address."@en .
 
 simpulseid:User a owl:Class ;
+    rdfs:label "User"@en ;
     rdfs:subClassOf gx:NaturalPerson ,
                     schema:Person ;
-    rdfs:comment "User entity representing a natural person, compliant with mandatory Gaia-X standards for gx:NaturalPerson."@en .
+    rdfs:comment "User entity representing a natural person in the SimpulseID ecosystem, compliant with Gaia-X standards for gx:NaturalPerson."@en .
 
 simpulseid:BaseMembershipProgram a owl:Class ;
+    rdfs:label "Base Membership Program"@en ;
     rdfs:subClassOf schema:Program ;
     rdfs:comment "Definition of the ASCS e.V. Base Membership program as a schema:Program."@en .
 
 simpulseid:EnvitedMembershipProgram a owl:Class ;
+    rdfs:label "ENVITED Membership Program"@en ;
     rdfs:subClassOf schema:Program ;
     rdfs:comment "Definition of the ASCS e.V. ENVITED Membership program as a schema:Program."@en .
 
@@ -56,82 +65,78 @@ simpulseid:EnvitedMembershipProgram a owl:Class ;
 #################################################################
 
 simpulseid:Issuer a owl:Class ;
+    rdfs:label "Issuer"@en ;
     rdfs:subClassOf gx:LegalPerson ,
                     schema:Organization ;
     rdfs:comment "Issuer entity representing an organization authorized to issue SimpulseID credentials. In practice, issuers are also SimpulseID Participants and are expected to reference their member organization via schema:member / simpulseid:member."@en .
 
 #################################################################
-# Credential classes (for use in VC.type)
+# Credential classes (for use in VC @type)
 #################################################################
 
 simpulseid:ParticipantCredential a owl:Class ;
-    rdfs:subClassOf vc:VerifiableCredential ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:credentialSubject ;
-        owl:allValuesFrom simpulseid:Participant
-    ] ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:issuer ;
-        owl:allValuesFrom simpulseid:Issuer
-    ] ;
+    rdfs:label "Participant Credential"@en ;
+    rdfs:subClassOf vc:VerifiableCredential ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:credentialSubject ;
+          owl:allValuesFrom simpulseid:Participant
+        ] ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:issuer ;
+          owl:allValuesFrom simpulseid:Issuer
+        ] ;
     rdfs:comment "Verifiable Credential asserting that the credentialSubject is a SimpulseID Participant and that the credential is issued by a SimpulseID Issuer."@en .
 
 simpulseid:AscsBaseMembershipCredential a owl:Class ;
-    rdfs:subClassOf vc:VerifiableCredential ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:credentialSubject ;
-        owl:allValuesFrom simpulseid:AscsBaseMembership
-    ] ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:issuer ;
-        owl:allValuesFrom simpulseid:Issuer
-    ] ;
+    rdfs:label "ASCS Base Membership Credential"@en ;
+    rdfs:subClassOf vc:VerifiableCredential ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:credentialSubject ;
+          owl:allValuesFrom simpulseid:AscsBaseMembership
+        ] ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:issuer ;
+          owl:allValuesFrom simpulseid:Issuer
+        ] ;
     rdfs:comment "Verifiable Credential asserting that the credentialSubject holds an ASCS e.V. base membership, issued by a SimpulseID Issuer."@en .
 
 simpulseid:AscsEnvitedMembershipCredential a owl:Class ;
-    rdfs:subClassOf vc:VerifiableCredential ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:credentialSubject ;
-        owl:allValuesFrom simpulseid:AscsEnvitedMembership
-    ] ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:issuer ;
-        owl:allValuesFrom simpulseid:Issuer
-    ] ;
-    rdfs:comment "Verifiable Credential asserting that the credentialSubject holds an ASCS e.V. ENVITED membership, issued by a SimpulseID Issuer. Revocation of this credential implies loss of Envited membership status."@en .
+    rdfs:label "ASCS ENVITED Membership Credential"@en ;
+    rdfs:subClassOf vc:VerifiableCredential ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:credentialSubject ;
+          owl:allValuesFrom simpulseid:AscsEnvitedMembership
+        ] ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:issuer ;
+          owl:allValuesFrom simpulseid:Issuer
+        ] ;
+    rdfs:comment "Verifiable Credential asserting that the credentialSubject holds an ASCS e.V. ENVITED membership, issued by a SimpulseID Issuer. Revocation of this credential implies loss of ENVITED membership status."@en .
 
 simpulseid:AdministratorCredential a owl:Class ;
-    rdfs:subClassOf vc:VerifiableCredential ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:credentialSubject ;
-        owl:allValuesFrom simpulseid:Administrator
-    ] ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:issuer ;
-        owl:allValuesFrom simpulseid:Issuer
-    ] ;
+    rdfs:label "Administrator Credential"@en ;
+    rdfs:subClassOf vc:VerifiableCredential ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:credentialSubject ;
+          owl:allValuesFrom simpulseid:Administrator
+        ] ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:issuer ;
+          owl:allValuesFrom simpulseid:Issuer
+        ] ;
     rdfs:comment "Verifiable Credential asserting that the credentialSubject acts as a SimpulseID Administrator for a given Participant or membership context, issued by a SimpulseID Issuer."@en .
 
 simpulseid:UserCredential a owl:Class ;
-    rdfs:subClassOf vc:VerifiableCredential ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:credentialSubject ;
-        owl:allValuesFrom simpulseid:User
-    ] ;
-    rdfs:subClassOf [
-        a owl:Restriction ;
-        owl:onProperty vc:issuer ;
-        owl:allValuesFrom simpulseid:Issuer
-    ] ;
+    rdfs:label "User Credential"@en ;
+    rdfs:subClassOf vc:VerifiableCredential ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:credentialSubject ;
+          owl:allValuesFrom simpulseid:User
+        ] ,
+        [ a owl:Restriction ;
+          owl:onProperty vc:issuer ;
+          owl:allValuesFrom simpulseid:Issuer
+        ] ;
     rdfs:comment "Verifiable Credential asserting that the credentialSubject is a SimpulseID User associated with a Participant or membership, issued by a SimpulseID Issuer."@en .
 
 #################################################################
@@ -139,9 +144,11 @@ simpulseid:UserCredential a owl:Class ;
 #################################################################
 
 simpulseid:LegalForm a owl:Class , skos:ConceptScheme ;
+    rdfs:label "Legal Form"@en ;
     rdfs:comment "Code list (SKOS concept scheme) of legal forms used in SimpulseID credentials."@en .
 
 simpulseid:legalForm a owl:ObjectProperty ;
+    rdfs:label "legal form"@en ;
     rdfs:domain simpulseid:Participant ;
     rdfs:range  simpulseid:LegalForm ;
     rdfs:comment "Legal form of the participant entity, pointing to a SKOS concept in the SimpulseID LegalForm scheme."@en .
@@ -151,137 +158,162 @@ simpulseid:legalForm a owl:ObjectProperty ;
 lf:LLC a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Limited Liability Company"@en ;
-    skos:notation "LLC" .
+    skos:notation "LLC" ;
+    rdfs:label "LLC"@en .
 
 lf:Corporation a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Corporation"@en ;
-    skos:notation "Corporation" .
+    skos:notation "Corporation" ;
+    rdfs:label "Corporation"@en .
 
 lf:LimitedPartnership a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Limited Partnership"@en ;
-    skos:notation "LimitedPartnership" .
+    skos:notation "LimitedPartnership" ;
+    rdfs:label "Limited Partnership"@en .
 
 lf:NonprofitCorporation a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Nonprofit Corporation"@en ;
-    skos:notation "NonprofitCorporation" .
+    skos:notation "NonprofitCorporation" ;
+    rdfs:label "Nonprofit Corporation"@en .
 
 lf:GmbH a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Gesellschaft mit beschränkter Haftung"@de ,
                    "Limited liability company (GmbH)"@en ;
-    skos:notation "GmbH" .
+    skos:notation "GmbH" ;
+    rdfs:label "GmbH"@en .
 
 lf:AG a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Aktiengesellschaft"@de ,
                    "Stock corporation (AG)"@en ;
-    skos:notation "AG" .
+    skos:notation "AG" ;
+    rdfs:label "AG"@en .
 
 lf:Einzelunternehmen a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Einzelunternehmen"@de ,
                    "Sole proprietorship"@en ;
-    skos:notation "Einzelunternehmen" .
+    skos:notation "Einzelunternehmen" ;
+    rdfs:label "Sole Proprietorship"@en .
 
 lf:GbR a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Gesellschaft bürgerlichen Rechts"@de ,
                    "Civil-law partnership (GbR)"@en ;
-    skos:notation "GbR" .
+    skos:notation "GbR" ;
+    rdfs:label "GbR"@en .
 
 lf:OHG a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Offene Handelsgesellschaft"@de ,
                    "General partnership (OHG)"@en ;
-    skos:notation "OHG" .
+    skos:notation "OHG" ;
+    rdfs:label "OHG"@en .
 
 lf:KG a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Kommanditgesellschaft"@de ,
                    "Limited partnership (KG)"@en ;
-    skos:notation "KG" .
+    skos:notation "KG" ;
+    rdfs:label "KG"@en .
 
 lf:UG a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Unternehmergesellschaft (haftungsbeschränkt)"@de ,
                    "Entrepreneurial company (UG)"@en ;
-    skos:notation "UG" .
+    skos:notation "UG" ;
+    rdfs:label "UG"@en .
 
 lf:SoleTrader a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Sole Trader"@en ;
-    skos:notation "SoleTrader" .
+    skos:notation "SoleTrader" ;
+    rdfs:label "Sole Trader"@en .
 
 lf:UnincorporatedAssociation a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Unincorporated Association"@en ;
-    skos:notation "UnincorporatedAssociation" .
+    skos:notation "UnincorporatedAssociation" ;
+    rdfs:label "Unincorporated Association"@en .
 
 lf:Partnership a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Partnership"@en ;
-    skos:notation "Partnership" .
+    skos:notation "Partnership" ;
+    rdfs:label "Partnership"@en .
 
 lf:Trust a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Trust"@en ;
-    skos:notation "Trust" .
+    skos:notation "Trust" ;
+    rdfs:label "Trust"@en .
 
 lf:LimitedCompany a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Limited Company"@en ;
-    skos:notation "LimitedCompany" .
+    skos:notation "LimitedCompany" ;
+    rdfs:label "Limited Company"@en .
 
 lf:LLP a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Limited Liability Partnership"@en ;
-    skos:notation "LLP" .
+    skos:notation "LLP" ;
+    rdfs:label "LLP"@en .
 
 lf:CIC a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Community Interest Company (CIC)"@en ;
-    skos:notation "CIC" .
+    skos:notation "CIC" ;
+    rdfs:label "CIC"@en .
 
 lf:CIO a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Charitable Incorporated Organisation (CIO)"@en ;
-    skos:notation "CIO" .
+    skos:notation "CIO" ;
+    rdfs:label "CIO"@en .
 
 lf:CooperativeSociety a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Co-operative Society"@en ;
-    skos:notation "CooperativeSociety" .
+    skos:notation "CooperativeSociety" ;
+    rdfs:label "Cooperative Society"@en .
 
 lf:BenCom a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Community Benefit Society (BenCom)"@en ;
-    skos:notation "BenCom" .
+    skos:notation "BenCom" ;
+    rdfs:label "BenCom"@en .
 
 lf:other a skos:Concept , simpulseid:LegalForm ;
     skos:inScheme simpulseid:LegalForm ;
     skos:prefLabel "Other / unspecified legal form"@en ;
-    skos:notation "other" .
-
+    skos:notation "other" ;
+    rdfs:label "Other"@en .
 
 #################################################################
 # Membership-related properties
 #################################################################
 
-# Subject → credential link (Envited membership subject → Base membership credential VC)
 simpulseid:baseMembershipCredential a owl:ObjectProperty ;
+    rdfs:label "Base Membership Credential"@en ;
     rdfs:domain simpulseid:AscsEnvitedMembership ;
     rdfs:range  simpulseid:AscsBaseMembershipCredential ;
-    rdfs:comment "Reference from an Envited membership subject to the underlying ASCS Base Membership credential (VC), identified by its id (e.g. a UUID URN)."@en .
+    rdfs:comment "Reference from an ENVITED membership subject to the underlying ASCS Base Membership credential (VC), identified by its id (e.g., a UUID URN)."@en .
 
 simpulseid:member a owl:ObjectProperty ;
+    rdfs:label "Member"@en ;
     owl:equivalentProperty schema:member ;
+    owl:inverseOf simpulseid:memberOf ;
     rdfs:comment "Alias for schema:member used in SimpulseID Issuer / membership credentials."@en .
 
 simpulseid:memberOf a owl:ObjectProperty ;
+    rdfs:label "Member Of"@en ;
     owl:equivalentProperty schema:memberOf ;
+    owl:inverseOf simpulseid:member ;
     rdfs:comment "Alias for schema:memberOf used in SimpulseID membership credentials."@en .
 
 #################################################################
@@ -289,17 +321,19 @@ simpulseid:memberOf a owl:ObjectProperty ;
 #################################################################
 
 simpulseid:termsAndConditions a owl:ObjectProperty ;
+    rdfs:label "Terms and Conditions"@en ;
     rdfs:domain simpulseid:Participant ,
                 simpulseid:AscsBaseMembership ,
                 simpulseid:AscsEnvitedMembership ,
                 simpulseid:Administrator ,
                 simpulseid:User ;
     rdfs:range gx:TermsAndConditions ;
-    rdfs:comment "Reference from SimpulseID credential subjects to terms and conditions resources, which are represented as instances of gx:TermsAndConditions (e.g. documents or web resources describing conditions for participation, membership or data processing)."@en .
+    rdfs:comment "Reference from SimpulseID credential subjects to terms and conditions resources, which are represented as instances of gx:TermsAndConditions (e.g., documents or web resources describing conditions for participation, membership, or data processing)."@en .
 
 #################################################################
 # Address note (linking to Gaia-X / vCard)
 #################################################################
 
 gx:Address a owl:Class ;
-    rdfs:comment "Gaia-X Address class. In SimpulseID credentials, gx:Address instances are expected to use vCard properties vcard:street-address, vcard:postal-code, vcard:locality and vcard:region together with gx:countryCode to represent the full postal address and country subdivision (e.g. DE-BY for Bavaria) in line with Gaia-X specifications."@en .
+    rdfs:label "Gaia-X Address"@en ;
+    rdfs:comment "Gaia-X Address class. In SimpulseID credentials, gx:Address instances are expected to use vCard properties vcard:street-address, vcard:postal-code, vcard:locality, and vcard:region together with gx:countryCode to represent the full postal address and country subdivision (e.g., DE-BY for Bavaria) in line with Gaia-X specifications."@en .
