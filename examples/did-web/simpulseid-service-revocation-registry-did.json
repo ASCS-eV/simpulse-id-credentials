@@ -1,0 +1,29 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://schema.reachhaven.com/HarbourCredentials/v1"
+    ],
+    "id": "did:web:did.ascs.digital:services:revocation-registry",
+    "controller": "did:web:did.ascs.digital:services:trust-anchor",
+    "service": [
+        {
+            "id": "did:web:did.ascs.digital:services:revocation-registry#crset",
+            "type": "CRSetRevocationRegistryService",
+            "serviceEndpoint": {
+                "@type": "harbour:CRSetServiceEndpoint",
+                "endpoint": "https://gatehouse.reachhaven.com/services/harbour/crset",
+                "statusPurpose": "revocation",
+                "contractURN": "urn:blockchain:eip155:42793:contract:0x646B92C8f21e55DF67E766047E4bD7bEdF8DfA14",
+                "sourceRepository": "https://github.com/ASCS-eV/smart-contracts",
+                "implementation": "https://arxiv.org/abs/2501.17089"
+            }
+        }
+    ],
+    "proof": {
+        "type": "EcdsaSecp256k1Signature2019",
+        "created": "2025-08-06T10:30:00Z",
+        "verificationMethod": "did:web:did.ascs.digital:participants:ascs#etherlink-key-1",
+        "proofPurpose": "assertionMethod",
+        "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImFzY3MtZXRoZXJsaW5rLWtleS0xIn0.EXAMPLE_SIGNATURE_REVOCATION_REGISTRY"
+    }
+}

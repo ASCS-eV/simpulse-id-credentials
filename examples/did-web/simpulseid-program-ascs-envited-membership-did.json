@@ -4,7 +4,7 @@
     "https://schema.org"
   ],
   "id": "did:web:did.ascs.digital:programs:ascs-envited-membership",
-  "controller": "did:web:did.ascs.digital:participants:ascs#tezos-key-1",
+  "controller": "did:web:did.ascs.digital:services:trust-anchor",
   "alsoKnownAs": [
     "https://did.ascs.digital/programs/ascs-envited-membership"
   ],
@@ -28,12 +28,20 @@
       "@id": "did:web:did.ascs.digital:participants:ascs",
       "@type": "Organization",
       "name": "Automotive Solution Center for Simulation e.V."
+    },
+    "articlesOfAssociation": "https://media.ascs.digital/terms/ascs_articles_of_association_2021-09-17.pdf#cidv1",
+    "contributionRules": "https://media.ascs.digital/terms/ascs_contribution_rules_2020-07-08.pdf#cidv1",
+    "ecosystem": {
+      "@type": "schema:DigitalEcosystem",
+      "name": "ENVITED-X Data Space",
+      "url": "https://envited-x.net/",
+      "description": "The ENVITED-X Data Space is a collaborative platform for secure data sharing and digital asset management in the ENVITED ecosystem."
     }
   },
   "proof": {
     "type": "EcdsaSecp256k1Signature2019",
     "created": "2025-08-06T10:05:00Z",
-    "verificationMethod": "did:web:did.ascs.digital:participants:ascs#tezos-key-1",
+    "verificationMethod": "did:web:did.ascs.digital:participants:ascs#etherlink-key-1",
     "proofPurpose": "assertionMethod",
     "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_PAYLOAD_ENVITED"
   }

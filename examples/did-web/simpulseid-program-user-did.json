@@ -1,0 +1,41 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "https://schema.org",
+        "https://schema.ascs.digital/SimpulseIdCredentials/v1"
+    ],
+    "id": "did:web:did.ascs.digital:programs:simpulseid-user",
+    "controller": "did:web:did.ascs.digital:services:trust-anchor",
+    "service": [
+        {
+            "id": "did:web:did.ascs.digital:programs:simpulseid-user#program-metadata",
+            "type": "ProgramMetadataService",
+            "serviceEndpoint": {
+                "@type": [
+                    "schema:CreativeWork",
+                    "simpulseid:UserProgram"
+                ],
+                "@id": "https://did.ascs.digital/programs/simpulseid-user",
+                "name": "SimpulseID User Program",
+                "description": "Program definition for standard SimpulseID users in the ENVITED Ecosystem. Covers basic identity, login, and membership-related functionality for natural persons.",
+                "about": "User-level SimpulseID credentials and their usage within the ENVITED data space.",
+                "publisher": {
+                    "@type": "schema:Organization",
+                    "name": "Automotive Solution Center for Simulation e.V. (ASCS)",
+                    "url": "https://ascs.digital/"
+                },
+                "inLanguage": "en",
+                "datePublished": "2025-08-05",
+                "termsOfService": "https://media.ascs.digital/terms/simpulse_id_terms_2025-08-05.pdf#cidv1",
+                "privacyPolicy": "https://media.ascs.digital/terms/privacy_policy_2025-08-05.pdf#cidv1"
+            }
+        }
+    ],
+    "proof": {
+        "type": "EcdsaSecp256k1Signature2019",
+        "created": "2025-08-06T10:00:00Z",
+        "verificationMethod": "did:web:did.ascs.digital:participants:ascs#etherlink-key-1",
+        "proofPurpose": "assertionMethod",
+        "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImFzY3MtZGlkLXdlYi1rZXktMSJ9.EXAMPLE_SIGNATURE_SIMPULSEID_USER_PROGRAM"
+    }
+}
