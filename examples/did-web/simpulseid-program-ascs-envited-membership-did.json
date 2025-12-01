@@ -3,16 +3,16 @@
     "https://www.w3.org/ns/did/v1",
     "https://schema.org"
   ],
-  "id": "did:web:did.identity.ascs.digital:programs:ascs-envited-membership",
-  "controller": "did:web:did.identity.ascs.digital:participants:ascs#tezos-key-1",
+  "id": "did:web:did.ascs.digital:programs:ascs-envited-membership",
+  "controller": "did:web:did.ascs.digital:participants:ascs#tezos-key-1",
   "alsoKnownAs": [
-    "https://ascs.digital/id/programs/envited-membership"
+    "https://did.ascs.digital/programs/ascs-envited-membership"
   ],
   "service": [
     {
-      "id": "did:web:did.identity.ascs.digital:programs:ascs-envited-membership#program-metadata",
+      "id": "did:web:did.ascs.digital:programs:ascs-envited-membership#program-metadata",
       "type": "ProgramMetadataService",
-      "serviceEndpoint": "https://ascs.digital/id/programs/envited-membership"
+      "serviceEndpoint": "https://did.ascs.digital/programs/ascs-envited-membership"
     }
   ],
   "program": {
@@ -21,11 +21,11 @@
       "schema:Program",
       "simpulseid:EnvitedMembershipProgram"
     ],
-    "@id": "https://ascs.digital/id/programs/envited-membership",
+    "@id": "https://did.ascs.digital/programs/ascs-envited-membership",
     "name": "ASCS e.V. ENVITED Membership",
     "description": "ENVITED membership program of the Automotive Solution Center for Simulation e.V. (ASCS e.V.), providing access to the ENVITED ecosystem and related services.",
     "hostingOrganization": {
-      "@id": "did:web:did.identity.ascs.digital:participants:ascs",
+      "@id": "did:web:did.ascs.digital:participants:ascs",
       "@type": "Organization",
       "name": "Automotive Solution Center for Simulation e.V."
     }
@@ -33,7 +33,7 @@
   "proof": {
     "type": "EcdsaSecp256k1Signature2019",
     "created": "2025-08-06T10:05:00Z",
-    "verificationMethod": "did:web:did.identity.ascs.digital:participants:ascs#tezos-key-1",
+    "verificationMethod": "did:web:did.ascs.digital:participants:ascs#tezos-key-1",
     "proofPurpose": "assertionMethod",
     "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_PAYLOAD_ENVITED"
   }

@@ -64,9 +64,10 @@ Each VC uses:
 
 Example **did:web DID documents** that correspond to identifiers used in the credentials, e.g.:
 
-- Participants (`did:web:did.identity.ascs.digital:participants:...`)
-- Programs (`did:web:did.identity.ascs.digital:programs:...`)
-- Users & administrators (`did:web:did.identity.ascs.digital:users:...`)
+- Participants (`did:web:did.ascs.digital:participants:...`)
+- Programs (`did:web:did.ascs.digital:programs:...`)
+- Users & administrators (`did:web:did.ascs.digital:users:...`)
+- Services (`did:web:did.ascs.digital:services:...`)
 
 These demonstrate:
 
@@ -76,7 +77,7 @@ These demonstrate:
 
 In production, these DID documents are intended to be hosted under:
 
-- `https://did.identity.ascs.digital/...`
+- `https://did.ascs.digital/...`
 
 ---
 
@@ -156,7 +157,7 @@ Typical flow:
 
 1. A participant (organization) is onboarded and receives a **Participant VC**.
 2. The organization receives **ASCS base membership** and optionally **ENVITED membership** credentials.
-3. Individual administrators and users receive **Admin/User VCs**, bound to opaque did:web identifiers under `did.identity.ascs.digital`.
+3. Individual administrators and users receive **Admin/User VCs**, bound to opaque did:web identifiers under `did.ascs.digital`.
 4. Wallets like Altme use the **contexts** and **manifests** from this repo to display these credentials.
 5. Services behind `identity.ascs.digital` use the **ontologies** and **Gaia-X compatible structures** to perform trust and membership checks.
 

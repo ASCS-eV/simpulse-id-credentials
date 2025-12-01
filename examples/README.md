@@ -49,11 +49,11 @@ Types included:
 
 All credentials use **did:web subject identifiers** for users and admins:
 
-- opaque  
-- non-PII  
-- key-rotation capable  
+- opaque
+- non-PII
+- key-rotation capable
 - hosted under:  
-  `https://did.identity.ascs.digital/users/...`
+  `https://did.ascs.digital/users/...`
 
 ---
 
@@ -62,13 +62,13 @@ All credentials use **did:web subject identifiers** for users and admins:
 Examples under `examples/did-web/` illustrate:
 
 - Participant DIDs controlled by organizations  
-  (`did:web:did.identity.ascs.digital:participants:ascs`, `participants:bmw`, …)
+  (`did:web:did.ascs.digital:participants:ascs`, `participants:bmw`, …)
 
 - Program DIDs controlled by ASCS  
-  (`did:web:did.identity.ascs.digital:programs:ascs-base-membership`, …)
+  (`did:web:did.ascs.digital:programs:ascs-base-membership`, …)
 
 - User and Administrator DIDs:  
-  Opaque, privacy-preserving identifiers that *only* expose verification keys.
+  Opaque, privacy-preserving identifiers that _only_ expose verification keys.
 
 Each DID document supports:
 
@@ -87,31 +87,31 @@ Decentralized Identity Foundation **Wallet Rendering Specification**.
 
 Each manifest:
 
-- references the correct SimpulseID credential type  
-- defines which properties appear on the card  
-- includes human-readable fallback titles  
-- is issued by the ASCS organizational DID (`did:web:did.identity.ascs.digital:participants:ascs`)
+- references the correct SimpulseID credential type
+- defines which properties appear on the card
+- includes human-readable fallback titles
+- is issued by the ASCS organizational DID (`did:web:did.ascs.digital:participants:ascs`)
 
 ---
 
 ## 4. Notes on Issuance Model
 
-### Participant Credentials  
+### Participant Credentials
 
 Issued by ASCS upon onboarding of an organization into the ENVITED ecosystem.
 
-### Program Membership Credentials  
+### Program Membership Credentials
 
 Base membership and ENVITED membership are issued by ASCS.
 
-### Administrator Credentials  
+### Administrator Credentials
 
 Issued by ASCS to individuals acting on behalf of ASCS or participants.
 
-### User Credentials  
+### User Credentials
 
 Issued by participant administrators to individuals.  
-These credentials use an opaque user DID under `did.identity.ascs.digital` to support:
+These credentials use an opaque user DID under `did.ascs.digital` to support:
 
 - privacy (no PII in DID)
 - key rotation

@@ -1,0 +1,36 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1"
+    ],
+    "id": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e",
+    "controller": "did:web:did.ascs.digital:participants:bmw",
+    "verificationMethod": [
+        {
+            "id": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#tezos-key-1",
+            "type": "EcdsaSecp256k1VerificationKey2019",
+            "controller": "did:web:did.ascs.digital:participants:bmw",
+            "blockchainAccountId": "tezos:NetXnHfVqm9iesp:tz1SfdVU1mor3Sgej3FmmwMH4HM1EjTzqqeE"
+        },
+        {
+            "id": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#etherlink-key-1",
+            "type": "EcdsaSecp256k1VerificationKey2019",
+            "controller": "did:web:did.ascs.digital:participants:bmw",
+            "blockchainAccountId": "eip155:42793:0x9FBDa871d559710256a2502A2517b794B482Db40"
+        }
+    ],
+    "authentication": [
+        "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#tezos-key-1",
+        "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#etherlink-key-1"
+    ],
+    "assertionMethod": [
+        "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#tezos-key-1",
+        "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#etherlink-key-1"
+    ],
+    "proof": {
+        "type": "EcdsaSecp256k1Signature2019",
+        "created": "2025-08-06T10:10:00Z",
+        "verificationMethod": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#etherlink-key-1",
+        "proofPurpose": "assertionMethod",
+        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_BMW_USER"
+    }
+}

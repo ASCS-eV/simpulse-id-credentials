@@ -3,16 +3,16 @@
         "https://www.w3.org/ns/did/v1",
         "https://schema.org"
     ],
-    "id": "did:web:did.identity.ascs.digital:programs:ascs-base-membership",
-    "controller": "did:web:did.identity.ascs.digital:participants:ascs#tezos-key-1",
+    "id": "did:web:did.ascs.digital:programs:ascs-base-membership",
+    "controller": "did:web:did.ascs.digital:participants:ascs#tezos-key-1",
     "alsoKnownAs": [
-        "https://ascs.digital/id/programs/base-membership"
+        "https://did.ascs.digital/programs/ascs-base-membership"
     ],
     "service": [
         {
-            "id": "did:web:did.identity.ascs.digital:programs:ascs-base-membership#program-metadata",
+            "id": "did:web:did.ascs.digital:programs:ascs-base-membership#program-metadata",
             "type": "ProgramMetadataService",
-            "serviceEndpoint": "https://ascs.digital/id/programs/base-membership"
+            "serviceEndpoint": "https://did.ascs.digital/programs/ascs-base-membership"
         }
     ],
     "program": {
@@ -21,11 +21,11 @@
             "schema:Program",
             "simpulseid:BaseMembershipProgram"
         ],
-        "@id": "https://ascs.digital/id/programs/base-membership",
+        "@id": "https://did.ascs.digital/programs/ascs-base-membership",
         "name": "ASCS e.V. Base Membership",
         "description": "Base membership program of the Automotive Solution Center for Simulation e.V. (ASCS e.V.).",
         "hostingOrganization": {
-            "@id": "did:web:did.identity.ascs.digital:participants:ascs",
+            "@id": "did:web:did.ascs.digital:participants:ascs",
             "@type": "Organization",
             "name": "Automotive Solution Center for Simulation e.V."
         }
@@ -33,7 +33,7 @@
     "proof": {
         "type": "EcdsaSecp256k1Signature2019",
         "created": "2025-08-06T10:00:00Z",
-        "verificationMethod": "did:web:did.identity.ascs.digital:participants:ascs#tezos-key-1",
+        "verificationMethod": "did:web:did.ascs.digital:participants:ascs#tezos-key-1",
         "proofPurpose": "assertionMethod",
         "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_PAYLOAD"
     }
