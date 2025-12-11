@@ -1,0 +1,6 @@
+[submodule "ontology-management-base"]
+	path = ontology-management-base
+	url = git@github.com:GAIA-X4PLC-AAD/ontology-management-base.git
+[submodule "service-characteristics"]
+	path = service-characteristics
+	url = https://gitlab.com/gaia-x/technical-committee/service-characteristics-working-group/service-characteristics.git

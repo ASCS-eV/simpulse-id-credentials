@@ -1,0 +1,16 @@
+# Core LinkML libraries (generators, runtime, datamodel)
+linkml==1.9.6
+linkml-runtime==1.9.5
+
+# RDF & SHACL stack needed by LinkML and your existing scripts
+rdflib==7.5.0
+pyshacl==0.30.1
+
+# JSON-LD parsing and framing
+pyld==2.0.4
+
+# YAML loader for LinkML schema parsing
+PyYAML==6.0.3
+
+# General utilities used in your scripts
+click==8.1.8

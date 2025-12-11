@@ -1,0 +1,340 @@
+id: https://schema.ascs.digital/SimpulseId/linkml/v1
+name: simpulseid
+description: >
+  LinkML schema for SimpulseID credentials, aligned with the SimpulseIdOntology,
+  SimpulseIdCredentials JSON-LD context, and Gaia-X 24.06 LinkML models.
+  This schema is intended as the single source of truth to generate JSON-LD
+  contexts, SHACL shapes, and OWL ontologies for SimpulseID credential types.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  simpulseid: https://schema.ascs.digital/SimpulseIdCredentials/v1#
+  gx: https://w3id.org/gaia-x/development#
+  schema: http://schema.org/
+  vc: https://www.w3.org/ns/credentials#
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: simpulseid
+default_range: string
+
+imports:
+  - linkml:types
+  # Single entry point for Gaia-X: pulls in Address, LegalPerson, LegalDocument,
+  # Issuer, Participant, TermsAndConditions, etc. via gaia-x.yaml.
+  - ../service-characteristics/linkml/gaia-x
+
+slots:
+
+  id:
+    description: >
+      Identifier of the resource, typically a URN (e.g. urn:uuid:...)
+      or DID URL. In the Gaia-X LegalPerson context this is NOT the
+      primary key – Gaia-X uses registrationNumber as the identifier.
+    # IMPORTANT: do NOT mark this as identifier, otherwise we clash
+    # with Gaia-X LegalPerson.registrationNumber.
+    required: true
+    range: uri
+
+  type:
+    description: >
+      Set of RDF types associated with an instance (e.g. VerifiableCredential,
+      harbour:VerifiableCredential, simpulseid:UserCredential).
+    multivalued: true
+    range: string
+
+  issuer:
+    description: >
+      Issuer of the Verifiable Credential, modelled using the Gaia-X Issuer
+      class.
+    slot_uri: vc:issuer
+    range: Issuer          # class from Gaia-X (issuer.yaml)
+    required: true
+
+  issuance_date:
+    description: >
+      Date-time at which the credential was issued.
+    slot_uri: vc:issuanceDate
+    range: datetime
+    required: true
+
+  expiration_date:
+    description: >
+      Date-time at which the credential expires, if any.
+    slot_uri: vc:expirationDate
+    range: datetime
+    required: false
+
+  credential_subject:
+    description: >
+      Subject of the Verifiable Credential.
+    slot_uri: vc:credentialSubject
+    range: CredentialSubject
+    required: true
+
+  credential_status:
+    description: >
+      Status entry or entries associated with the Verifiable Credential
+      (e.g. Harbour CRSet entries).
+    slot_uri: vc:credentialStatus
+    range: CredentialStatusEntry
+    multivalued: true
+    required: false
+
+  # Common person-related slots (schema.org)
+  given_name:
+    description: Given name of a natural person.
+    slot_uri: schema:givenName
+    range: string
+
+  family_name:
+    description: Family name of a natural person.
+    slot_uri: schema:familyName
+    range: string
+
+  email:
+    description: Email address of a person or organization.
+    slot_uri: schema:email
+    range: string
+
+  # Membership / program slots (schema.org)
+  member_of:
+    description: >
+      Membership relation pointing from a person or membership to a participant
+      or program (DID or IRI).
+    slot_uri: schema:memberOf
+    multivalued: true
+    range: uri
+
+  program_name:
+    description: Human-readable name of the program (e.g. ASCS Base Membership).
+    slot_uri: schema:programName
+    range: string
+
+  hosting_organization:
+    description: >
+      Organization hosting the membership program (e.g. ASCS e.V. as
+      hosting organization of ENVITED).
+    slot_uri: schema:hostingOrganization
+    range: SimpulseidParticipant
+
+  member_since:
+    description: >
+      Date on which the membership became effective.
+    slot_uri: schema:memberSince
+    range: date
+
+  # Organization / participant related slots (Gaia-X-aligned)
+  legal_name:
+    description: >
+      Full legal name of the organization (e.g. Bayerische Motoren Werke
+      Aktiengesellschaft). Uses the Gaia-X legalName property.
+    slot_uri: gx:legalName
+    range: string
+
+  legal_address:
+    description: >
+      Legal address of the organization, as required by the Gaia-X Trust
+      Framework (gx:legalAddress).
+    slot_uri: gx:legalAddress
+    range: Address          # Gaia-X Address class
+    required: true
+
+  headquarters_address:
+    description: >
+      Headquarters address of the organization, optional according to the
+      Gaia-X Trust Framework (gx:headquartersAddress).
+    slot_uri: gx:headquartersAddress
+    range: Address
+    required: false
+
+  # Terms and Conditions / agreements (Gaia-X LegalDocument)
+  terms_and_conditions:
+    description: >
+      References to legal documents representing Terms and Conditions records,
+      typically URLs with fragments that identify specific consent documents.
+      Implemented using Gaia-X LegalDocument as range and gx:termsAndConditions
+      as the property IRI.
+    slot_uri: gx:termsAndConditions
+    range: LegalDocument     # class from Gaia-X (legal-document.yaml)
+    multivalued: true
+
+  # Base membership credential cross-reference
+  base_membership_credential:
+    description: >
+      Reference from an ENVITED membership subject to its underlying base
+      membership credential (URN of the credential).
+    slot_uri: simpulseid:baseMembershipCredential
+    range: uri
+
+
+classes:
+
+  #############################################
+  # Core abstractions
+  #############################################
+
+  CredentialSubject:
+    description: >
+      Abstract base class for all SimpulseID credential subject entities
+      (participants, memberships, users, administrators).
+    abstract: true
+    class_uri: schema:Thing
+    slots:
+      - id
+      - type
+      - terms_and_conditions
+
+  VerifiableCredential:
+    description: >
+      Base class for SimpulseID Verifiable Credentials.
+    class_uri: vc:VerifiableCredential
+    slots:
+      - id
+      - type
+      - issuer
+      - issuance_date
+      - expiration_date
+      - credential_subject
+      - credential_status
+
+  CredentialStatusEntry:
+    description: >
+      Status entry describing revocation state, typically a Harbour
+      CRSetEntry.
+    class_uri: schema:Thing
+    slots:
+      - id
+      - type
+    # Harbour-specific properties stay in Harbour’s own context/ontology.
+
+  #############################################
+  # Participant / person classes
+  #############################################
+
+  SimpulseidParticipant:
+    description: >
+      SimpulseID Participant entity representing a legal person taking part
+      in SimpulseID programs. It specializes the Gaia-X LegalPerson and adds
+      SimpulseID-specific properties such as gx:legalName and gx:termsAndConditions.
+    is_a: LegalPerson          # imported from Gaia-X legal-person.yaml
+    mixins:
+      - CredentialSubject
+    class_uri: simpulseid:Participant
+    slots:
+      - legal_name
+      - legal_address
+      - headquarters_address
+      - email
+      - terms_and_conditions
+    # Note: registrationNumber comes from Gaia-X LegalPerson and remains
+    # the identifier for this class according to Gaia-X.
+
+  User:
+    description: >
+      SimpulseID User entity, representing a natural person acting in the
+      ENVITED Ecosystem.
+    is_a: CredentialSubject
+    class_uri: simpulseid:User
+    slots:
+      - given_name
+      - family_name
+      - email
+      - member_of
+
+  Administrator:
+    description: >
+      SimpulseID Administrator entity, representing a natural person with
+      elevated rights in the ENVITED Ecosystem.
+    is_a: CredentialSubject
+    class_uri: simpulseid:Administrator
+    slots:
+      - given_name
+      - family_name
+      - email
+      - member_of
+
+  AscsBaseMembership:
+    description: >
+      ASCS Base Membership entity, representing the base membership of a
+      participant in ASCS e.V.
+    is_a: CredentialSubject
+    class_uri: simpulseid:AscsBaseMembership
+    slots:
+      - program_name
+      - hosting_organization
+      - member_of
+      - member_since
+
+  AscsEnvitedMembership:
+    description: >
+      ASCS ENVITED Membership entity, representing membership of a participant
+      in the ENVITED program, requiring an underlying base membership credential.
+    is_a: CredentialSubject
+    class_uri: simpulseid:AscsEnvitedMembership
+    slots:
+      - program_name
+      - hosting_organization
+      - member_of
+      - member_since
+      - base_membership_credential
+
+  #############################################
+  # Credential classes
+  #############################################
+
+  ParticipantCredential:
+    description: >
+      SimpulseID Participant Credential. Verifiable Credential asserting that
+      the subject is a SimpulseID Participant (a Gaia-X LegalPerson in the
+      context of the ENVITED Ecosystem).
+    is_a: VerifiableCredential
+    class_uri: simpulseid:ParticipantCredential
+    slot_usage:
+      credential_subject:
+        range: SimpulseidParticipant
+        required: true
+
+  AscsBaseMembershipCredential:
+    description: >
+      SimpulseID ASCS Base Membership Credential. Verifiable Credential asserting
+      base membership of a participant in ASCS e.V.
+    is_a: VerifiableCredential
+    class_uri: simpulseid:AscsBaseMembershipCredential
+    slot_usage:
+      credential_subject:
+        range: AscsBaseMembership
+        required: true
+
+  AscsEnvitedMembershipCredential:
+    description: >
+      SimpulseID ASCS ENVITED Membership Credential. Verifiable Credential
+      asserting ENVITED membership status, referencing an underlying base
+      membership credential.
+    is_a: VerifiableCredential
+    class_uri: simpulseid:AscsEnvitedMembershipCredential
+    slot_usage:
+      credential_subject:
+        range: AscsEnvitedMembership
+        required: true
+
+  AdministratorCredential:
+    description: >
+      SimpulseID Administrator Credential. Verifiable Credential asserting that
+      the subject is an administrator.
+    is_a: VerifiableCredential
+    class_uri: simpulseid:AdministratorCredential
+    slot_usage:
+      credential_subject:
+        range: Administrator
+        required: true
+
+  UserCredential:
+    description: >
+      SimpulseID User Credential. Verifiable Credential asserting that the
+      subject is a SimpulseID User.
+    is_a: VerifiableCredential
+    class_uri: simpulseid:UserCredential
+    slot_usage:
+      credential_subject:
+        range: User
+        required: true

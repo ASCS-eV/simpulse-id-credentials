@@ -17,6 +17,23 @@ All of this is intended to be **publicly hostable** and consumable by wallets, v
 
 ---
 
+## Installation
+
+If you want to use the validation scripts from 📁 `ontology-management-base/src` then you need to isntall the following dependencies:
+
+```bash
+# On Windows use python instead of python3
+sudo apt-get install python3-full
+python3 -m venv .venv/
+source .venv/bin/activate # On Windows use: source .venv/Scripts/activate
+python3 -m pip install -r ontology-management-base/requirements.txt
+python3 -m pip install -r requirements.txt
+# Example check
+python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py examples/simpulseid-administrator-credential.json
+```
+
+---
+
 ## Repository structure
 
 ### `contexts/`
