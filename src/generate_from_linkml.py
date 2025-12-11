@@ -12,8 +12,8 @@ Usage examples:
     python src/generate_from_linkml.py \
         --model linkml/simpulseid-model.yaml \
         --out-context generated/contexts/SimpulseIdCredentials.context.jsonld \
-        --out-shacl generated/ontologies/SimpulseIdShacl.ttl \
-        --out-owl generated/ontologies/SimpulseIdOntology.ttl
+        --out-shacl   generated/ontologies/SimpulseIdShacl.ttl \
+        --out-owl     generated/ontologies/SimpulseIdOntology.ttl
 
 The script writes ALL artefacts into the /generated/* folder so that
 hand-written files in /contexts and /ontologies remain untouched for diffing.
@@ -24,10 +24,10 @@ import os
 from pathlib import Path
 from typing import Dict
 
-# NOTE: JSONLDContextGenerator was renamed to ContextGenerator in recent LinkML versions
 from linkml.generators.jsonldcontextgen import ContextGenerator
-from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 def debug(msg: str) -> None:
@@ -60,18 +60,19 @@ def find_repo_root(start: Path) -> Path:
 
 def build_import_map(repo_root: Path) -> Dict[str, str]:
     """
-    Build an import map for SchemaLoader so that imports like 'address',
-    'country-names', 'legal-person', etc. used inside Gaia-X's gaia-x.yaml
-    resolve to the actual files under service-characteristics/linkml.
+    Build an import map for Gaia-X LinkML modules so that imports like
+    'address', 'legal-person', 'vm-image', etc. resolve to the actual files under
+    service-characteristics/linkml.
 
     We map:
 
-        'address' -> '/abs/path/service-characteristics/linkml/address'
-        'country-names' -> '/abs/path/service-characteristics/linkml/country-names'
+        'address'      -> '/abs/path/service-characteristics/linkml/address'
+        'vm-image'     -> '/abs/path/service-characteristics/linkml/vm-image'
+        'legal-person' -> '/abs/path/service-characteristics/linkml/legal-person'
         ...
 
-    SchemaLoader will then append '.yaml' and treat the value as an absolute
-    file path, bypassing the incorrect 'linkml/address.yaml' resolution.
+    SchemaLoader / SchemaView will then append '.yaml' and treat the value
+    as an absolute file path, bypassing incorrect 'linkml/*.yaml' resolution.
     """
     gaiax_linkml_dir = repo_root / "service-characteristics" / "linkml"
     import_map: Dict[str, str] = {}
@@ -84,19 +85,81 @@ def build_import_map(repo_root: Path) -> Dict[str, str]:
         return import_map
 
     for yaml_file in gaiax_linkml_dir.glob("*.yaml"):
-        stem = yaml_file.stem  # e.g. 'address', 'country-names'
-        # Absolute path *without* .yaml; SchemaLoader will add '.yaml'
+        stem = yaml_file.stem  # e.g. 'address', 'country-names', 'vm-image'
         import_map[stem] = str(yaml_file.with_suffix("").resolve())
 
     debug(f"Built import_map with {len(import_map)} entries from {gaiax_linkml_dir}")
-    # Print a few sample entries for debugging
-    for i, (k, v) in enumerate(sorted(import_map.items())):
-        if i >= 10:
-            break
-        debug(f"  import_map[{k!r}] = {v!r}")
-
+    # Show a few sample entries
+    sample_keys = sorted(import_map.keys())[:10]
+    debug(f"Import map keys (first {len(sample_keys)}): {sample_keys}")
     return import_map
 
+
+# ---------------------------------------------------------------------------
+# Fixed ShaclGenerator that correctly propagates importmap into SchemaView
+# ---------------------------------------------------------------------------
+
+class FixedShaclGenerator(_BaseShaclGenerator):
+    """
+    Wrapper around the stock ShaclGenerator.
+
+    The original ShaclGenerator.__post_init__ builds its own SchemaView without
+    using the importmap. That causes imports like 'vm-image', 'legal-person',
+    etc. to be resolved again relative to linkml/, which is why you saw
+    errors like 'linkml/vm-image.yaml'.
+
+    Here we:
+
+    1) Run the base Generator.__post_init__ to get a fully resolved SchemaDefinition
+       via SchemaLoader (which *does* use importmap).
+    2) Build a SchemaView from that resolved schema, explicitly passing the same
+       importmap (and base_dir) so any further import resolution inside SchemaView
+       uses the Gaia-X paths, not linkml/.
+    """
+
+    def __post_init__(self) -> None:
+        from linkml.utils.generator import Generator as BaseGenerator
+
+        debug("[FixedShaclGenerator] __post_init__ starting")
+        debug(f"[FixedShaclGenerator] raw schema parameter type: {type(self.schema)}")
+
+        # Run only the generic Generator logic (SchemaLoader etc.), NOT the
+        # original ShaclGenerator.__post_init__ which would create its own SchemaView.
+        debug("[FixedShaclGenerator] Running BaseGenerator.__post_init__ (SchemaLoader + imports)")
+        BaseGenerator.__post_init__(self)
+
+        debug(
+            "[FixedShaclGenerator] After BaseGenerator.__post_init__: "
+            f"schema.name={getattr(self.schema, 'name', None)!r}, "
+            f"schema.id={getattr(self.schema, 'id', None)!r}, "
+            f"base_dir={self.base_dir!r}, "
+            f"importmap entries={len(self.importmap) if getattr(self, 'importmap', None) else 0}"
+        )
+
+        # Now create a SchemaView that knows about the same importmap.
+        debug("[FixedShaclGenerator] Building SchemaView from resolved schema with importmap + base_dir")
+        sv = SchemaView(self.schema, importmap=self.importmap or {}, base_dir=self.base_dir)
+
+        debug(
+            "[FixedShaclGenerator] SchemaView created: "
+            f"root schema={sv.schema.name!r}, "
+            f"importmap entries={len(sv.importmap)}"
+        )
+        if sv.importmap:
+            some_keys = sorted(sv.importmap.keys())[:10]
+            debug(f"[FixedShaclGenerator] SchemaView.importmap keys (first {len(some_keys)}): {some_keys}")
+
+        # Attach to self so ShaclGenerator.as_graph() can use it.
+        self.schemaview = sv
+
+        # Generate SHACL header as usual
+        self.generate_header()
+        debug("[FixedShaclGenerator] __post_init__ completed")
+
+
+# ---------------------------------------------------------------------------
+# Main script
+# ---------------------------------------------------------------------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -125,27 +188,17 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    cwd = Path.cwd()
     model_path = Path(args.model).resolve()
-
-    debug(f"Current working directory: {cwd}")
-    debug(f"Model path (resolved): {model_path}")
-
     if not model_path.exists():
         raise SystemExit(f"LinkML model not found: {model_path}")
 
     repo_root = find_repo_root(model_path.parent)
-    debug(
-        f"repo_root: {repo_root}  (exists={repo_root.exists()}, "
-        f"type={'dir' if repo_root.is_dir() else 'missing'})"
-    )
+    debug(f"repo_root: {repo_root}  (exists={repo_root.exists()}, type={'dir' if repo_root.is_dir() else 'missing'})")
 
     # Build import map for Gaia-X schemas under service-characteristics/linkml
     import_map = build_import_map(repo_root)
-    debug(f"Import map keys (first 10): {sorted(list(import_map.keys()))[:10]}")
 
-    # We keep LINKML_MODEL_PATH for other tools if you are using them,
-    # but the *critical* part for this script is import_map above.
+    # Keep LINKML_MODEL_PATH for other tools, although our import_map is the critical part.
     gaiax_linkml_dir = repo_root / "service-characteristics" / "linkml"
     local_linkml_dir = repo_root / "linkml"
     search_paths = []
@@ -169,6 +222,10 @@ def main() -> None:
             "directories relative to the model; imports may fail."
         )
 
+    cwd = Path.cwd()
+    debug(f"Current working directory: {cwd}")
+    debug(f"Model path (resolved): {model_path}")
+
     out_context = Path(args.out_context).resolve()
     out_shacl = Path(args.out_shacl).resolve()
     out_owl = Path(args.out_owl).resolve()
@@ -178,11 +235,11 @@ def main() -> None:
         f"type={'file' if out_context.is_file() else 'missing'})"
     )
     debug(
-        f"out_shacl: {out_shacl}  (exists={out_shacl.exists()}, "
+        f"out_shacl:   {out_shacl}  (exists={out_shacl.exists()}, "
         f"type={'file' if out_shacl.is_file() else 'missing'})"
     )
     debug(
-        f"out_owl: {out_owl}  (exists={out_owl.exists()}, "
+        f"out_owl:     {out_owl}  (exists={out_owl.exists()}, "
         f"type={'file' if out_owl.is_file() else 'missing'})"
     )
 
@@ -193,68 +250,49 @@ def main() -> None:
 
     print(f"Using LinkML model: {model_path}")
 
-    # For relative imports in simpulseid-model.yaml itself, having base_dir=model_path.parent
-    # is the most intuitive setup.
+    # Base dir for loaders and SchemaView – the directory of simpulseid-model.yaml
     base_dir = str(model_path.parent)
     debug(f"Using base_dir for generators: {base_dir}")
 
-    # Change working directory only for the generators' internal filesystem logic
+    # Change working directory only for internal relative path logic
     old_cwd = Path.cwd()
     os.chdir(model_path.parent)
     try:
         # 1) JSON-LD context
         print(f"Generating JSON-LD context -> {out_context}")
         debug("Initializing ContextGenerator with importmap and base_dir")
-        try:
-            ctx_gen = ContextGenerator(
-                str(model_path),
-                importmap=import_map,
-                base_dir=base_dir,
-            )
-        except Exception as e:
-            debug("ContextGenerator initialization failed. "
-                  "This usually indicates a schema modelling problem "
-                  "(e.g. duplicate identifiers, conflicting slot names, "
-                  "or unresolved imports).")
-            raise
-
+        ctx_gen = ContextGenerator(
+            str(model_path),
+            importmap=import_map,
+            base_dir=base_dir,
+        )
         context_str = ctx_gen.serialize()
         out_context.write_text(context_str, encoding="utf-8")
+        debug("JSON-LD context generation completed successfully.")
 
         # 2) SHACL shapes
         print(f"Generating SHACL shapes -> {out_shacl}")
-        debug("Initializing ShaclGenerator with importmap and base_dir")
-        try:
-            shacl_gen = ShaclGenerator(
-                str(model_path),
-                importmap=import_map,
-                base_dir=base_dir,
-            )
-        except Exception as e:
-            debug("ShaclGenerator initialization failed. "
-                  "This is likely due to the same schema issues reported "
-                  "by the JSON-LD context generation step.")
-            raise
-
+        debug("Initializing FixedShaclGenerator with importmap and base_dir")
+        shacl_gen = FixedShaclGenerator(
+            str(model_path),
+            importmap=import_map,
+            base_dir=base_dir,
+        )
         shacl_str = shacl_gen.serialize()
         out_shacl.write_text(shacl_str, encoding="utf-8")
+        debug("SHACL shapes generation completed successfully.")
 
         # 3) OWL ontology
         print(f"Generating OWL ontology -> {out_owl}")
         debug("Initializing OwlSchemaGenerator with importmap and base_dir")
-        try:
-            owl_gen = OwlSchemaGenerator(
-                str(model_path),
-                importmap=import_map,
-                base_dir=base_dir,
-            )
-        except Exception as e:
-            debug("OwlSchemaGenerator initialization failed. "
-                  "Again, likely a modelling issue in the LinkML schema.")
-            raise
-
+        owl_gen = OwlSchemaGenerator(
+            str(model_path),
+            importmap=import_map,
+            base_dir=base_dir,
+        )
         owl_str = owl_gen.serialize()
         out_owl.write_text(owl_str, encoding="utf-8")
+        debug("OWL ontology generation completed successfully.")
     finally:
         os.chdir(old_cwd)
 
