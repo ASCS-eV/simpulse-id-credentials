@@ -172,19 +172,20 @@ def main() -> None:
     )
     parser.add_argument(
         "--out-context",
-        default="generated/contexts/SimpulseIdCredentials.context.jsonld",
+        default="generated/simpulseid/simpulseid_context.jsonld",
         help="Output path for the generated JSON-LD context.",
     )
     parser.add_argument(
         "--out-shacl",
-        default="generated/ontologies/SimpulseIdShacl.ttl",
+        default="generated/simpulseid/simpulseid_shacl.ttl",
         help="Output path for the generated SHACL shapes.",
     )
     parser.add_argument(
         "--out-owl",
-        default="generated/ontologies/SimpulseIdOntology.ttl",
+        default="generated/simpulseid/simpulseid_ontology.ttl",
         help="Output path for the generated OWL ontology.",
     )
+
 
     args = parser.parse_args()
 
