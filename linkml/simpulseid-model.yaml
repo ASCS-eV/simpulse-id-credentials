@@ -8,7 +8,7 @@ description: >
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  simpulseid: https://schema.ascs.digital/SimpulseIdCredentials/v1#
+  simpulseid: https://schema.ascs.digital/SimpulseId/v1/credentials
   gx: https://w3id.org/gaia-x/development#
   schema: http://schema.org/
   vc: https://www.w3.org/ns/credentials#
@@ -24,7 +24,6 @@ imports:
   - ../service-characteristics/linkml/gaia-x
 
 slots:
-
   id:
     description: >
       Identifier of the resource, typically a URN (e.g. urn:uuid:...)
@@ -47,7 +46,7 @@ slots:
       Issuer of the Verifiable Credential, modelled using the Gaia-X Issuer
       class.
     slot_uri: vc:issuer
-    range: Issuer          # class from Gaia-X (issuer.yaml)
+    range: Issuer # class from Gaia-X (issuer.yaml)
     required: true
 
   issuance_date:
@@ -136,7 +135,7 @@ slots:
       Legal address of the organization, as required by the Gaia-X Trust
       Framework (gx:legalAddress).
     slot_uri: gx:legalAddress
-    range: Address          # Gaia-X Address class
+    range: Address # Gaia-X Address class
     required: true
 
   headquarters_address:
@@ -155,7 +154,7 @@ slots:
       Implemented using Gaia-X LegalDocument as range and gx:termsAndConditions
       as the property IRI.
     slot_uri: gx:termsAndConditions
-    range: LegalDocument     # class from Gaia-X (legal-document.yaml)
+    range: LegalDocument # class from Gaia-X (legal-document.yaml)
     multivalued: true
 
   # Base membership credential cross-reference
@@ -166,9 +165,7 @@ slots:
     slot_uri: simpulseid:baseMembershipCredential
     range: uri
 
-
 classes:
-
   #############################################
   # Core abstractions
   #############################################
@@ -216,7 +213,7 @@ classes:
       SimpulseID Participant entity representing a legal person taking part
       in SimpulseID programs. It specializes the Gaia-X LegalPerson and adds
       SimpulseID-specific properties such as gx:legalName and gx:termsAndConditions.
-    is_a: LegalPerson          # imported from Gaia-X legal-person.yaml
+    is_a: LegalPerson # imported from Gaia-X legal-person.yaml
     mixins:
       - CredentialSubject
     class_uri: simpulseid:Participant

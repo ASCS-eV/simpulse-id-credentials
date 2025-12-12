@@ -80,7 +80,7 @@ Each entry is a `skos:Concept` inside the `simpulseid:LegalForm` concept scheme.
 Credentials reference these IRIs like:
 
 ```txt
-<https://schema.ascs.digital/SimpulseIdOntology/v1/legalForm#AG>
+<https://schema.ascs.digital/SimpulseId/v1/legalForm#AG>
 ```
 
 ---

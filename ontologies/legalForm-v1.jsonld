@@ -2,8 +2,8 @@
     "@context": {
         "@version": 1.1,
         "skos": "http://www.w3.org/2004/02/skos/core#",
-        "simpulseid": "https://schema.ascs.digital/SimpulseIdCredentials/v1#",
-        "@vocab": "https://schema.ascs.digital/SimpulseIdOntology/v1/legalForm#"
+        "simpulseid": "https://schema.ascs.digital/SimpulseId/v1/credentials",
+        "@vocab": "https://schema.ascs.digital/SimpulseId/v1/legalForm"
     },
     "@id": "simpulseid:LegalForm",
     "@type": [

@@ -2,7 +2,7 @@
     "@context": [
         "https://www.w3.org/ns/did/v1",
         "https://schema.org",
-        "https://schema.ascs.digital/SimpulseIdCredentials/v1"
+        "https://schema.ascs.digital/SimpulseId/v1/credentials"
     ],
     "id": "did:web:did.ascs.digital:programs:simpulseid-user",
     "controller": "did:web:did.ascs.digital:services:trust-anchor",
