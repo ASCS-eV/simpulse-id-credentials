@@ -1,0 +1,78 @@
+id: https://schema.reachhaven.com/Harbour/linkml/v1#Harbour
+name: harbour
+description: >
+  LinkML schema for Harbour credentials vocabulary, aligned with the
+  HarbourCredentials JSON-LD context.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  harbour: https://schema.reachhaven.com/Harbour/v1/credentials#
+  xsd: http://www.w3.org/2001/XMLSchema#
+  vcs: https://www.w3.org/ns/credentials/status#
+
+default_prefix: harbour
+default_range: string
+
+imports:
+  - linkml:types
+  - ./core
+
+slots:
+  status_purpose:
+    description: >
+      Status purpose as defined by VC Status (e.g., "revocation").
+    slot_uri: vcs:statusPurpose
+    range: string
+    required: false
+
+  endpoint:
+    description: Service endpoint IRI.
+    slot_uri: harbour:endpoint
+    range: uri
+    required: false
+
+  contract_urn:
+    description: Contract identifier (URN/IRI) for the revocation registry implementation.
+    slot_uri: harbour:contractURN
+    range: uri
+    required: false
+
+  source_repository:
+    description: Source repository IRI (e.g., Git repository URL) for the implementation.
+    slot_uri: harbour:sourceRepository
+    range: uri
+    required: false
+
+  implementation:
+    description: Implementation identifier IRI (e.g., software package or artifact reference).
+    slot_uri: harbour:implementation
+    range: uri
+    required: false
+
+classes:
+  HarbourVerifiableCredential:
+    description: >
+      Marker class used in Harbour contexts to identify a Verifiable Credential
+      using the Harbour vocabulary.
+    class_uri: harbour:VerifiableCredential
+
+  CRSetEntry:
+    description: >
+      Credential status list entry (typically used in vc:credentialStatus),
+      aligned with harbour:CRSetEntry.
+    class_uri: harbour:CRSetEntry
+    slots:
+      - id
+      - type
+      - status_purpose
+
+  CRSetServiceEndpoint:
+    description: >
+      Service endpoint descriptor for a credential revocation set service.
+    class_uri: harbour:CRSetServiceEndpoint
+    slots:
+      - endpoint
+      - status_purpose
+      - contract_urn
+      - source_repository
+      - implementation

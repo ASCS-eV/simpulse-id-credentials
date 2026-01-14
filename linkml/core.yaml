@@ -1,0 +1,30 @@
+id: https://schema.ascs.digital/Core/linkml/v1#Core
+name: core
+description: >
+  Shared LinkML core definitions to avoid URI conflicts across imported schemas.
+  This schema defines common slots once (e.g., id/type) with stable URIs.
+  JSON-LD keyword aliasing (id -> @id, type -> @type) is applied in the
+  generation script as a post-processing step.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: linkml
+default_range: string
+
+imports:
+  - linkml:types
+
+slots:
+  id:
+    description: Stable identifier slot (post-processed to JSON-LD @id in context output).
+    slot_uri: linkml:id
+    required: true
+    range: uri
+
+  type:
+    description: Stable type slot (post-processed to JSON-LD @type in context output).
+    slot_uri: linkml:type
+    multivalued: true
+    range: uri

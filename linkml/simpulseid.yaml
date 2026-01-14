@@ -1,4 +1,4 @@
-id: https://schema.ascs.digital/SimpulseId/linkml/v1
+id: https://schema.ascs.digital/SimpulseId/linkml/v1#SimpulseId
 name: simpulseid
 description: >
   LinkML schema for SimpulseID credentials, aligned with the SimpulseIdOntology,
@@ -8,46 +8,44 @@ description: >
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  simpulseid: https://schema.ascs.digital/SimpulseId/v1/credentials
+  simpulseid: https://schema.ascs.digital/SimpulseId/v1/credentials#
+  harbour: https://schema.reachhaven.com/Harbour/v1/credentials#
+  vcs: https://www.w3.org/ns/credentials/status#
   gx: https://w3id.org/gaia-x/development#
   schema: http://schema.org/
-  vc: https://www.w3.org/ns/credentials#
+  vc: https://www.w3.org/2018/credentials#
+  vcard: http://www.w3.org/2006/vcard/ns#
   xsd: http://www.w3.org/2001/XMLSchema#
+  skos: http://www.w3.org/2004/02/skos/core#
+  lf: https://schema.ascs.digital/SimpulseId/v1/legalForm#
 
 default_prefix: simpulseid
 default_range: string
 
 imports:
   - linkml:types
+  - ./core
   # Single entry point for Gaia-X: pulls in Address, LegalPerson, LegalDocument,
   # Issuer, Participant, TermsAndConditions, etc. via gaia-x.yaml.
   - ../service-characteristics/linkml/gaia-x
+  - ./harbour
 
 slots:
-  id:
-    description: >
-      Identifier of the resource, typically a URN (e.g. urn:uuid:...)
-      or DID URL. In the Gaia-X LegalPerson context this is NOT the
-      primary key – Gaia-X uses registrationNumber as the identifier.
-    # IMPORTANT: do NOT mark this as identifier, otherwise we clash
-    # with Gaia-X LegalPerson.registrationNumber.
-    required: true
-    range: uri
-
-  type:
-    description: >
-      Set of RDF types associated with an instance (e.g. VerifiableCredential,
-      harbour:VerifiableCredential, simpulseid:UserCredential).
-    multivalued: true
-    range: string
+  # NOTE:
+  # id and type are intentionally NOT defined here.
+  # They must be provided by ./core to avoid merge conflicts.
 
   issuer:
     description: >
-      Issuer of the Verifiable Credential, modelled using the Gaia-X Issuer
-      class.
+      Issuer of the Verifiable Credential. This slot uses the VC vocabulary
+      predicate vc:issuer and points to a SimpulseID-specific Issuer class.
+      That Issuer class is modelled as a subclass of the imported Gaia-X Issuer
+      definition to preserve Gaia-X semantics while allowing SimpulseID typing
+      (simpulseid:Issuer) in the credential payload.
     slot_uri: vc:issuer
-    range: Issuer # class from Gaia-X (issuer.yaml)
+    range: SimpulseIdIssuer
     required: true
+    aliases: [issuer]
 
   issuance_date:
     description: >
@@ -55,6 +53,7 @@ slots:
     slot_uri: vc:issuanceDate
     range: datetime
     required: true
+    aliases: [issuanceDate]
 
   expiration_date:
     description: >
@@ -62,6 +61,7 @@ slots:
     slot_uri: vc:expirationDate
     range: datetime
     required: false
+    aliases: [expirationDate]
 
   credential_subject:
     description: >
@@ -69,6 +69,7 @@ slots:
     slot_uri: vc:credentialSubject
     range: CredentialSubject
     required: true
+    aliases: [credentialSubject]
 
   credential_status:
     description: >
@@ -78,24 +79,30 @@ slots:
     range: CredentialStatusEntry
     multivalued: true
     required: false
+    aliases: [credentialStatus]
 
   # Common person-related slots (schema.org)
+
   given_name:
     description: Given name of a natural person.
     slot_uri: schema:givenName
     range: string
+    aliases: [givenName]
 
   family_name:
     description: Family name of a natural person.
     slot_uri: schema:familyName
     range: string
+    aliases: [familyName]
 
   email:
     description: Email address of a person or organization.
     slot_uri: schema:email
     range: string
+    aliases: [email]
 
   # Membership / program slots (schema.org)
+
   member_of:
     description: >
       Membership relation pointing from a person or membership to a participant
@@ -103,11 +110,13 @@ slots:
     slot_uri: schema:memberOf
     multivalued: true
     range: uri
+    aliases: [memberOf]
 
   program_name:
     description: Human-readable name of the program (e.g. ASCS Base Membership).
     slot_uri: schema:programName
     range: string
+    aliases: [programName]
 
   hosting_organization:
     description: >
@@ -115,57 +124,236 @@ slots:
       hosting organization of ENVITED).
     slot_uri: schema:hostingOrganization
     range: SimpulseidParticipant
+    aliases: [hostingOrganization]
 
   member_since:
     description: >
       Date on which the membership became effective.
     slot_uri: schema:memberSince
     range: date
+    aliases: [memberSince]
+
+  # Address (Gaia-X aligned) – pretty keys via aliases
+
+  address:
+    description: >
+      Address of a natural person. This slot is aligned with Gaia-X by using
+      gx:address as predicate and a SimpulseID Address class that subclasses
+      the imported Gaia-X Address definition. Individual address fields use
+      vCard predicates and Gaia-X predicates, while JSON keys remain wallet-
+      friendly (streetAddress, postalCode, locality, countryCode, region).
+    slot_uri: gx:address
+    range: SimpulseIdAddress
+    required: false
+    aliases: [address]
+
+  street_address:
+    description: >
+      Street address, including street name and house number. Mapped to
+      vcard:street-address while preserving the JSON key streetAddress.
+    slot_uri: vcard:street-address
+    range: string
+    aliases: [streetAddress]
+
+  postal_code:
+    description: >
+      Postal code / ZIP code. Mapped to vcard:postal-code while preserving
+      the JSON key postalCode.
+    slot_uri: vcard:postal-code
+    range: string
+    aliases: [postalCode]
+
+  locality:
+    description: >
+      Locality / city. Mapped to vcard:locality.
+    slot_uri: vcard:locality
+    range: string
+    aliases: [locality]
+
+  country_code:
+    description: >
+      ISO 3166-1 alpha-2 country code as required by Gaia-X (gx:countryCode).
+      Preserves the JSON key countryCode.
+    slot_uri: gx:countryCode
+    range: string
+    required: true
+    aliases: [countryCode]
+
+  region:
+    description: >
+      Region code, typically NUTS2 (e.g. DE21 for Oberbayern) as used in Gaia-X
+      (gx:region). Preserves the JSON key region.
+    slot_uri: gx:region
+    range: string
+    required: false
+    aliases: [region]
 
   # Organization / participant related slots (Gaia-X-aligned)
+
   legal_name:
     description: >
       Full legal name of the organization (e.g. Bayerische Motoren Werke
       Aktiengesellschaft). Uses the Gaia-X legalName property.
     slot_uri: gx:legalName
     range: string
+    aliases: [legalName]
+
+  legal_form:
+    description: >
+      Legal form of a legal person using the Gaia-X property gx:legalForm.
+      Values are IRIs from the SimpulseID legal form vocabulary (lf:*),
+      modelled directly in this LinkML schema (no standalone JSON-LD file).
+      JSON key preserved as legalForm.
+    slot_uri: gx:legalForm
+    range: SimpulseIdLegalForm
+    required: false
+    aliases: [legalForm]
 
   legal_address:
     description: >
       Legal address of the organization, as required by the Gaia-X Trust
       Framework (gx:legalAddress).
     slot_uri: gx:legalAddress
-    range: Address # Gaia-X Address class
+    range: SimpulseIdAddress
     required: true
+    aliases: [legalAddress]
 
   headquarters_address:
     description: >
       Headquarters address of the organization, optional according to the
       Gaia-X Trust Framework (gx:headquartersAddress).
     slot_uri: gx:headquartersAddress
-    range: Address
+    range: SimpulseIdAddress
     required: false
+    aliases: [headquartersAddress]
 
   # Terms and Conditions / agreements (Gaia-X LegalDocument)
+
   terms_and_conditions:
     description: >
-      References to legal documents representing Terms and Conditions records,
-      typically URLs with fragments that identify specific consent documents.
+      References to legal documents representing Terms and Conditions records.
       Implemented using Gaia-X LegalDocument as range and gx:termsAndConditions
-      as the property IRI.
+      as the property IRI. JSON key preserved as termsAndConditions.
     slot_uri: gx:termsAndConditions
-    range: LegalDocument # class from Gaia-X (legal-document.yaml)
+    range: LegalDocument
     multivalued: true
+    aliases: [termsAndConditions]
 
   # Base membership credential cross-reference
+
   base_membership_credential:
     description: >
       Reference from an ENVITED membership subject to its underlying base
       membership credential (URN of the credential).
     slot_uri: simpulseid:baseMembershipCredential
     range: uri
+    aliases: [baseMembershipCredential]
+
+enums:
+  SimpulseIdLegalForm:
+    description: >
+      SimpulseID legal form vocabulary modelled as a controlled code list.
+      Each value is expressed as an IRI in the lf: namespace. This replaces the
+      previously standalone JSON-LD vocabulary file while keeping stable,
+      dereferenceable identifiers for legal forms.
+    permissible_values:
+      LLC:
+        description: Limited Liability Company
+        meaning: lf:LLC
+      Corporation:
+        description: Corporation
+        meaning: lf:Corporation
+      LimitedPartnership:
+        description: Limited Partnership
+        meaning: lf:LimitedPartnership
+      NonprofitCorporation:
+        description: Nonprofit Corporation
+        meaning: lf:NonprofitCorporation
+      GmbH:
+        description: Gesellschaft mit beschränkter Haftung / Limited liability company (GmbH)
+        meaning: lf:GmbH
+      AG:
+        description: Aktiengesellschaft / Stock corporation (AG)
+        meaning: lf:AG
+      Einzelunternehmen:
+        description: Einzelunternehmen / Sole proprietorship
+        meaning: lf:Einzelunternehmen
+      GbR:
+        description: Gesellschaft bürgerlichen Rechts / Civil-law partnership (GbR)
+        meaning: lf:GbR
+      OHG:
+        description: Offene Handelsgesellschaft / General partnership (OHG)
+        meaning: lf:OHG
+      KG:
+        description: Kommanditgesellschaft / Limited partnership (KG)
+        meaning: lf:KG
+      UG:
+        description: Unternehmergesellschaft (haftungsbeschränkt) / Entrepreneurial company (UG)
+        meaning: lf:UG
+      SoleTrader:
+        description: Sole Trader
+        meaning: lf:SoleTrader
+      UnincorporatedAssociation:
+        description: Unincorporated Association
+        meaning: lf:UnincorporatedAssociation
+      Partnership:
+        description: Partnership
+        meaning: lf:Partnership
+      Trust:
+        description: Trust
+        meaning: lf:Trust
+      LimitedCompany:
+        description: Limited Company
+        meaning: lf:LimitedCompany
+      LLP:
+        description: Limited Liability Partnership
+        meaning: lf:LLP
+      CIC:
+        description: Community Interest Company (CIC)
+        meaning: lf:CIC
+      CIO:
+        description: Charitable Incorporated Organisation (CIO)
+        meaning: lf:CIO
+      CooperativeSociety:
+        description: Co-operative Society
+        meaning: lf:CooperativeSociety
+      BenCom:
+        description: Community Benefit Society (BenCom)
+        meaning: lf:BenCom
+      other:
+        description: Other / unspecified legal form
+        meaning: lf:other
 
 classes:
+  #############################################
+  # Option A: Gaia-X reuse + SimpulseID subclasses
+  #############################################
+
+  SimpulseIdIssuer:
+    description: >
+      SimpulseID issuer class used in VC instances (simpulseid:Issuer).
+      This class is a subclass of the imported Gaia-X Issuer definition,
+      enabling alignment with Gaia-X semantics while allowing SimpulseID-specific
+      typing in credentials. In JSON, the issuer object can therefore use
+      "type": "simpulseid:Issuer".
+    is_a: Issuer
+    class_uri: simpulseid:Issuer
+
+  SimpulseIdAddress:
+    description: >
+      Address class for SimpulseID credentials. It subclasses the imported
+      Gaia-X Address definition and uses gx:Address as RDF class. Address
+      fields are mapped to Gaia-X/vCard predicates through slot_uri, while the
+      JSON keys remain wallet-friendly through LinkML aliases.
+    is_a: Address
+    class_uri: gx:Address
+    slots:
+      - street_address
+      - postal_code
+      - locality
+      - country_code
+      - region
+
   #############################################
   # Core abstractions
   #############################################
@@ -212,13 +400,15 @@ classes:
     description: >
       SimpulseID Participant entity representing a legal person taking part
       in SimpulseID programs. It specializes the Gaia-X LegalPerson and adds
-      SimpulseID-specific properties such as gx:legalName and gx:termsAndConditions.
-    is_a: LegalPerson # imported from Gaia-X legal-person.yaml
+      SimpulseID-specific properties such as gx:legalName, gx:legalForm and
+      gx:termsAndConditions.
+    is_a: LegalPerson
     mixins:
       - CredentialSubject
     class_uri: simpulseid:Participant
     slots:
       - legal_name
+      - legal_form
       - legal_address
       - headquarters_address
       - email
@@ -237,6 +427,7 @@ classes:
       - family_name
       - email
       - member_of
+      - address
 
   Administrator:
     description: >
@@ -249,6 +440,7 @@ classes:
       - family_name
       - email
       - member_of
+      - address
 
   AscsBaseMembership:
     description: >
