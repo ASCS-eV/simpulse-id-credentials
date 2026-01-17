@@ -1,28 +1,26 @@
 {
-    "@context": [
-        "https://www.w3.org/ns/did/v1"
-    ],
-    "id": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e",
-    "controller": "did:web:did.ascs.digital:services:trust-anchor",
-    "verificationMethod": [
-        {
-            "id": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#tezos-key-1",
-            "type": "EcdsaSecp256k1VerificationKey2019",
-            "controller": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e",
-            "blockchainAccountId": "tezos:NetXnHfVqm9iesp:tz1SfdVU1mor3Sgej3FmmwMH4HM1EjTzqqeE"
-        }
-    ],
-    "authentication": [
-        "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#tezos-key-1"
-    ],
-    "assertionMethod": [
-        "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#tezos-key-1"
-    ],
-    "proof": {
-        "type": "EcdsaSecp256k1Signature2019",
-        "created": "2025-08-06T10:10:00Z",
-        "verificationMethod": "did:web:did.ascs.digital:participants:bmw#tezos-key-1",
-        "proofPurpose": "assertionMethod",
-        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_BMW_ADMIN"
+  "@context": ["https://www.w3.org/ns/did/v1"],
+  "id": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e",
+  "controller": "did:web:did.ascs.digital:services:trust-anchor",
+  "verificationMethod": [
+    {
+      "id": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#wallet-key-1",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e",
+      "publicKeyMultibase": "z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH"
     }
+  ],
+  "authentication": [
+    "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#wallet-key-1"
+  ],
+  "assertionMethod": [
+    "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e#wallet-key-1"
+  ],
+  "proof": {
+    "type": "EcdsaSecp256k1Signature2019",
+    "created": "2025-08-06T10:10:00Z",
+    "verificationMethod": "did:web:did.ascs.digital:participants:bmw#tezos-key-1",
+    "proofPurpose": "assertionMethod",
+    "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_BMW_ADMIN"
+  }
 }

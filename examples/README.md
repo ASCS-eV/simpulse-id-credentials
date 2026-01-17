@@ -55,6 +55,15 @@ All credentials use **did:web subject identifiers** for users and admins:
 - hosted under:  
   `https://did.ascs.digital/users/...`
 
+All credentials use the `evidence` field to show that the credential was requested by an admin before being signed by the service. Checking this is possible by:
+
+- checking the cryptographic and syntactical integrity of the `evidence`
+- retrieving the issuer's DID document, which is a participant `did:web`
+- iterating over the `verificationMethod` array
+  - retrieving DID document of `controller`
+  - checking if that document contains the `did:key` that signed the `evidence` vp
+- if a match was found, the `evidence` is valid
+
 ---
 
 ## 2. did:web Documents

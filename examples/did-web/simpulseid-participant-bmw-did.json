@@ -1,88 +1,72 @@
 {
-    "@context": [
-        "https://www.w3.org/ns/did/v1",
-        "https://schema.org"
-    ],
-    "id": "did:web:did.ascs.digital:participants:bmw",
-    "controller": "did:web:did.ascs.digital:services:trust-anchor",
-    "alsoKnownAs": [
-        "https://did.ascs.digital/participants/bmw"
-    ],
-    "verificationMethod": [
-        {
-            "id": "did:web:did.ascs.digital:participants:bmw#tezos-key-1",
-            "type": "EcdsaSecp256k1VerificationKey2019",
-            "controller": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e",
-            "blockchainAccountId": "tezos:NetXnHfVqm9iesp:tz1SfdVU1mor3Sgej3FmmwMH4HM1EjTzqqeE",
-            "revoked": "2025-08-06T10:15:00Z"
-        },
-        {
-            "id": "did:web:did.ascs.digital:participants:bmw#tezos-key-2",
-            "type": "EcdsaSecp256k1VerificationKey2019",
-            "controller": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c",
-            "blockchainAccountId": "tezos:NetXnHfVqm9iesp:tz1bpeJArd7apJyTUryfXH1SD6w8GL6Gwhj8"
-        },
-        {
-            "id": "did:web:did.ascs.digital:participants:bmw#etherlink-key-1",
-            "type": "EcdsaSecp256k1VerificationKey2019",
-            "controller": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c",
-            "blockchainAccountId": "eip155:42793:0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-        }
-    ],
-    "assertionMethod": [
-        "did:web:did.ascs.digital:participants:bmw#tezos-key-2",
-        "did:web:did.ascs.digital:participants:bmw#etherlink-key-1"
-    ],
-    "service": [
-        {
-            "id": "did:web:did.ascs.digital:participants:bmw#org-metadata",
-            "type": "OrganizationMetadataService",
-            "serviceEndpoint": "https://www.bmwgroup.com/"
-        }
-    ],
-    "organization": {
-        "@context": [
-            "https://schema.ascs.digital/SimpulseId/v1/credentials",
-            "https://schema.org"
-        ],
-        "@id": "did:web:did.ascs.digital:participants:bmw",
-        "type": [
-            "simpulseid:Participant",
-            "gx:LegalPerson",
-            "schema:Organization"
-        ],
-        "legalName": "Bayerische Motoren Werke Aktiengesellschaft",
-        "legalForm": "AG",
-        "registrationNumber": {
-            "@type": "gx:VatID",
-            "countryCode": "DE",
-            "vatID": "DE129273398"
-        },
-        "duns": "313995269",
-        "email": "imprint@bmw.com",
-        "website": "https://www.bmwgroup.com/",
-        "legalAddress": {
-            "@type": "gx:Address",
-            "streetAddress": "Petuelring 130",
-            "postalCode": "80809",
-            "addressLocality": "München",
-            "countrySubdivisionCode": "DE-BY",
-            "country": "DE"
-        },
-        "headquartersAddress": {
-            "@type": "gx:Address",
-            "streetAddress": "Petuelring 130",
-            "postalCode": "80809",
-            "addressLocality": "München",
-            "countrySubdivisionCode": "DE-BY",
-            "country": "DE"
-        }
+  "@context": ["https://www.w3.org/ns/did/v1", "https://schema.org"],
+  "id": "did:web:did.ascs.digital:participants:bmw",
+  "controller": "did:web:did.ascs.digital:services:trust-anchor",
+  "alsoKnownAs": ["https://did.ascs.digital/participants/bmw"],
+  "verificationMethod": [
+    {
+      "id": "did:web:did.ascs.digital:participants:bmw#wallet-key-1",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e",
+      "publicKeyMultibase": "z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH"
     },
-    "proof": {
-        "type": "EcdsaSecp256k1Signature2019",
-        "created": "2025-08-06T10:20:00Z",
-        "verificationMethod": "did:web:did.ascs.digital:participants:ascs#etherlink-key-1",
-        "proofPurpose": "assertionMethod",
-        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_PAYLOAD_BMW"
+    {
+      "id": "did:web:did.ascs.digital:participants:bmw#wallet-key-2",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c",
+      "publicKeyMultibase": "z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
     }
+  ],
+  "assertionMethod": [
+    "did:web:did.ascs.digital:participants:bmw#wallet-key-1",
+    "did:web:did.ascs.digital:participants:bmw#wallet-key-2"
+  ],
+  "service": [
+    {
+      "id": "did:web:did.ascs.digital:participants:bmw#org-metadata",
+      "type": "OrganizationMetadataService",
+      "serviceEndpoint": "https://www.bmwgroup.com/"
+    }
+  ],
+  "organization": {
+    "@context": [
+      "https://schema.ascs.digital/SimpulseId/v1/credentials",
+      "https://schema.org"
+    ],
+    "@id": "did:web:did.ascs.digital:participants:bmw",
+    "type": ["simpulseid:Participant", "gx:LegalPerson", "schema:Organization"],
+    "legalName": "Bayerische Motoren Werke Aktiengesellschaft",
+    "legalForm": "AG",
+    "registrationNumber": {
+      "@type": "gx:VatID",
+      "countryCode": "DE",
+      "vatID": "DE129273398"
+    },
+    "duns": "313995269",
+    "email": "imprint@bmw.com",
+    "website": "https://www.bmwgroup.com/",
+    "legalAddress": {
+      "@type": "gx:Address",
+      "streetAddress": "Petuelring 130",
+      "postalCode": "80809",
+      "addressLocality": "München",
+      "countrySubdivisionCode": "DE-BY",
+      "country": "DE"
+    },
+    "headquartersAddress": {
+      "@type": "gx:Address",
+      "streetAddress": "Petuelring 130",
+      "postalCode": "80809",
+      "addressLocality": "München",
+      "countrySubdivisionCode": "DE-BY",
+      "country": "DE"
+    }
+  },
+  "proof": {
+    "type": "EcdsaSecp256k1Signature2019",
+    "created": "2025-08-06T10:20:00Z",
+    "verificationMethod": "did:web:did.ascs.digital:participants:ascs#etherlink-key-1",
+    "proofPurpose": "assertionMethod",
+    "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_PAYLOAD_BMW"
+  }
 }
