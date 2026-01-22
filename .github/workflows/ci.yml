@@ -26,8 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Important: Fetch submodules to allow pip installing them
-          submodules: recursive
+          # FIXED: changed 'recursive' to 'true' to skip nested submodules (service-characteristics)
+          submodules: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -54,8 +54,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # We need submodules to get the validation script and install dependencies
-          submodules: recursive
+          # FIXED: changed 'recursive' to 'true' to skip nested submodules
+          submodules: true
 
       - uses: actions/setup-python@v5
         with:
@@ -68,8 +68,6 @@ jobs:
 
       - name: Run SHACL Validation on Examples
         # Finds all files in examples/ and passes them to the validator with --force-load
-        # We use 'find' to explicitly pass files because the script's directory-scan mode
-        # specifically looks for *_instance.json, which might miss some example files.
         run: |
           # Gather all JSON/JSONLD files in examples/
           FILES=$(find examples -name "*.json" -o -name "*.jsonld")
