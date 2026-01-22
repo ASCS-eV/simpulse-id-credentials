@@ -28,7 +28,7 @@ Root Project
 └── Submodule C
 ```
 
-````bash
+```bash
 # First time
 git clone --recurse-submodules git@github.com:ASCS-eV/credentials.git
 # Initialize after already having cloned
@@ -39,7 +39,7 @@ git pull --recurse-submodules
 
 ---
 
-## Installation
+## Installation & Configure `pre-commit`
 
 If you want to use the validation scripts from 📁 `ontology-management-base/src` then you need to isntall the following dependencies:
 
@@ -55,12 +55,22 @@ source .venv/bin/activate  # On Windows use: source .venv/Scripts/activate
 # This reads both pyproject.toml files and handles all versions automatically.
 python3 -m pip install -e ./ontology-management-base -e ".[dev]"
 
-# 3. Generate ontologies, SHACL shapes and Contexts from LinkML models
+# 3. Verify
+pre-commit install
+pre-commit run --all-files
+```
+
+---
+
+## Generate and validate
+
+```bash
+# 1. Generate ontologies, SHACL shapes and Contexts from LinkML models
 # We generate artifacts for core, harbour, and simpulseid so they are available in generated/
 python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/
 #python3 src/generate_from_linkml.py --model linkml/core.yaml --model linkml/harbour.yaml --model linkml/simpulseid.yaml
 
-# 4. Example check
+# 2. Example check
 # The script now automatically finds the 'generated/' folder and 'ontology-management-base/' submodule
 python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py examples/simpulseid-administrator-credential.json
 ```

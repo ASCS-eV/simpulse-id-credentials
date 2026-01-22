@@ -183,9 +183,9 @@ classes:
     # 'termsAndConditions' is imported from Gaia-X slots.yaml
     slots: [id, type, termsAndConditions] 
     slot_usage:
-      # Upstream range is string; we override to LegalDocument for nested object structure
+      # Upstream range is string; we override to TermsAndConditions for nested object structure
       termsAndConditions: 
-        range: LegalDocument
+        range: TermsAndConditions
         multivalued: true
 
   NaturalPerson:
@@ -246,8 +246,8 @@ classes:
       # Map generic 'url' to 'website' alias
       url: { aliases: [website] } 
       duns: { aliases: [duns] }
-      # Override upstream 'termsAndConditions' range (string) to LegalDocument
-      termsAndConditions: { range: LegalDocument, multivalued: true }
+      # Override upstream 'termsAndConditions' range (string) to TermsAndConditions
+      termsAndConditions: { range: TermsAndConditions, multivalued: true }
 
   AscsBaseMembership:
     is_a: CredentialSubject

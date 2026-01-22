@@ -14,19 +14,17 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
 from linkml_runtime.utils.schemaview import SchemaView
-import json
 
 # Post-processing replacement to satisfy oxigraph/pyshacl fragments
 URI_TWEAKS = {
     # Gaia-X
     "https://w3id.org/gaia-x/development#": "https://w3id.org/gaia-x/development/",
-    
     # SimpulseID
     "https://schema.ascs.digital/SimpulseId/v1/credentials#": "https://schema.ascs.digital/SimpulseId/v1/credentials/",
-    
     # Harbour (Added)
-    "https://schema.reachhaven.com/Harbour/v1/credentials#": "https://schema.reachhaven.com/Harbour/v1/credentials/"
+    "https://schema.reachhaven.com/Harbour/v1/credentials#": "https://schema.reachhaven.com/Harbour/v1/credentials/",
 }
+
 
 def apply_artifact_replacements(content: str) -> str:
     """Replaces URIs in generated content to prevent double hash fragments in validation tools."""
@@ -46,7 +44,9 @@ def ensure_dir(path: Path) -> None:
 def find_repo_root(start: Path) -> Path:
     current = start
     while current != current.parent:
-        if (current / "ontology-management-base").is_dir() or (current / ".git").is_dir():
+        if (current / "ontology-management-base").is_dir() or (
+            current / ".git"
+        ).is_dir():
             return current
         current = current.parent
     return start.parent
@@ -55,10 +55,10 @@ def find_repo_root(start: Path) -> Path:
 def build_import_map(repo_root: Path) -> Dict[str, str]:
     candidates = [
         repo_root / "ontology-management-base" / "service-characteristics" / "linkml",
-        repo_root / "service-characteristics" / "linkml"
+        repo_root / "service-characteristics" / "linkml",
     ]
     gaiax_linkml_dir = next((d for d in candidates if d.is_dir()), None)
-    
+
     import_map: Dict[str, str] = {}
 
     if not gaiax_linkml_dir:
@@ -79,7 +79,7 @@ def build_import_map(repo_root: Path) -> Dict[str, str]:
 def iri_to_model_name(iri: str) -> str:
     path = urlparse(iri).path
     parts = [p for p in path.split("/") if p]
-    return (parts[0].lower() if parts else "unknown")
+    return parts[0].lower() if parts else "unknown"
 
 
 class FixedShaclGenerator(_BaseShaclGenerator):
@@ -89,23 +89,25 @@ class FixedShaclGenerator(_BaseShaclGenerator):
         from linkml.utils.generator import Generator as BaseGenerator
 
         BaseGenerator.__post_init__(self)
-        self.schemaview = SchemaView(self.schema, importmap=self.importmap or {}, base_dir=self.base_dir)
+        self.schemaview = SchemaView(
+            self.schema, importmap=self.importmap or {}, base_dir=self.base_dir
+        )
         self.generate_header()
 
 
 def set_linkml_model_path(repo_root: Path) -> None:
     gaiax_linkml_dirs = [
         repo_root / "ontology-management-base" / "service-characteristics" / "linkml",
-        repo_root / "service-characteristics" / "linkml"
+        repo_root / "service-characteristics" / "linkml",
     ]
     local_linkml_dir = repo_root / "linkml"
 
     search_paths: List[str] = []
-    
+
     for d in gaiax_linkml_dirs:
         if d.is_dir():
             search_paths.append(str(d))
-            
+
     if local_linkml_dir.is_dir():
         search_paths.append(str(local_linkml_dir))
 
@@ -118,7 +120,9 @@ def set_linkml_model_path(repo_root: Path) -> None:
         debug(f"LINKML_MODEL_PATH set to: {os.environ['LINKML_MODEL_PATH']}")
 
 
-def schema_id_for(model_path: Path, import_map: Dict[str, str], base_dir: str) -> Optional[str]:
+def schema_id_for(
+    model_path: Path, import_map: Dict[str, str], base_dir: str
+) -> Optional[str]:
     sv = SchemaView(str(model_path), importmap=import_map, base_dir=base_dir)
     return getattr(sv.schema, "id", None)
 
@@ -147,16 +151,28 @@ def generate_one(model_path: Path, out_root: Path, import_map: Dict[str, str]) -
 
         print(f"Generating JSON-LD context -> {out_context}")
         # The ContextGenerator handles @id/@type automatically due to identifier: true and designates_type: true
-        ctx_gen = ContextGenerator(str(model_path), importmap=import_map, base_dir=base_dir)
-        out_context.write_text(apply_artifact_replacements(ctx_gen.serialize()), encoding="utf-8")
+        ctx_gen = ContextGenerator(
+            str(model_path), importmap=import_map, base_dir=base_dir
+        )
+        out_context.write_text(
+            apply_artifact_replacements(ctx_gen.serialize()), encoding="utf-8"
+        )
 
         print(f"Generating SHACL shapes -> {out_shacl}")
-        shacl_gen = FixedShaclGenerator(str(model_path), importmap=import_map, base_dir=base_dir)
-        out_shacl.write_text(apply_artifact_replacements(shacl_gen.serialize()), encoding="utf-8")
+        shacl_gen = FixedShaclGenerator(
+            str(model_path), importmap=import_map, base_dir=base_dir
+        )
+        out_shacl.write_text(
+            apply_artifact_replacements(shacl_gen.serialize()), encoding="utf-8"
+        )
 
         print(f"Generating OWL ontology -> {out_owl}")
-        owl_gen = OwlSchemaGenerator(str(model_path), importmap=import_map, base_dir=base_dir)
-        out_owl.write_text(apply_artifact_replacements(owl_gen.serialize()), encoding="utf-8")
+        owl_gen = OwlSchemaGenerator(
+            str(model_path), importmap=import_map, base_dir=base_dir
+        )
+        out_owl.write_text(
+            apply_artifact_replacements(owl_gen.serialize()), encoding="utf-8"
+        )
 
         print(f"Done: {model_name}")
     finally:
@@ -191,11 +207,13 @@ def main() -> None:
             linkml_dir = Path("linkml").resolve()
 
         if not linkml_dir.is_dir():
-            raise SystemExit(f"Error: No --model provided and 'linkml' directory not found at {repo_root / 'linkml'}")
+            raise SystemExit(
+                f"Error: No --model provided and 'linkml' directory not found at {repo_root / 'linkml'}"
+            )
 
         print(f"No --model specified. Auto-detecting *.yaml in {linkml_dir}...")
         models = sorted(list(linkml_dir.glob("*.yaml")))
-        
+
         if not models:
             raise SystemExit(f"Error: No .yaml files found in {linkml_dir}")
 

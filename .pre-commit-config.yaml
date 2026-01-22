@@ -1,0 +1,41 @@
+---
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: black
+        language: system
+        types: [python]
+        args: ["--config=pyproject.toml"]
+        pass_filenames: true
+
+      - id: isort
+        name: isort
+        entry: isort
+        language: system
+        types: [python]
+        args: ["--settings=pyproject.toml"]
+        pass_filenames: true
+
+      - id: flake8
+        name: flake8
+        entry: flake8
+        language: system
+        types: [python]
+        args: ["--config=.flake8"]
+        pass_filenames: true
+
+      - id: jsonld-lint
+        name: JSON-LD Parser
+        entry: python ontology-management-base/src/utils/check_parse_jsonld.py
+        language: system
+        types: [json]
+        files: \.json$
+
+      - id: turtle-lint
+        name: Turtle Parser
+        entry: python ontology-management-base/src/utils/check_parse_turtle.py
+        language: system
+        types: [text]
+        files: \.(ttl)$
