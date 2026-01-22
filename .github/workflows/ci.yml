@@ -18,15 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # Do NOT set submodules here. We must modify .gitmodules first.
-
-      # FIX: Rewrite .gitmodules from SSH to HTTPS using sed
-      # This physically changes the file, guaranteeing Git uses HTTPS.
-      - name: Force HTTPS for Submodules
-        run: |
-          sed -i 's/git@github.com:/https:\/\/github.com\//g' .gitmodules
-          sed -i 's/git@gitlab.com:/https:\/\/gitlab.com\//g' .gitmodules
-          git submodule update --init --recursive
+        with:
+          # Use 'true' (non-recursive) to fetch just the top level submodule.
+          # This works if you don't need the nested gitlab dependencies for linting.
+          submodules: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -49,13 +44,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # Do NOT set submodules here.
+        # Do NOT set submodules here. We handle them manually.
 
-      # FIX: Rewrite .gitmodules from SSH to HTTPS using sed
-      - name: Force HTTPS for Submodules
+      - name: Fix Submodule URLs and Update
         run: |
+          # 1. Fix top-level .gitmodules (GitHub SSH -> HTTPS)
           sed -i 's/git@github.com:/https:\/\/github.com\//g' .gitmodules
+          
+          # 2. Init and Update ONLY the top-level submodule first
+          git submodule update --init ontology-management-base
+          
+          # 3. Now enter the submodule and fix ITS .gitmodules (GitLab SSH -> HTTPS)
+          cd ontology-management-base
           sed -i 's/git@gitlab.com:/https:\/\/gitlab.com\//g' .gitmodules
+          
+          # 4. Now safe to recurse inside
           git submodule update --init --recursive
 
       - uses: actions/setup-python@v5
