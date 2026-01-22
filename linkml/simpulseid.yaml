@@ -3,13 +3,14 @@ name: simpulseid
 description: >
   LinkML schema for SimpulseID credentials.
   Inherits Evidence structure from Harbour and enforces specific business rules.
+  Extends the Gaia-X Service Characteristics ontology.
 
 prefixes:
   linkml: https://w3id.org/linkml/
   simpulseid: https://schema.ascs.digital/SimpulseId/v1/credentials#
   harbour: https://schema.reachhaven.com/Harbour/v1/credentials#
   vcs: https://www.w3.org/ns/credentials/status#
-  gx: https://w3id.org/gaia-x/development# # Harmonized with import
+  gx: https://w3id.org/gaia-x/development#
   schema: http://schema.org/
   vc: https://www.w3.org/ns/credentials/v2#
   vcard: http://www.w3.org/2006/vcard/ns#
@@ -27,6 +28,8 @@ imports:
   - ./harbour
 
 slots:
+  # --- Verifiable Credential Slots (Standard W3C) ---
+  # These are not defined in Gaia-X upstream and must be defined locally.
   issuer:
     slot_uri: vc:issuer
     range: SimpulseIdIssuer
@@ -64,6 +67,30 @@ slots:
     required: false
     aliases: [proof]
 
+  # --- SimpulseID Specific Business Slots ---
+  
+  duns:
+    description: The Data Universal Numbering System (DUNS) number.
+    slot_uri: simpulseid:duns
+    range: string
+    aliases: [duns]
+
+  censored:
+    description: Flag indicating if the credential subject data has been redacted.
+    slot_uri: simpulseid:censored
+    range: boolean
+    required: false
+    aliases: [censored]
+
+  base_membership_credential:
+    description: Reference to the base membership credential required for nested memberships.
+    slot_uri: simpulseid:baseMembershipCredential
+    range: uri
+    aliases: [baseMembershipCredential]
+
+  # --- Schema.org Mappings (Natural Person & Memberships) ---
+  # Gaia-X upstream focuses on LegalPerson; these map generic Schema.org concepts.
+  
   given_name:
     slot_uri: schema:givenName
     range: string
@@ -73,27 +100,6 @@ slots:
     slot_uri: schema:familyName
     range: string
     aliases: [familyName]
-
-  simpulse_email: # Renamed to avoid Gaia-X conflict
-    slot_uri: schema:email
-    range: string
-    aliases: [email]
-
-  simpulse_website: # Renamed to avoid Gaia-X conflict
-    slot_uri: schema:url
-    range: uri
-    aliases: [website]
-
-  duns:
-    slot_uri: simpulseid:duns
-    range: string
-    aliases: [duns]
-
-  censored:
-    slot_uri: simpulseid:censored
-    range: boolean
-    required: false
-    aliases: [censored]
 
   member_of:
     slot_uri: schema:memberOf
@@ -116,25 +122,14 @@ slots:
     range: date
     aliases: [memberSince]
 
-  street_address:
-    slot_uri: vcard:street-address
-    range: string
-    aliases: [streetAddress]
-
-  postal_code:
-    slot_uri: vcard:postal-code
-    range: string
-    aliases: [postalCode]
-
-  locality:
-    slot_uri: vcard:locality
-    range: string
-    aliases: [locality]
-
-  base_membership_credential:
-    slot_uri: simpulseid:baseMembershipCredential
-    range: uri
-    aliases: [baseMembershipCredential]
+  # --- Missing Upstream Slots ---
+  # 'legalForm' is missing from upstream slots.yaml and legal-person.yaml.
+  
+  legalForm:
+    description: The legal form of the entity (e.g., AG, GmbH).
+    slot_uri: gx:legalForm
+    range: SimpulseIdLegalForm
+    aliases: [legalForm]
 
 enums:
   SimpulseIdLegalForm:
@@ -171,25 +166,37 @@ classes:
     is_a: Address
     class_uri: gx:Address
     slots:
-      - street_address
-      - postal_code
-      - locality
-      - country_code
-      - region
+      - streetAddress   # Imported from Gaia-X slots.yaml
+      - postalCode      # Imported from Gaia-X slots.yaml
+      - locality        # Imported from Gaia-X slots.yaml
+      - countryCode     # Imported from Gaia-X slots.yaml
+      - region          # Imported from Gaia-X slots.yaml
     slot_usage:
-      country_code: { required: true, aliases: [countryCode] }
-      region: { required: false, aliases: [region] }
+      countryCode:
+        required: true
+      region:
+        required: false
 
   CredentialSubject:
     abstract: true
     class_uri: schema:Thing
-    slots: [id, type, terms_and_conditions]
+    # 'termsAndConditions' is imported from Gaia-X slots.yaml
+    slots: [id, type, termsAndConditions] 
     slot_usage:
-      terms_and_conditions: { range: LegalDocument, multivalued: true, aliases: [termsAndConditions] }
+      # Upstream range is string; we override to LegalDocument for nested object structure
+      termsAndConditions: 
+        range: LegalDocument
+        multivalued: true
 
   NaturalPerson:
+    # NaturalPerson is not defined in the upstream list provided; defining locally.
     class_uri: gx:NaturalPerson
-    slots: [given_name, family_name, simpulse_email, member_of, address]
+    slots: 
+      - given_name
+      - family_name
+      - email          # Imported from Gaia-X slots.yaml
+      - member_of
+      - address
     slot_usage:
       address: { range: SimpulseIdAddress, required: false, aliases: [address] }
 
@@ -201,7 +208,7 @@ classes:
       address: { required: true }
       given_name: { required: true }
       family_name: { required: true }
-      simpulse_email: { required: true }
+      email: { required: true }
 
   User:
     is_a: NaturalPerson
@@ -212,24 +219,35 @@ classes:
   SimpulseIdHostingOrganization:
     is_a: LegalPerson
     class_uri: gx:LegalPerson
-    slots: [legal_name]
+    slots: [legalName] # Imported from Gaia-X slots.yaml
     slot_usage:
-      legal_name: { aliases: [legalName] }
-      legal_address: { required: false, aliases: [legalAddress] }
-      headquarters_address: { required: false, aliases: [headquartersAddress] }
+      legalName: { aliases: [legalName] }
+      legalAddress: { required: false, aliases: [legalAddress] }
+      headquartersAddress: { required: false, aliases: [headquartersAddress] }
 
   SimpulseidParticipant:
     is_a: LegalPerson
     mixins: [CredentialSubject]
     class_uri: simpulseid:Participant
-    slots: [legal_name, legal_form, legal_address, headquarters_address, simpulse_email, simpulse_website, duns, terms_and_conditions]
+    slots: 
+      - legalName           # Imported from Gaia-X slots.yaml
+      - legalForm           # Local (Missing Upstream)
+      - legalAddress        # Imported from Gaia-X slots.yaml
+      - headquartersAddress # Imported from Gaia-X slots.yaml
+      - email               # Imported from Gaia-X slots.yaml
+      - url                 # Imported from Gaia-X slots.yaml (replaces simpulse_website)
+      - duns                # Local
+      - termsAndConditions  # Imported from Gaia-X slots.yaml
     slot_usage:
-      legal_name: { aliases: [legalName] }
-      legal_form: { range: SimpulseIdLegalForm, aliases: [legalForm] }
-      legal_address: { range: SimpulseIdAddress, required: true, aliases: [legalAddress] }
-      headquarters_address: { range: SimpulseIdAddress, aliases: [headquartersAddress] }
-      simpulse_website: { aliases: [website] }
+      legalName: { aliases: [legalName] }
+      legalForm: { range: SimpulseIdLegalForm, aliases: [legalForm] }
+      legalAddress: { range: SimpulseIdAddress, required: true, aliases: [legalAddress] }
+      headquartersAddress: { range: SimpulseIdAddress, aliases: [headquartersAddress] }
+      # Map generic 'url' to 'website' alias
+      url: { aliases: [website] } 
       duns: { aliases: [duns] }
+      # Override upstream 'termsAndConditions' range (string) to LegalDocument
+      termsAndConditions: { range: LegalDocument, multivalued: true }
 
   AscsBaseMembership:
     is_a: CredentialSubject
