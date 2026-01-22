@@ -19,8 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # CRITICAL FIX 1: Only fetch the top-level submodule. 
-          # Do NOT use 'recursive' here, or it crashes on the SSH URL immediately.
+          # STEP 1: Fetch only the top-level submodule (ontology-management-base)
+          # We purposefully avoid 'recursive' here to prevent the SSH crash
           submodules: true
 
       - name: Set up Python
@@ -45,16 +45,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # CRITICAL FIX 1: Stop recursion here so we can fix the URLs first.
+          # STEP 1: Fetch only the top-level submodule. 
+          # Do NOT change this to 'recursive'.
           submodules: true
 
-      # CRITICAL FIX 2: Force Git to use HTTPS for GitLab (bypassing SSH keys)
+      # STEP 2: Configure Git to use HTTPS instead of SSH for GitLab
+      # This runs BEFORE we try to fetch the nested submodule
       - name: Configure Git to use HTTPS for GitLab
         run: |
           git config --global url."https://gitlab.com/".insteadOf "git@gitlab.com:"
           git config --global url."https://gitlab.com/".insteadOf "ssh://git@gitlab.com/"
 
-      # CRITICAL FIX 3: Now manually fetch the nested submodules safely
+      # STEP 3: Now manually update the nested submodules
+      # Since we configured HTTPS above, this will now succeed
       - name: Update nested submodules
         run: git submodule update --init --recursive
 
@@ -66,12 +69,13 @@ jobs:
       - name: Install dependencies
         run: python3 -m pip install -e ./ontology-management-base -e ".[dev]"
 
-      # Generate the ontology (SimpulseID etc.)
+      # STEP 4: Generate the ontology (required for validation)
       - name: Generate Ontology from LinkML
         run: python3 src/generate_from_linkml.py
 
       - name: Run SHACL Validation on Examples
         run: |
+          # Find all JSON/JSONLD files
           FILES=$(find examples -name "*.json" -o -name "*.jsonld")
           
           if [ -z "$FILES" ]; then
@@ -82,4 +86,5 @@ jobs:
           echo "Testing the following files:"
           echo "$FILES"
           
+          # Run validation with --force-load to pick up the generated ontology
           python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py $FILES --force-load
