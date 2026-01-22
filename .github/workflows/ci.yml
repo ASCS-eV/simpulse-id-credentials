@@ -44,10 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          # STEP 1: Fetch only the top-level submodule. 
-          # Do NOT change this to 'recursive'.
-          submodules: true
 
       # STEP 2: Configure Git to use HTTPS instead of SSH for GitLab
       # This runs BEFORE we try to fetch the nested submodule
