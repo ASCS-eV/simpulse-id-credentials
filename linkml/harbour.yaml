@@ -21,64 +21,56 @@ imports:
 
 slots:
   status_purpose:
-    description: Status purpose as defined by VC Status (e.g., "revocation").
     slot_uri: vcs:statusPurpose
     range: string
     required: false
 
-  endpoint:
+  harbour_endpoint: # Renamed to avoid conflict with Gaia-X 'endpoint'
     description: Service endpoint IRI.
     slot_uri: harbour:endpoint
     range: uri
     required: false
+    aliases: [endpoint]
 
   contract_urn:
-    description: Contract identifier (URN/IRI).
     slot_uri: harbour:contractURN
     range: uri
     required: false
 
   source_repository:
-    description: Source repository IRI.
     slot_uri: harbour:sourceRepository
     range: uri
     required: false
 
   implementation:
-    description: Implementation identifier IRI.
     slot_uri: harbour:implementation
     range: uri
     required: false
 
   evidence:
-    description: One or more pieces of evidence supporting the credential.
     slot_uri: vc:evidence
     range: Evidence
     multivalued: true
     required: false 
 
   vp:
-    description: A Verifiable Presentation serving as evidence.
     slot_uri: harbour:vp
     range: string 
     required: false
 
 classes:
   HarbourVerifiableCredential:
-    description: Marker class for Harbour-based credentials.
     class_uri: harbour:VerifiableCredential
     slots:
       - evidence
 
   Evidence:
-    description: Base class for evidence data.
     class_uri: vc:Evidence
     slots:
       - type
       - vp
 
   CRSetEntry:
-    description: Credential status list entry.
     class_uri: harbour:CRSetEntry
     slots:
       - id
@@ -86,10 +78,9 @@ classes:
       - status_purpose
 
   CRSetServiceEndpoint:
-    description: Service endpoint descriptor for revocation service.
     class_uri: harbour:CRSetServiceEndpoint
     slots:
-      - endpoint
+      - harbour_endpoint
       - status_purpose
       - contract_urn
       - source_repository

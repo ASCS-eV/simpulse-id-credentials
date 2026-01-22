@@ -9,7 +9,7 @@ prefixes:
   simpulseid: https://schema.ascs.digital/SimpulseId/v1/credentials#
   harbour: https://schema.reachhaven.com/Harbour/v1/credentials#
   vcs: https://www.w3.org/ns/credentials/status#
-  gx: https://w3id.org/gaia-x/development#
+  gx: https://w3id.org/gaia-x/development# # Harmonized with import
   schema: http://schema.org/
   vc: https://www.w3.org/ns/credentials/v2#
   vcard: http://www.w3.org/2006/vcard/ns#
@@ -74,12 +74,12 @@ slots:
     range: string
     aliases: [familyName]
 
-  email:
+  simpulse_email: # Renamed to avoid Gaia-X conflict
     slot_uri: schema:email
     range: string
     aliases: [email]
 
-  website:
+  simpulse_website: # Renamed to avoid Gaia-X conflict
     slot_uri: schema:url
     range: uri
     aliases: [website]
@@ -189,7 +189,7 @@ classes:
 
   NaturalPerson:
     class_uri: gx:NaturalPerson
-    slots: [given_name, family_name, email, member_of, address]
+    slots: [given_name, family_name, simpulse_email, member_of, address]
     slot_usage:
       address: { range: SimpulseIdAddress, required: false, aliases: [address] }
 
@@ -201,7 +201,7 @@ classes:
       address: { required: true }
       given_name: { required: true }
       family_name: { required: true }
-      email: { required: true }
+      simpulse_email: { required: true }
 
   User:
     is_a: NaturalPerson
@@ -222,13 +222,13 @@ classes:
     is_a: LegalPerson
     mixins: [CredentialSubject]
     class_uri: simpulseid:Participant
-    slots: [legal_name, legal_form, legal_address, headquarters_address, email, website, duns, terms_and_conditions]
+    slots: [legal_name, legal_form, legal_address, headquarters_address, simpulse_email, simpulse_website, duns, terms_and_conditions]
     slot_usage:
       legal_name: { aliases: [legalName] }
       legal_form: { range: SimpulseIdLegalForm, aliases: [legalForm] }
       legal_address: { range: SimpulseIdAddress, required: true, aliases: [legalAddress] }
       headquarters_address: { range: SimpulseIdAddress, aliases: [headquartersAddress] }
-      website: { aliases: [website] }
+      simpulse_website: { aliases: [website] }
       duns: { aliases: [duns] }
 
   AscsBaseMembership:
