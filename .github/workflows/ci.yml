@@ -18,23 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # DO NOT use 'submodules: true' here. 
-        # We must handle them manually to fix the SSH/HTTPS issues first.
+        # Do NOT set submodules here. We must modify .gitmodules first.
 
-      # STEP 1: Fix Git URLs for BOTH GitHub and GitLab
-      - name: Configure Git to use HTTPS (Bypass SSH)
+      # FIX: Rewrite .gitmodules from SSH to HTTPS using sed
+      # This physically changes the file, guaranteeing Git uses HTTPS.
+      - name: Force HTTPS for Submodules
         run: |
-          # Fix GitHub URLs
-          git config --global url."https://github.com/".insteadOf "git@github.com:"
-          git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
-          
-          # Fix GitLab URLs
-          git config --global url."https://gitlab.com/".insteadOf "git@gitlab.com:"
-          git config --global url."https://gitlab.com/".insteadOf "ssh://git@gitlab.com/"
-
-      # STEP 2: Manually fetch submodules now that URLs are fixed
-      - name: Initialize Submodules
-        run: git submodule update --init --recursive
+          sed -i 's/git@github.com:/https:\/\/github.com\//g' .gitmodules
+          sed -i 's/git@gitlab.com:/https:\/\/gitlab.com\//g' .gitmodules
+          git submodule update --init --recursive
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -57,22 +49,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # DO NOT use 'submodules: true' here.
+        # Do NOT set submodules here.
 
-      # STEP 1: Fix Git URLs for BOTH GitHub and GitLab
-      - name: Configure Git to use HTTPS (Bypass SSH)
+      # FIX: Rewrite .gitmodules from SSH to HTTPS using sed
+      - name: Force HTTPS for Submodules
         run: |
-          # Fix GitHub URLs
-          git config --global url."https://github.com/".insteadOf "git@github.com:"
-          git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
-          
-          # Fix GitLab URLs
-          git config --global url."https://gitlab.com/".insteadOf "git@gitlab.com:"
-          git config --global url."https://gitlab.com/".insteadOf "ssh://git@gitlab.com/"
-
-      # STEP 2: Manually fetch submodules
-      - name: Initialize Submodules
-        run: git submodule update --init --recursive
+          sed -i 's/git@github.com:/https:\/\/github.com\//g' .gitmodules
+          sed -i 's/git@gitlab.com:/https:\/\/gitlab.com\//g' .gitmodules
+          git submodule update --init --recursive
 
       - uses: actions/setup-python@v5
         with:
@@ -82,7 +66,6 @@ jobs:
       - name: Install dependencies
         run: python3 -m pip install -e ./ontology-management-base -e ".[dev]"
 
-      # STEP 3: Generate the ontology (required for validation)
       - name: Generate Ontology from LinkML
         run: python3 src/generate_from_linkml.py
 
