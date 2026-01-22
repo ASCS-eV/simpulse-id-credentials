@@ -18,10 +18,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          # STEP 1: Fetch only the top-level submodule (ontology-management-base)
-          # We purposefully avoid 'recursive' here to prevent the SSH crash
-          submodules: true
+        # DO NOT use 'submodules: true' here. 
+        # We must handle them manually to fix the SSH/HTTPS issues first.
+
+      # STEP 1: Fix Git URLs for BOTH GitHub and GitLab
+      - name: Configure Git to use HTTPS (Bypass SSH)
+        run: |
+          # Fix GitHub URLs
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+          
+          # Fix GitLab URLs
+          git config --global url."https://gitlab.com/".insteadOf "git@gitlab.com:"
+          git config --global url."https://gitlab.com/".insteadOf "ssh://git@gitlab.com/"
+
+      # STEP 2: Manually fetch submodules now that URLs are fixed
+      - name: Initialize Submodules
+        run: git submodule update --init --recursive
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -44,17 +57,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        # DO NOT use 'submodules: true' here.
 
-      # STEP 2: Configure Git to use HTTPS instead of SSH for GitLab
-      # This runs BEFORE we try to fetch the nested submodule
-      - name: Configure Git to use HTTPS for GitLab
+      # STEP 1: Fix Git URLs for BOTH GitHub and GitLab
+      - name: Configure Git to use HTTPS (Bypass SSH)
         run: |
+          # Fix GitHub URLs
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+          
+          # Fix GitLab URLs
           git config --global url."https://gitlab.com/".insteadOf "git@gitlab.com:"
           git config --global url."https://gitlab.com/".insteadOf "ssh://git@gitlab.com/"
 
-      # STEP 3: Now manually update the nested submodules
-      # Since we configured HTTPS above, this will now succeed
-      - name: Update nested submodules
+      # STEP 2: Manually fetch submodules
+      - name: Initialize Submodules
         run: git submodule update --init --recursive
 
       - uses: actions/setup-python@v5
@@ -65,13 +82,12 @@ jobs:
       - name: Install dependencies
         run: python3 -m pip install -e ./ontology-management-base -e ".[dev]"
 
-      # STEP 4: Generate the ontology (required for validation)
+      # STEP 3: Generate the ontology (required for validation)
       - name: Generate Ontology from LinkML
         run: python3 src/generate_from_linkml.py
 
       - name: Run SHACL Validation on Examples
         run: |
-          # Find all JSON/JSONLD files
           FILES=$(find examples -name "*.json" -o -name "*.jsonld")
           
           if [ -z "$FILES" ]; then
@@ -82,5 +98,4 @@ jobs:
           echo "Testing the following files:"
           echo "$FILES"
           
-          # Run validation with --force-load to pick up the generated ontology
           python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py $FILES --force-load
