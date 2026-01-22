@@ -6,6 +6,7 @@ from one or more LinkML schemas.
 Examples:
   python3 src/generate_from_linkml.py --model linkml/simpulseid.yaml
   python3 src/generate_from_linkml.py --model linkml/simpulseid.yaml --model linkml/harbour.yaml
+  python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/
 """
 
 import argparse
@@ -19,6 +20,7 @@ from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
 from linkml_runtime.utils.schemaview import SchemaView
 import json
+
 
 def patch_jsonld_keywords(context_json: str) -> str:
     """
@@ -46,22 +48,40 @@ def ensure_dir(path: Path) -> None:
 def find_repo_root(start: Path) -> Path:
     current = start
     while current != current.parent:
-        if (current / ".git").is_dir() or (current / "service-characteristics").is_dir():
+        # [UPDATED] Check for submodule nesting "ontology-management-base"
+        if (current / "ontology-management-base").is_dir() or (current / ".git").is_dir():
             return current
         current = current.parent
     return start.parent
 
 
 def build_import_map(repo_root: Path) -> Dict[str, str]:
-    gaiax_linkml_dir = repo_root / "service-characteristics" / "linkml"
+    # [UPDATED] Look for submodule in nested path first, then direct path
+    candidates = [
+        repo_root / "ontology-management-base" / "service-characteristics" / "linkml",
+        repo_root / "service-characteristics" / "linkml"
+    ]
+    gaiax_linkml_dir = next((d for d in candidates if d.is_dir()), None)
+    
     import_map: Dict[str, str] = {}
 
-    if not gaiax_linkml_dir.is_dir():
-        debug(f"Gaia-X linkml dir not found at {gaiax_linkml_dir}")
+    if not gaiax_linkml_dir:
+        debug(f"Gaia-X linkml dir not found in candidates: {candidates}")
         return import_map
 
     for yaml_file in gaiax_linkml_dir.glob("*.yaml"):
-        import_map[yaml_file.stem] = str(yaml_file.with_suffix("").resolve())
+        # Resolve to absolute path without extension (LinkML standard)
+        abs_path = str(yaml_file.with_suffix("").resolve())
+        
+        # 1. Map by stem (e.g. "gaia-x" -> /path/to/gaia-x)
+        import_map[yaml_file.stem] = abs_path
+        
+        # 2. Map by legacy relative path to fix the "FileNotFoundError" in simpulseid.yaml
+        # This intercepts imports like "../service-characteristics/linkml/gaia-x"
+        # and redirects them to the new nested submodule location.
+        legacy_path = f"../service-characteristics/linkml/{yaml_file.stem}"
+        import_map[legacy_path] = abs_path
+        import_map[f"{legacy_path}.yaml"] = abs_path  # Safety net for explicit extensions
 
     debug(f"Built import_map with {len(import_map)} entries from {gaiax_linkml_dir}")
     return import_map
@@ -85,12 +105,19 @@ class FixedShaclGenerator(_BaseShaclGenerator):
 
 
 def set_linkml_model_path(repo_root: Path) -> None:
-    gaiax_linkml_dir = repo_root / "service-characteristics" / "linkml"
+    # [UPDATED] Include nested submodule paths in search path
+    gaiax_linkml_dirs = [
+        repo_root / "ontology-management-base" / "service-characteristics" / "linkml",
+        repo_root / "service-characteristics" / "linkml"
+    ]
     local_linkml_dir = repo_root / "linkml"
 
     search_paths: List[str] = []
-    if gaiax_linkml_dir.is_dir():
-        search_paths.append(str(gaiax_linkml_dir))
+    
+    for d in gaiax_linkml_dirs:
+        if d.is_dir():
+            search_paths.append(str(d))
+            
     if local_linkml_dir.is_dir():
         search_paths.append(str(local_linkml_dir))
 
@@ -154,8 +181,8 @@ def main() -> None:
     parser.add_argument(
         "--model",
         action="append",
-        required=True,
-        help="Path to a LinkML YAML schema. Repeat --model for multiple schemas.",
+        required=False,
+        help="Path to a LinkML YAML schema. If not provided, defaults to all *.yaml files in the 'linkml' directory (non-recursive).",
     )
     parser.add_argument(
         "--out-root",
@@ -165,11 +192,34 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    models = [Path(m).resolve() for m in args.model]
+    # 1. Determine models to process
+    if args.model:
+        models = [Path(m).resolve() for m in args.model]
+    else:
+        # Default behavior: Find repo root and scan 'linkml/*.yaml'
+        repo_root = find_repo_root(Path.cwd())
+        linkml_dir = repo_root / "linkml"
+
+        if not linkml_dir.is_dir():
+            # Fallback for when script is run from inside linkml/ or specific subfolder
+            linkml_dir = Path("linkml").resolve()
+
+        if not linkml_dir.is_dir():
+            raise SystemExit(f"Error: No --model provided and 'linkml' directory not found at {repo_root / 'linkml'}")
+
+        print(f"No --model specified. Auto-detecting *.yaml in {linkml_dir}...")
+        # glob("*.yaml") strictly matches files in linkml_dir, excluding subdirectories
+        models = sorted(list(linkml_dir.glob("*.yaml")))
+        
+        if not models:
+            raise SystemExit(f"Error: No .yaml files found in {linkml_dir}")
+
+    # 2. Validation
     for mp in models:
         if not mp.exists():
             raise SystemExit(f"LinkML model not found: {mp}")
 
+    # 3. Setup environment (using parent of first model to find root, works for both cases)
     repo_root = find_repo_root(models[0].parent)
     debug(f"repo_root: {repo_root} (exists={repo_root.exists()}, type={'dir' if repo_root.is_dir() else 'missing'})")
 
