@@ -1,14 +1,16 @@
 id: https://schema.reachhaven.com/Harbour/linkml/v1#Harbour
 name: harbour
 description: >
-  LinkML schema for Harbour credentials vocabulary, aligned with the
-  HarbourCredentials JSON-LD context.
+  LinkML schema for Harbour credentials vocabulary.
+  Defines the base structures for Evidence, Status, and core credential logic.
 
 prefixes:
   linkml: https://w3id.org/linkml/
   harbour: https://schema.reachhaven.com/Harbour/v1/credentials#
+  gx: https://w3id.org/gaia-x/development#
   xsd: http://www.w3.org/2001/XMLSchema#
   vcs: https://www.w3.org/ns/credentials/status#
+  vc: https://www.w3.org/ns/credentials/v2#
 
 default_prefix: harbour
 default_range: string
@@ -19,8 +21,7 @@ imports:
 
 slots:
   status_purpose:
-    description: >
-      Status purpose as defined by VC Status (e.g., "revocation").
+    description: Status purpose as defined by VC Status (e.g., "revocation").
     slot_uri: vcs:statusPurpose
     range: string
     required: false
@@ -32,34 +33,52 @@ slots:
     required: false
 
   contract_urn:
-    description: Contract identifier (URN/IRI) for the revocation registry implementation.
+    description: Contract identifier (URN/IRI).
     slot_uri: harbour:contractURN
     range: uri
     required: false
 
   source_repository:
-    description: Source repository IRI (e.g., Git repository URL) for the implementation.
+    description: Source repository IRI.
     slot_uri: harbour:sourceRepository
     range: uri
     required: false
 
   implementation:
-    description: Implementation identifier IRI (e.g., software package or artifact reference).
+    description: Implementation identifier IRI.
     slot_uri: harbour:implementation
     range: uri
     required: false
 
+  evidence:
+    description: One or more pieces of evidence supporting the credential.
+    slot_uri: vc:evidence
+    range: Evidence
+    multivalued: true
+    required: false 
+
+  vp:
+    description: A Verifiable Presentation serving as evidence.
+    slot_uri: harbour:vp
+    range: string 
+    required: false
+
 classes:
   HarbourVerifiableCredential:
-    description: >
-      Marker class used in Harbour contexts to identify a Verifiable Credential
-      using the Harbour vocabulary.
+    description: Marker class for Harbour-based credentials.
     class_uri: harbour:VerifiableCredential
+    slots:
+      - evidence
+
+  Evidence:
+    description: Base class for evidence data.
+    class_uri: vc:Evidence
+    slots:
+      - type
+      - vp
 
   CRSetEntry:
-    description: >
-      Credential status list entry (typically used in vc:credentialStatus),
-      aligned with harbour:CRSetEntry.
+    description: Credential status list entry.
     class_uri: harbour:CRSetEntry
     slots:
       - id
@@ -67,8 +86,7 @@ classes:
       - status_purpose
 
   CRSetServiceEndpoint:
-    description: >
-      Service endpoint descriptor for a credential revocation set service.
+    description: Service endpoint descriptor for revocation service.
     class_uri: harbour:CRSetServiceEndpoint
     slots:
       - endpoint

@@ -1,14 +1,14 @@
-id: https://schema.ascs.digital/Core/linkml/v1#Core
+id: https://schema.reachhaven.com/Core/linkml/v1#Core
 name: core
 description: >
-  Shared LinkML core definitions to avoid URI conflicts across imported schemas.
-  This schema defines common slots once (e.g., id/type) with stable URIs.
-  JSON-LD keyword aliasing (id -> @id, type -> @type) is applied in the
-  generation script as a post-processing step.
+  Shared LinkML core definitions. Native LinkML properties (identifier: true 
+  and designates_type: true) ensure these slots are correctly mapped to 
+  @id and @type in JSON-LD contexts.
 
 prefixes:
   linkml: https://w3id.org/linkml/
   xsd: http://www.w3.org/2001/XMLSchema#
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 
 default_prefix: linkml
 default_range: string
@@ -18,13 +18,14 @@ imports:
 
 slots:
   id:
-    description: Stable identifier slot (post-processed to JSON-LD @id in context output).
-    slot_uri: linkml:id
+    description: The stable identifier for the entity (becomes @id in JSON-LD).
+    identifier: true  # Native Subject ID mapping
     required: true
     range: uri
 
   type:
-    description: Stable type slot (post-processed to JSON-LD @type in context output).
-    slot_uri: linkml:type
+    description: The semantic type of the entity (becomes @type in JSON-LD).
+    designates_type: true # Native RDF type mapping
+    slot_uri: rdf:type    
     multivalued: true
     range: uri

@@ -2,11 +2,6 @@
 """
 Generate downstream artefacts (JSON-LD context, SHACL shapes, OWL ontology)
 from one or more LinkML schemas.
-
-Examples:
-  python3 src/generate_from_linkml.py --model linkml/simpulseid.yaml
-  python3 src/generate_from_linkml.py --model linkml/simpulseid.yaml --model linkml/harbour.yaml
-  python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/
 """
 
 import argparse
@@ -21,20 +16,16 @@ from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
 from linkml_runtime.utils.schemaview import SchemaView
 import json
 
+# Post-processing replacement to satisfy oxigraph/pyshacl fragments
+URI_TWEAKS = {
+    "https://w3id.org/gaia-x/development#": "https://w3id.org/gaia-x/development/"
+}
 
-def patch_jsonld_keywords(context_json: str) -> str:
-    """
-    LinkML cannot use '@id'/'@type' as slot_uri (loader rejects it).
-    We therefore patch the generated context to alias:
-      - id -> @id
-      - type -> @type
-    """
-    doc = json.loads(context_json)
-    ctx = doc.get("@context")
-    if isinstance(ctx, dict):
-        ctx["id"] = "@id"
-        ctx["type"] = "@type"
-    return json.dumps(doc, indent=2, ensure_ascii=False) + "\n"
+def apply_artifact_replacements(content: str) -> str:
+    """Replaces URIs in generated content to prevent double hash fragments in validation tools."""
+    for original, replacement in URI_TWEAKS.items():
+        content = content.replace(original, replacement)
+    return content
 
 
 def debug(msg: str) -> None:
@@ -48,7 +39,6 @@ def ensure_dir(path: Path) -> None:
 def find_repo_root(start: Path) -> Path:
     current = start
     while current != current.parent:
-        # [UPDATED] Check for submodule nesting "ontology-management-base"
         if (current / "ontology-management-base").is_dir() or (current / ".git").is_dir():
             return current
         current = current.parent
@@ -56,7 +46,6 @@ def find_repo_root(start: Path) -> Path:
 
 
 def build_import_map(repo_root: Path) -> Dict[str, str]:
-    # [UPDATED] Look for submodule in nested path first, then direct path
     candidates = [
         repo_root / "ontology-management-base" / "service-characteristics" / "linkml",
         repo_root / "service-characteristics" / "linkml"
@@ -70,18 +59,11 @@ def build_import_map(repo_root: Path) -> Dict[str, str]:
         return import_map
 
     for yaml_file in gaiax_linkml_dir.glob("*.yaml"):
-        # Resolve to absolute path without extension (LinkML standard)
         abs_path = str(yaml_file.with_suffix("").resolve())
-        
-        # 1. Map by stem (e.g. "gaia-x" -> /path/to/gaia-x)
         import_map[yaml_file.stem] = abs_path
-        
-        # 2. Map by legacy relative path to fix the "FileNotFoundError" in simpulseid.yaml
-        # This intercepts imports like "../service-characteristics/linkml/gaia-x"
-        # and redirects them to the new nested submodule location.
         legacy_path = f"../service-characteristics/linkml/{yaml_file.stem}"
         import_map[legacy_path] = abs_path
-        import_map[f"{legacy_path}.yaml"] = abs_path  # Safety net for explicit extensions
+        import_map[f"{legacy_path}.yaml"] = abs_path
 
     debug(f"Built import_map with {len(import_map)} entries from {gaiax_linkml_dir}")
     return import_map
@@ -105,7 +87,6 @@ class FixedShaclGenerator(_BaseShaclGenerator):
 
 
 def set_linkml_model_path(repo_root: Path) -> None:
-    # [UPDATED] Include nested submodule paths in search path
     gaiax_linkml_dirs = [
         repo_root / "ontology-management-base" / "service-characteristics" / "linkml",
         repo_root / "service-characteristics" / "linkml"
@@ -158,16 +139,17 @@ def generate_one(model_path: Path, out_root: Path, import_map: Dict[str, str]) -
         print(f"Using LinkML model: {model_path}")
 
         print(f"Generating JSON-LD context -> {out_context}")
+        # The ContextGenerator handles @id/@type automatically due to identifier: true and designates_type: true
         ctx_gen = ContextGenerator(str(model_path), importmap=import_map, base_dir=base_dir)
-        out_context.write_text(patch_jsonld_keywords(ctx_gen.serialize()), encoding="utf-8")
+        out_context.write_text(apply_artifact_replacements(ctx_gen.serialize()), encoding="utf-8")
 
         print(f"Generating SHACL shapes -> {out_shacl}")
         shacl_gen = FixedShaclGenerator(str(model_path), importmap=import_map, base_dir=base_dir)
-        out_shacl.write_text(shacl_gen.serialize(), encoding="utf-8")
+        out_shacl.write_text(apply_artifact_replacements(shacl_gen.serialize()), encoding="utf-8")
 
         print(f"Generating OWL ontology -> {out_owl}")
         owl_gen = OwlSchemaGenerator(str(model_path), importmap=import_map, base_dir=base_dir)
-        out_owl.write_text(owl_gen.serialize(), encoding="utf-8")
+        out_owl.write_text(apply_artifact_replacements(owl_gen.serialize()), encoding="utf-8")
 
         print(f"Done: {model_name}")
     finally:
@@ -192,36 +174,30 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # 1. Determine models to process
     if args.model:
         models = [Path(m).resolve() for m in args.model]
     else:
-        # Default behavior: Find repo root and scan 'linkml/*.yaml'
         repo_root = find_repo_root(Path.cwd())
         linkml_dir = repo_root / "linkml"
 
         if not linkml_dir.is_dir():
-            # Fallback for when script is run from inside linkml/ or specific subfolder
             linkml_dir = Path("linkml").resolve()
 
         if not linkml_dir.is_dir():
             raise SystemExit(f"Error: No --model provided and 'linkml' directory not found at {repo_root / 'linkml'}")
 
         print(f"No --model specified. Auto-detecting *.yaml in {linkml_dir}...")
-        # glob("*.yaml") strictly matches files in linkml_dir, excluding subdirectories
         models = sorted(list(linkml_dir.glob("*.yaml")))
         
         if not models:
             raise SystemExit(f"Error: No .yaml files found in {linkml_dir}")
 
-    # 2. Validation
     for mp in models:
         if not mp.exists():
             raise SystemExit(f"LinkML model not found: {mp}")
 
-    # 3. Setup environment (using parent of first model to find root, works for both cases)
     repo_root = find_repo_root(models[0].parent)
-    debug(f"repo_root: {repo_root} (exists={repo_root.exists()}, type={'dir' if repo_root.is_dir() else 'missing'})")
+    debug(f"repo_root: {repo_root}")
 
     import_map = build_import_map(repo_root)
     set_linkml_model_path(repo_root)
