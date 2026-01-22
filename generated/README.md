@@ -85,7 +85,7 @@ A SKOS vocabulary for legal forms (e.g., AG, GmbH, LLC, CIC, BenCom). Each entry
 Credentials reference these IRIs like:
 
 ```txt
-<https://schema.ascs.digital/SimpulseId/v1/legalForm#AG>
+<https://schema.ascs.digital/SimpulseId/v1/legalForm/AG>
 ```
 
 ---

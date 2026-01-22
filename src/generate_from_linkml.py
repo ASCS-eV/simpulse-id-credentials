@@ -19,10 +19,6 @@ from linkml_runtime.utils.schemaview import SchemaView
 URI_TWEAKS = {
     # Gaia-X
     "https://w3id.org/gaia-x/development#": "https://w3id.org/gaia-x/development/",
-    # SimpulseID
-    "https://schema.ascs.digital/SimpulseId/v1/credentials#": "https://schema.ascs.digital/SimpulseId/v1/credentials/",
-    # Harbour (Added)
-    "https://schema.reachhaven.com/Harbour/v1/credentials#": "https://schema.reachhaven.com/Harbour/v1/credentials/",
 }
 
 

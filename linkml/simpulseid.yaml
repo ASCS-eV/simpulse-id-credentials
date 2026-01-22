@@ -1,4 +1,4 @@
-id: https://schema.ascs.digital/SimpulseId/linkml/v1#SimpulseId
+id: https://schema.ascs.digital/linkml/v1#SimpulseId
 name: simpulseid
 description: >
   LinkML schema for SimpulseID credentials.
@@ -7,16 +7,17 @@ description: >
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  simpulseid: https://schema.ascs.digital/SimpulseId/v1/credentials#
-  harbour: https://schema.reachhaven.com/Harbour/v1/credentials#
-  vcs: https://www.w3.org/ns/credentials/status#
+  simpulseid: https://schema.ascs.digital/simpulseid/v1/credentials/
+  harbour: https://schema.reachhaven.com/harbour/v1/credentials/
+  core: https://schema.reachhaven.com/harbour/v1/core/
+  cs: https://www.w3.org/ns/credentials/status#
   gx: https://w3id.org/gaia-x/development#
   schema: http://schema.org/
-  vc: https://www.w3.org/2018/credentials#
+  cred: https://www.w3.org/2018/credentials#
   vcard: http://www.w3.org/2006/vcard/ns#
   xsd: http://www.w3.org/2001/XMLSchema#
   skos: http://www.w3.org/2004/02/skos/core#
-  lf: https://schema.ascs.digital/SimpulseId/v1/legalForm#
+  lf: https://schema.ascs.digital/SimpulseId/v1/legalForm/
 
 default_prefix: simpulseid
 default_range: string
@@ -31,38 +32,38 @@ slots:
   # --- Verifiable Credential Slots (Standard W3C) ---
   # These are not defined in Gaia-X upstream and must be defined locally.
   issuer:
-    slot_uri: vc:issuer
+    slot_uri: cred:issuer
     range: SimpulseIdIssuer
     required: true
     aliases: [issuer]
 
   issuance_date:
-    slot_uri: vc:issuanceDate
+    slot_uri: cred:issuanceDate
     range: datetime
     required: true
     aliases: [issuanceDate]
 
   expiration_date:
-    slot_uri: vc:expirationDate
+    slot_uri: cred:expirationDate
     range: datetime
     required: false
     aliases: [expirationDate]
 
   credential_subject:
-    slot_uri: vc:credentialSubject
+    slot_uri: cred:credentialSubject
     range: CredentialSubject
     required: true
     aliases: [credentialSubject]
 
   credential_status:
-    slot_uri: vc:credentialStatus
+    slot_uri: cred:credentialStatus
     range: CRSetEntry
     multivalued: true
     required: false
     aliases: [credentialStatus]
 
   proof:
-    slot_uri: vc:proof
+    slot_uri: cred:proof
     range: string
     required: false
     aliases: [proof]
@@ -260,7 +261,7 @@ classes:
     slots: [program_name, hosting_organization, member_of, member_since, base_membership_credential]
 
   VerifiableCredential:
-    class_uri: vc:VerifiableCredential
+    class_uri: cred:VerifiableCredential
     slots: [id, type, issuer, issuance_date, expiration_date, credential_subject, credential_status, evidence, proof]
 
   ParticipantCredential:

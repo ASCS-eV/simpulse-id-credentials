@@ -1,8 +1,14 @@
 {
-  "@context": ["https://www.w3.org/ns/did/v1", "https://schema.org"],
+  "@context": [
+    "https://schema.ascs.digital/simpulseid/v1/credentials/",
+    "https://www.w3.org/ns/did/v1",
+    "https://schema.org"
+  ],
   "id": "did:web:did.ascs.digital:participants:bmw",
   "controller": "did:web:did.ascs.digital:services:trust-anchor",
-  "alsoKnownAs": ["https://did.ascs.digital/participants/bmw"],
+  "alsoKnownAs": [
+    "https://did.ascs.digital/participants/bmw"
+  ],
   "verificationMethod": [
     {
       "id": "did:web:did.ascs.digital:participants:bmw#wallet-key-1",
@@ -29,12 +35,12 @@
     }
   ],
   "organization": {
-    "@context": [
-      "https://schema.ascs.digital/SimpulseId/v1/credentials",
-      "https://schema.org"
-    ],
     "@id": "did:web:did.ascs.digital:participants:bmw",
-    "type": ["simpulseid:Participant", "gx:LegalPerson", "schema:Organization"],
+    "type": [
+      "simpulseid:Participant",
+      "gx:LegalPerson",
+      "schema:Organization"
+    ],
     "legalName": "Bayerische Motoren Werke Aktiengesellschaft",
     "legalForm": "AG",
     "registrationNumber": {

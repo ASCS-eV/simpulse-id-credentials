@@ -1,5 +1,6 @@
 {
     "@context": [
+        "https://schema.ascs.digital/simpulseid/v1/credentials/",
         "https://www.w3.org/ns/did/v1",
         "https://schema.org"
     ],
@@ -16,7 +17,6 @@
         }
     ],
     "program": {
-        "@context": "https://schema.org",
         "@type": [
             "schema:Program",
             "simpulseid:BaseMembershipProgram"

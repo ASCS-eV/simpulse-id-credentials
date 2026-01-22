@@ -1,7 +1,7 @@
 {
     "@context": [
-        "https://www.w3.org/ns/did/v1",
-        "https://schema.reachhaven.com/Harbour/v1/credentials"
+        "https://schema.reachhaven.com/harbour/v1/credentials/",
+        "https://www.w3.org/ns/did/v1"
     ],
     "id": "did:web:did.ascs.digital:services:revocation-registry",
     "controller": "did:web:did.ascs.digital:services:trust-anchor",
