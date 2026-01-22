@@ -68,7 +68,6 @@ pre-commit run --all-files
 # 1. Generate ontologies, SHACL shapes and Contexts from LinkML models
 # We generate artifacts for core, harbour, and simpulseid so they are available in generated/
 python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/
-#python3 src/generate_from_linkml.py --model linkml/core.yaml --model linkml/harbour.yaml --model linkml/simpulseid.yaml
 
 # 2. Example check
 # The script now automatically finds the 'generated/' folder and 'ontology-management-base/' submodule
@@ -241,4 +240,7 @@ Some relevant specifications and resources:
   <https://json-schema.org/specification>
 - schema.org
   <https://schema.org/>
-````
+
+```
+
+```
