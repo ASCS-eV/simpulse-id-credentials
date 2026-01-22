@@ -5,3 +5,4 @@
 /generated/*/
 *.zip
 *.egg-info/
+.ontology_iri_cache.json

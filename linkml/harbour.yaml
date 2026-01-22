@@ -10,7 +10,7 @@ prefixes:
   gx: https://w3id.org/gaia-x/development#
   xsd: http://www.w3.org/2001/XMLSchema#
   vcs: https://www.w3.org/ns/credentials/status#
-  vc: https://www.w3.org/ns/credentials/v2#
+  vc: https://www.w3.org/2018/credentials#
 
 default_prefix: harbour
 default_range: string
@@ -25,7 +25,7 @@ slots:
     range: string
     required: false
 
-  harbour_endpoint: # Renamed to avoid conflict with Gaia-X 'endpoint'
+  harbour_endpoint:
     description: Service endpoint IRI.
     slot_uri: harbour:endpoint
     range: uri

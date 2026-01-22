@@ -25,7 +25,7 @@ The examples serve as a canonical blueprint for services integrating with
 
 Each credential in this folder uses:
 
-- `https://www.w3.org/ns/credentials/v2` (VC Data Model v2)
+- `https://www.w3.org/2018/credentials#` (VC Data Model v2)
 - `simpulseid_context.jsonld` (main context)
 - `harbour_context.jsonld` (credential status)
 - `harbour:CRSetEntry` with `statusPurpose: "revocation"`

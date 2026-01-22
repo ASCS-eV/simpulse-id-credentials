@@ -104,7 +104,7 @@ Typical credential subjects include:
 
 Each VC uses:
 
-- `https://www.w3.org/ns/credentials/v2` (VC Data Model v2)
+- `https://www.w3.org/2018/credentials#` (VC Data Model v2)
 - SimpulseID context from this repo
 - Harbour context for `credentialStatus`
 - `harbour:CRSetEntry` + `statusPurpose: "revocation"` for revocation status
@@ -219,7 +219,7 @@ Some relevant specifications and resources:
 - W3C Verifiable Credentials Data Model v2
   <https://www.w3.org/TR/vc-data-model-2.0/>
 - W3C Verifiable Credential Vocabulary (VC v2)
-  <https://www.w3.org/ns/credentials/v2>
+  <https://www.w3.org/2018/credentials#>
 - Gaia-X Credential Format & Trust Framework (24.11)
   <https://docs.gaia-x.eu/technical-committee/identity-credential-access-management/>
 - DIF Wallet Rendering specification

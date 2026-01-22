@@ -18,7 +18,14 @@ import json
 
 # Post-processing replacement to satisfy oxigraph/pyshacl fragments
 URI_TWEAKS = {
-    "https://w3id.org/gaia-x/development#": "https://w3id.org/gaia-x/development/"
+    # Gaia-X
+    "https://w3id.org/gaia-x/development#": "https://w3id.org/gaia-x/development/",
+    
+    # SimpulseID
+    "https://schema.ascs.digital/SimpulseId/v1/credentials#": "https://schema.ascs.digital/SimpulseId/v1/credentials/",
+    
+    # Harbour (Added)
+    "https://schema.reachhaven.com/Harbour/v1/credentials#": "https://schema.reachhaven.com/Harbour/v1/credentials/"
 }
 
 def apply_artifact_replacements(content: str) -> str:

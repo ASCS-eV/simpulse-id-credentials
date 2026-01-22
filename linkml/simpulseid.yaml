@@ -12,7 +12,7 @@ prefixes:
   vcs: https://www.w3.org/ns/credentials/status#
   gx: https://w3id.org/gaia-x/development#
   schema: http://schema.org/
-  vc: https://www.w3.org/ns/credentials/v2#
+  vc: https://www.w3.org/2018/credentials#
   vcard: http://www.w3.org/2006/vcard/ns#
   xsd: http://www.w3.org/2001/XMLSchema#
   skos: http://www.w3.org/2004/02/skos/core#
