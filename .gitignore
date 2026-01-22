@@ -4,3 +4,4 @@
 *.log
 /generated/*/
 *.zip
+*.egg-info/

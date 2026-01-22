@@ -17,6 +17,28 @@ All of this is intended to be **publicly hostable** and consumable by wallets, v
 
 ---
 
+## Cloning with submodules
+
+The repository depends on the follwing submodules:
+
+```markdown
+Root Project
+├── Submodule A
+│ └── Submodule B (Nested inside A)
+└── Submodule C
+```
+
+````bash
+# First time
+git clone --recurse-submodules git@github.com:ASCS-eV/credentials.git
+# Initialize after already having cloned
+git submodule update --init --recursive
+# Pull all changes also from submodules
+git pull --recurse-submodules
+```
+
+---
+
 ## Installation
 
 If you want to use the validation scripts from 📁 `ontology-management-base/src` then you need to isntall the following dependencies:
@@ -24,11 +46,16 @@ If you want to use the validation scripts from 📁 `ontology-management-base/sr
 ```bash
 # On Windows use python instead of python3
 sudo apt-get install python3-full
+
+# 1. Create and activate a virtual environment
 python3 -m venv .venv/
-source .venv/bin/activate # On Windows use: source .venv/Scripts/activate
-python3 -m pip install -r ontology-management-base/requirements.txt
-python3 -m pip install -r requirements.txt
-# Example check
+source .venv/bin/activate  # On Windows use: source .venv/Scripts/activate
+
+# 2. Install dependencies (Submodule + Main Project + Dev Tools)
+# This reads both pyproject.toml files and handles all versions automatically.
+python3 -m pip install -e ./ontology-management-base -e ".[dev]"
+
+# 3. Example check
 python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py examples/simpulseid-administrator-credential.json
 ```
 
@@ -100,7 +127,7 @@ In production, these DID documents are intended to be hosted under:
 
 ### `manifests/`
 
-Wallet **rendering manifests** for each credential type, following the  
+Wallet **rendering manifests** for each credential type, following the
 [Decentralized Identity Foundation Wallet Rendering specification](https://identity.foundation/wallet-rendering/).
 
 They are used by wallets like **Altme** to:
@@ -131,7 +158,6 @@ RDF/OWL ontologies and vocabularies that define the **formal semantics** of Simp
 Key elements include:
 
 - `SimpulseIdOntology.ttl`
-
   - Classes:
     - `simpulseid:Participant` ⊑ `gx:LegalPerson`, `schema:Organization`
     - `simpulseid:AscsBaseMembership`, `simpulseid:AscsEnvitedMembership` ⊑ `schema:ProgramMembership`
@@ -184,18 +210,19 @@ Typical flow:
 
 Some relevant specifications and resources:
 
-- W3C Verifiable Credentials Data Model v2  
+- W3C Verifiable Credentials Data Model v2
   <https://www.w3.org/TR/vc-data-model-2.0/>
-- W3C Verifiable Credential Vocabulary (VC v2)  
+- W3C Verifiable Credential Vocabulary (VC v2)
   <https://www.w3.org/ns/credentials/v2>
-- Gaia-X Credential Format & Trust Framework (24.11)  
+- Gaia-X Credential Format & Trust Framework (24.11)
   <https://docs.gaia-x.eu/technical-committee/identity-credential-access-management/>
-- DIF Wallet Rendering specification  
+- DIF Wallet Rendering specification
   <https://identity.foundation/wallet-rendering/>
-- JSON-LD 1.1 & best practices  
-  <https://json-ld.org/>  
+- JSON-LD 1.1 & best practices
+  <https://json-ld.org/>
   <https://w3c.github.io/json-ld-bp/>
-- JSON Schema  
+- JSON Schema
   <https://json-schema.org/specification>
-- schema.org  
+- schema.org
   <https://schema.org/>
+````

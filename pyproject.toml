@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "credentials"
+version = "2.0.0"
+requires-python = ">=3.12"
+dependencies = [
+    "linkml>=1.9.6",
+    "linkml-runtime>=1.9.5",
+    "pyld>=2.0.4",
+    "PyYAML>=6.0.3",
+    "click>=8.0.0, <8.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=25.12.0",
+    "flake8>=7.1.2",
+    "isort>=7.0.0",
+    "pre-commit>=4.5.1",
+]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
