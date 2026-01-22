@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Only fetch the direct parent submodule initially
+          # Only fetch the direct parent submodule initially to avoid the SSH crash
           submodules: true
 
       - name: Set up Python
@@ -44,16 +44,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # 1. Fetch only the first level (ontology-management-base) to avoid failing on the nested SSH one
+          # 1. Fetch only the top-level submodule (ontology-management-base)
           submodules: true
 
-      # 2. FIX: Force git to use HTTPS for GitLab (bypassing SSH key errors)
+      # 2. FIX: Force git to use HTTPS for GitLab (bypassing the SSH Key error)
       - name: Configure Git to use HTTPS for GitLab
         run: |
           git config --global url."https://gitlab.com/".insteadOf "git@gitlab.com:"
           git config --global url."https://gitlab.com/".insteadOf "ssh://git@gitlab.com/"
 
-      # 3. Now safely fetch the nested submodules using HTTPS
+      # 3. Now safely fetch the nested submodules (service-characteristics) using HTTPS
       - name: Update nested submodules
         run: git submodule update --init --recursive
 
@@ -65,7 +65,8 @@ jobs:
       - name: Install dependencies
         run: python3 -m pip install -e ./ontology-management-base -e ".[dev]"
 
-      # 4. Generate the ontology (as you requested)
+      # 4. Generate the ontology (SimpulseID etc.)
+      # This needs to happen BEFORE validation so the schemas exist
       - name: Generate Ontology from LinkML
         run: python3 src/generate_from_linkml.py
 
@@ -81,4 +82,5 @@ jobs:
           echo "Testing the following files:"
           echo "$FILES"
           
+          # The --force-load flag will pick up the ontologies generated in the previous step
           python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py $FILES --force-load
