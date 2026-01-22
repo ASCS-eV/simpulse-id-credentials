@@ -1,0 +1,86 @@
+name: CI Pipeline
+
+on:
+  # Run on pushes ONLY to the main branch (after merge)
+  push:
+    branches: [ main ]
+  
+  # Run on any Pull Request targeting the main branch
+  pull_request:
+    branches: [ main ]
+
+  # Allow manual runs
+  workflow_dispatch:
+
+# Cancel any running jobs if a new commit is pushed to the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # --- JOB 1: Standards & Syntax ---
+  # Runs Black, Flake8, and JSON/TTL syntax checks via pre-commit
+  standards-and-syntax:
+    name: 🎨 Standards & Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Important: Fetch submodules to allow pip installing them
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install dependencies
+        # Installs the submodule in editable mode and the current repo with dev dependencies
+        run: python3 -m pip install -e ./ontology-management-base -e ".[dev]"
+      
+      - name: Install pre-commit hooks
+        run: pre-commit install
+
+      # Runs all hooks defined in .pre-commit-config.yaml on all files
+      - name: Run pre-commit (Lint + Syntax)
+        run: pre-commit run --all-files
+
+  # --- JOB 2: Examples Validation ---
+  # Validates all JSON-LD files in examples/ against the SHACL shapes
+  validate-examples:
+    name: ⚖️ Validate Examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # We need submodules to get the validation script and install dependencies
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+          
+      - name: Install dependencies
+        # Installs the submodule (includes oxigraph/pyshacl) and current repo
+        run: python3 -m pip install -e ./ontology-management-base -e ".[dev]"
+
+      - name: Run SHACL Validation on Examples
+        # Finds all files in examples/ and passes them to the validator with --force-load
+        # We use 'find' to explicitly pass files because the script's directory-scan mode
+        # specifically looks for *_instance.json, which might miss some example files.
+        run: |
+          # Gather all JSON/JSONLD files in examples/
+          FILES=$(find examples -name "*.json" -o -name "*.jsonld")
+          
+          if [ -z "$FILES" ]; then
+            echo "No example files found to test."
+            exit 0
+          fi
+          
+          echo "Testing the following files:"
+          echo "$FILES"
+          
+          # Run the validation script
+          python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py $FILES --force-load
