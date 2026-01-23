@@ -7,7 +7,7 @@ description: >
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  simpulseid: https://schema.ascs.digital/simpulseid/v1/credentials/
+  simpulseid: https://schema.ascs.digital/simpulse-id/v1/credentials/
   harbour: https://schema.reachhaven.com/harbour/v1/credentials/
   core: https://schema.reachhaven.com/harbour/v1/core/
   cs: https://www.w3.org/ns/credentials/status#
@@ -17,7 +17,7 @@ prefixes:
   vcard: http://www.w3.org/2006/vcard/ns#
   xsd: http://www.w3.org/2001/XMLSchema#
   skos: http://www.w3.org/2004/02/skos/core#
-  lf: https://schema.ascs.digital/SimpulseId/v1/legalForm/
+  lf: https://schema.ascs.digital/simpulse-id/v1/legal-form/
 
 default_prefix: simpulseid
 default_range: string
@@ -69,7 +69,7 @@ slots:
     aliases: [proof]
 
   # --- SimpulseID Specific Business Slots ---
-  
+
   duns:
     description: The Data Universal Numbering System (DUNS) number.
     slot_uri: simpulseid:duns
@@ -91,7 +91,7 @@ slots:
 
   # --- Schema.org Mappings (Natural Person & Memberships) ---
   # Gaia-X upstream focuses on LegalPerson; these map generic Schema.org concepts.
-  
+
   given_name:
     slot_uri: schema:givenName
     range: string
@@ -125,7 +125,7 @@ slots:
 
   # --- Missing Upstream Slots ---
   # 'legalForm' is missing from upstream slots.yaml and legal-person.yaml.
-  
+
   legalForm:
     description: The legal form of the entity (e.g., AG, GmbH).
     slot_uri: gx:legalForm
@@ -167,11 +167,11 @@ classes:
     is_a: Address
     class_uri: gx:Address
     slots:
-      - streetAddress   # Imported from Gaia-X slots.yaml
-      - postalCode      # Imported from Gaia-X slots.yaml
-      - locality        # Imported from Gaia-X slots.yaml
-      - countryCode     # Imported from Gaia-X slots.yaml
-      - region          # Imported from Gaia-X slots.yaml
+      - streetAddress # Imported from Gaia-X slots.yaml
+      - postalCode # Imported from Gaia-X slots.yaml
+      - locality # Imported from Gaia-X slots.yaml
+      - countryCode # Imported from Gaia-X slots.yaml
+      - region # Imported from Gaia-X slots.yaml
     slot_usage:
       countryCode:
         required: true
@@ -182,20 +182,20 @@ classes:
     abstract: true
     class_uri: schema:Thing
     # 'termsAndConditions' is imported from Gaia-X slots.yaml
-    slots: [id, type, termsAndConditions] 
+    slots: [id, type, termsAndConditions]
     slot_usage:
       # Upstream range is string; we override to TermsAndConditions for nested object structure
-      termsAndConditions: 
+      termsAndConditions:
         range: TermsAndConditions
         multivalued: true
 
   NaturalPerson:
     # NaturalPerson is not defined in the upstream list provided; defining locally.
     class_uri: gx:NaturalPerson
-    slots: 
+    slots:
       - given_name
       - family_name
-      - email          # Imported from Gaia-X slots.yaml
+      - email # Imported from Gaia-X slots.yaml
       - member_of
       - address
     slot_usage:
@@ -230,22 +230,24 @@ classes:
     is_a: LegalPerson
     mixins: [CredentialSubject]
     class_uri: simpulseid:Participant
-    slots: 
-      - legalName           # Imported from Gaia-X slots.yaml
-      - legalForm           # Local (Missing Upstream)
-      - legalAddress        # Imported from Gaia-X slots.yaml
+    slots:
+      - legalName # Imported from Gaia-X slots.yaml
+      - legalForm # Local (Missing Upstream)
+      - legalAddress # Imported from Gaia-X slots.yaml
       - headquartersAddress # Imported from Gaia-X slots.yaml
-      - email               # Imported from Gaia-X slots.yaml
-      - url                 # Imported from Gaia-X slots.yaml (replaces simpulse_website)
-      - duns                # Local
-      - termsAndConditions  # Imported from Gaia-X slots.yaml
+      - email # Imported from Gaia-X slots.yaml
+      - url # Imported from Gaia-X slots.yaml (replaces simpulse_website)
+      - duns # Local
+      - termsAndConditions # Imported from Gaia-X slots.yaml
     slot_usage:
       legalName: { aliases: [legalName] }
       legalForm: { range: SimpulseIdLegalForm, aliases: [legalForm] }
-      legalAddress: { range: SimpulseIdAddress, required: true, aliases: [legalAddress] }
-      headquartersAddress: { range: SimpulseIdAddress, aliases: [headquartersAddress] }
+      legalAddress:
+        { range: SimpulseIdAddress, required: true, aliases: [legalAddress] }
+      headquartersAddress:
+        { range: SimpulseIdAddress, aliases: [headquartersAddress] }
       # Map generic 'url' to 'website' alias
-      url: { aliases: [website] } 
+      url: { aliases: [website] }
       duns: { aliases: [duns] }
       # Override upstream 'termsAndConditions' range (string) to TermsAndConditions
       termsAndConditions: { range: TermsAndConditions, multivalued: true }
@@ -258,11 +260,29 @@ classes:
   AscsEnvitedMembership:
     is_a: CredentialSubject
     class_uri: simpulseid:AscsEnvitedMembership
-    slots: [program_name, hosting_organization, member_of, member_since, base_membership_credential]
+    slots:
+      [
+        program_name,
+        hosting_organization,
+        member_of,
+        member_since,
+        base_membership_credential,
+      ]
 
   VerifiableCredential:
     class_uri: cred:VerifiableCredential
-    slots: [id, type, issuer, issuance_date, expiration_date, credential_subject, credential_status, evidence, proof]
+    slots:
+      [
+        id,
+        type,
+        issuer,
+        issuance_date,
+        expiration_date,
+        credential_subject,
+        credential_status,
+        evidence,
+        proof,
+      ]
 
   ParticipantCredential:
     is_a: VerifiableCredential

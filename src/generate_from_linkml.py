@@ -7,7 +7,7 @@ from one or more LinkML schemas.
 import argparse
 import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 from urllib.parse import urlparse
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
@@ -116,28 +116,43 @@ def set_linkml_model_path(repo_root: Path) -> None:
         debug(f"LINKML_MODEL_PATH set to: {os.environ['LINKML_MODEL_PATH']}")
 
 
-def schema_id_for(
-    model_path: Path, import_map: Dict[str, str], base_dir: str
-) -> Optional[str]:
+def get_model_name(model_path: Path, import_map: Dict[str, str], base_dir: str) -> str:
     sv = SchemaView(str(model_path), importmap=import_map, base_dir=base_dir)
-    return getattr(sv.schema, "id", None)
+    # Prefer explicit 'name' from YAML
+    if sv.schema.name:
+        return sv.schema.name
+
+    # Fallback to parsing the ID
+    sid = getattr(sv.schema, "id", None)
+    if sid:
+        return iri_to_model_name(sid)
+
+    # Final fallback to filename
+    return model_path.stem.lower()
 
 
 def generate_one(model_path: Path, out_root: Path, import_map: Dict[str, str]) -> None:
     base_dir = str(model_path.parent)
 
-    sid = schema_id_for(model_path, import_map, base_dir)
-    model_name = iri_to_model_name(sid) if sid else model_path.stem.lower()
+    model_name = get_model_name(model_path, import_map, base_dir)
 
     out_dir = out_root / model_name
     ensure_dir(out_dir)
 
-    out_context = out_dir / f"{model_name}_context.jsonld"
-    out_shacl = out_dir / f"{model_name}_shacl.ttl"
-    out_owl = out_dir / f"{model_name}_ontology.ttl"
+    dir_jsonld = out_dir / "jsonld"
+    dir_shacl = out_dir / "shacl"
+    dir_owl = out_dir / "owl"
+
+    ensure_dir(dir_jsonld)
+    ensure_dir(dir_shacl)
+    ensure_dir(dir_owl)
+
+    out_context = dir_jsonld / f"{model_name}.context.jsonld"
+    out_shacl = dir_shacl / f"{model_name}.shacl.ttl"
+    out_owl = dir_owl / f"{model_name}.owl.ttl"
 
     debug(f"Model: {model_path}")
-    debug(f"schema_id={sid!r} -> model_name={model_name!r}")
+    debug(f"model_name={model_name!r}")
     debug(f"Outputs: {out_dir}")
 
     old_cwd = Path.cwd()
