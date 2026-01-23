@@ -1,16 +1,19 @@
-id: https://schema.reachhaven.com/Harbour/linkml/v1#Harbour
+id: https://schema.reachhaven.com/linkml/v1#Harbour
 name: harbour
 description: >
   LinkML schema for Harbour credentials vocabulary.
-  Defines the base structures for Evidence, Status, and core credential logic.
+  Defines the base structures for Evidence, Status, Trust Anchors, and Revocation Registries.
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  harbour: https://schema.reachhaven.com/Harbour/v1/credentials#
+  harbour: https://schema.reachhaven.com/harbour/v1/credentials/
+  core: https://schema.reachhaven.com/harbour/v1/core/
   gx: https://w3id.org/gaia-x/development#
   xsd: http://www.w3.org/2001/XMLSchema#
-  vcs: https://www.w3.org/ns/credentials/status#
-  vc: https://www.w3.org/2018/credentials#
+  cs: https://www.w3.org/ns/credentials/status#
+  cred: https://www.w3.org/2018/credentials#
+  schema: http://schema.org/
+  did: https://www.w3.org/ns/did#
 
 default_prefix: harbour
 default_range: string
@@ -18,15 +21,31 @@ default_range: string
 imports:
   - linkml:types
   - ./core
+  - ../ontology-management-base/service-characteristics/linkml/gaia-x
 
 slots:
+  # --- Core Identifiers ---
+  # id and type are imported from core / types
+
+  controller:
+    slot_uri: did:controller
+    range: string
+
+  # --- DID Service Slots ---
+  service_endpoint:
+    slot_uri: did:serviceEndpoint
+    range: Any # Defaults to Any, but specialized in classes via slot_usage
+    required: true
+
+  # --- Revocation Registry (CRSet) Slots ---
   status_purpose:
-    slot_uri: vcs:statusPurpose
+    slot_uri: cs:statusPurpose
     range: string
     required: false
+    aliases: [statusPurpose]
 
   harbour_endpoint:
-    description: Service endpoint IRI.
+    description: Service endpoint IRI for the CRSet.
     slot_uri: harbour:endpoint
     range: uri
     required: false
@@ -36,36 +55,134 @@ slots:
     slot_uri: harbour:contractURN
     range: uri
     required: false
+    aliases: [contractURN]
 
   source_repository:
     slot_uri: harbour:sourceRepository
     range: uri
     required: false
+    aliases: [sourceRepository]
 
   implementation:
     slot_uri: harbour:implementation
     range: uri
     required: false
 
+  # --- Trust Anchor / Organization Slots ---
+  # name, url, description, email, contactPoint are imported from gaia-x / slots
+
+  contact_type:
+    slot_uri: schema:contactType
+    range: string
+    aliases: [contactType]
+
+  # --- Credential / Evidence Slots ---
   evidence:
-    slot_uri: vc:evidence
+    slot_uri: cred:evidence
     range: Evidence
     multivalued: true
-    required: false 
+    required: false
 
   vp:
     slot_uri: harbour:vp
-    range: string 
+    range: string
     required: false
 
 classes:
+  Any:
+    class_uri: linkml:Any
+    description: "Generic class for any type of value."
+
+  # ==========================================
+  # 1. ROOT DOCUMENT (Optional Wrapper)
+  # ==========================================
+  DIDDocument:
+    class_uri: did:DIDDocument
+    slots:
+      - id
+      - controller
+    attributes:
+      service:
+        slot_uri: did:service
+        multivalued: true
+        inlined: true
+        range: ServiceUnion
+      verificationMethod:
+        slot_uri: did:verificationMethod
+        multivalued: true
+        range: VerificationMethod
+
+  # ==========================================
+  # 2. SERVICES
+  # ==========================================
+
+  # A Union Class to allow polymorphic services in the list
+  ServiceUnion:
+    union_of:
+      - TrustAnchorService
+      - CRSetRevocationRegistryService
+
+  # --- Trust Anchor Service ---
+  TrustAnchorService:
+    class_uri: harbour:TrustAnchorService
+    slots:
+      - id
+      - type
+      - service_endpoint
+    slot_usage:
+      service_endpoint:
+        range: OrganizationEndpoint
+        inlined: true
+
+  OrganizationEndpoint:
+    class_uri: schema:Organization
+    slots:
+      - name
+      - url
+      - description
+      - contactPoint
+    slot_usage:
+      contactPoint:
+        range: ContactPoint
+        inlined: true
+
+  ContactPoint:
+    class_uri: schema:ContactPoint
+    slots:
+      - contact_type
+      - email
+
+  # --- Revocation Registry Service ---
+  CRSetRevocationRegistryService:
+    class_uri: harbour:CRSetRevocationRegistryService
+    slots:
+      - id
+      - type
+      - service_endpoint
+    slot_usage:
+      service_endpoint:
+        range: CRSetServiceEndpoint
+        inlined: true
+
+  CRSetServiceEndpoint:
+    class_uri: harbour:CRSetServiceEndpoint
+    slots:
+      - harbour_endpoint
+      - status_purpose
+      - contract_urn
+      - source_repository
+      - implementation
+
+  # ==========================================
+  # 3. CREDENTIALS & EVIDENCE
+  # ==========================================
   HarbourVerifiableCredential:
     class_uri: harbour:VerifiableCredential
     slots:
       - evidence
 
   Evidence:
-    class_uri: vc:Evidence
+    class_uri: cred:Evidence
     slots:
       - type
       - vp
@@ -77,11 +194,15 @@ classes:
       - type
       - status_purpose
 
-  CRSetServiceEndpoint:
-    class_uri: harbour:CRSetServiceEndpoint
+  # ==========================================
+  # 4. HELPERS (For DID Doc structure)
+  # ==========================================
+  VerificationMethod:
+    class_uri: did:VerificationMethod
     slots:
-      - harbour_endpoint
-      - status_purpose
-      - contract_urn
-      - source_repository
-      - implementation
+      - id
+      - type
+      - controller
+    attributes:
+      blockchainAccountId:
+        range: string
