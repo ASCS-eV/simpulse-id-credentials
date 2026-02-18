@@ -2,7 +2,9 @@
 /.vscode/
 **/__pycache__/
 *.log
-/generated/*/
+/artifacts/*/
 *.zip
 *.egg-info/
 .ontology_iri_cache.json
+examples/signed/
+.pytest_cache/

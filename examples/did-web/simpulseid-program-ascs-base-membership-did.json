@@ -1,42 +1,35 @@
 {
-    "@context": [
-        "https://schema.ascs.digital/simpulse-id/v1/credentials/",
-        "https://www.w3.org/ns/did/v1",
-        "https://schema.org"
-    ],
-    "id": "did:web:did.ascs.digital:programs:ascs-base-membership",
-    "controller": "did:web:did.ascs.digital:services:trust-anchor",
-    "alsoKnownAs": [
-        "https://did.ascs.digital/programs/ascs-base-membership"
-    ],
-    "service": [
-        {
-            "id": "did:web:did.ascs.digital:programs:ascs-base-membership#program-metadata",
-            "type": "ProgramMetadataService",
-            "serviceEndpoint": "https://did.ascs.digital/programs/ascs-base-membership"
-        }
-    ],
-    "program": {
-        "@type": [
-            "schema:Program",
-            "simpulseid:BaseMembershipProgram"
-        ],
-        "@id": "https://did.ascs.digital/programs/ascs-base-membership",
-        "name": "ASCS e.V. Base Membership",
-        "description": "Base membership program of the Automotive Solution Center for Simulation e.V. (ASCS e.V.).",
-        "hostingOrganization": {
-            "@id": "did:web:did.ascs.digital:participants:ascs",
-            "@type": "Organization",
-            "name": "Automotive Solution Center for Simulation e.V."
-        },
-        "articlesOfAssociation": "https://media.ascs.digital/terms/ascs_articles_of_association_2021-09-17.pdf#cidv1",
-        "contributionRules": "https://media.ascs.digital/terms/ascs_contribution_rules_2020-07-08.pdf#cidv1"
-    },
-    "proof": {
-        "type": "EcdsaSecp256k1Signature2019",
-        "created": "2025-08-06T10:00:00Z",
-        "verificationMethod": "did:web:did.ascs.digital:participants:ascs#etherlink-key-1",
-        "proofPurpose": "assertionMethod",
-        "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_PAYLOAD"
+  "@context": [
+    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
+    "https://www.w3.org/ns/did/v1",
+    "https://schema.org"
+  ],
+  "id": "did:web:did.ascs.digital:programs:ascs-base-membership",
+  "controller": "did:web:did.ascs.digital:services:trust-anchor",
+  "alsoKnownAs": [
+    "https://did.ascs.digital/programs/ascs-base-membership"
+  ],
+  "service": [
+    {
+      "id": "did:web:did.ascs.digital:programs:ascs-base-membership#program-metadata",
+      "type": "ProgramMetadataService",
+      "serviceEndpoint": "https://did.ascs.digital/programs/ascs-base-membership"
     }
+  ],
+  "program": {
+    "@type": [
+      "schema:Program",
+      "simpulseid:BaseMembershipProgram"
+    ],
+    "@id": "https://did.ascs.digital/programs/ascs-base-membership",
+    "name": "ASCS e.V. Base Membership",
+    "description": "Base membership program of the Automotive Solution Center for Simulation e.V. (ASCS e.V.).",
+    "hostingOrganization": {
+      "@id": "did:web:did.ascs.digital:participants:ascs",
+      "@type": "Organization",
+      "name": "Automotive Solution Center for Simulation e.V."
+    },
+    "articlesOfAssociation": "https://media.ascs.digital/terms/ascs_articles_of_association_2021-09-17.pdf#cidv1",
+    "contributionRules": "https://media.ascs.digital/terms/ascs_contribution_rules_2020-07-08.pdf#cidv1"
+  }
 }

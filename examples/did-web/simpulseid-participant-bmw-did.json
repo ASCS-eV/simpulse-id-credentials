@@ -1,6 +1,6 @@
 {
   "@context": [
-    "https://schema.ascs.digital/simpulse-id/v1/credentials/",
+    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
     "https://www.w3.org/ns/did/v1",
     "https://schema.org"
   ],
@@ -12,15 +12,25 @@
   "verificationMethod": [
     {
       "id": "did:web:did.ascs.digital:participants:bmw#wallet-key-1",
-      "type": "Ed25519VerificationKey2018",
+      "type": "JsonWebKey",
       "controller": "did:web:did.ascs.digital:users:44b982bb-ae61-4f6f-899f-a0982aaf367e",
-      "publicKeyMultibase": "z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH"
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
     },
     {
       "id": "did:web:did.ascs.digital:participants:bmw#wallet-key-2",
-      "type": "Ed25519VerificationKey2018",
+      "type": "JsonWebKey",
       "controller": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c",
-      "publicKeyMultibase": "z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
     }
   ],
   "assertionMethod": [
@@ -67,12 +77,5 @@
       "countrySubdivisionCode": "DE-BY",
       "country": "DE"
     }
-  },
-  "proof": {
-    "type": "EcdsaSecp256k1Signature2019",
-    "created": "2025-08-06T10:20:00Z",
-    "verificationMethod": "did:web:did.ascs.digital:participants:ascs#etherlink-key-1",
-    "proofPurpose": "assertionMethod",
-    "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_PAYLOAD_BMW"
   }
 }

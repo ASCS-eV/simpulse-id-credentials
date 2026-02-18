@@ -1,13 +1,20 @@
 {
-  "@context": ["https://www.w3.org/ns/did/v1"],
+  "@context": [
+    "https://www.w3.org/ns/did/v1"
+  ],
   "id": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c",
   "controller": "did:web:did.ascs.digital:services:trust-anchor",
   "verificationMethod": [
     {
       "id": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c#wallet-key-1",
-      "type": "Ed25519VerificationKey2018",
+      "type": "JsonWebKey",
       "controller": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c",
-      "publicKeyMultibase": "z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
     }
   ],
   "authentication": [
@@ -15,12 +22,5 @@
   ],
   "assertionMethod": [
     "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c#wallet-key-1"
-  ],
-  "proof": {
-    "type": "EcdsaSecp256k1Signature2019",
-    "created": "2025-08-06T10:05:00Z",
-    "verificationMethod": "did:web:did.ascs.digital:participants:bmw#etherlink-key-1",
-    "proofPurpose": "assertionMethod",
-    "jws": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE_SIGNATURE_BMW_ADMIN"
-  }
+  ]
 }

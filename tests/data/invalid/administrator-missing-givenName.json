@@ -1,0 +1,49 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://w3id.org/gaia-x/development/"
+  ],
+  "type": [
+    "VerifiableCredential",
+    "simpulseid:AdministratorCredential"
+  ],
+  "id": "urn:uuid:9d3a0c1b-4d4e-4f9a-9b0c-1d2e3f4a5b6d",
+  "issuer": {
+    "id": "did:web:did.ascs.digital:participants:ascs",
+    "type": "simpulseid:Issuer",
+    "gaiaxTermsAndConditions": "067dcac5efd18c1927deb1ffed3feab6d0ad044c0a9a263e6d5d8bdc43224515",
+    "member": "did:web:did.ascs.digital:participants:bmw"
+  },
+  "validFrom": "2025-08-06T10:15:22Z",
+  "validUntil": "2030-08-05T00:00:00Z",
+  "credentialSubject": {
+    "id": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c",
+    "type": [
+      "simpulseid:Administrator",
+      "gx:NaturalPerson",
+      "schema:Person"
+    ],
+    "memberOf": [
+      "did:web:did.ascs.digital:participants:bmw",
+      "did:web:did.ascs.digital:programs:simpulseid-administrator"
+    ],
+    "familyName": "Admin",
+    "email": "andreas.admin@bmw.com",
+    "address": {
+      "@type": "gx:Address",
+      "streetAddress": "Petuelring 130",
+      "postalCode": "80809",
+      "locality": "München",
+      "countryCode": "DE"
+    },
+    "termsAndConditions": [
+      {
+        "@type": "gx:TermsAndConditions",
+        "url": "https://media.ascs.digital/terms/administrator_privacy_policy_2025-08-05.pdf",
+        "hash": "b4c3d2e1f09876543210fedcba9876543210fedcba9876543210fedcba987654"
+      }
+    ]
+  }
+}

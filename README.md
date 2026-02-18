@@ -19,29 +19,31 @@ All of this is intended to be **publicly hostable** and consumable by wallets, v
 
 ## Cloning with submodules
 
-The repository depends on the follwing submodules:
+All external dependencies live flat under `submodules/` (no recursive nesting):
 
-```markdown
-Root Project
-├── Submodule A
-│ └── Submodule B (Nested inside A)
-└── Submodule C
+```
+submodules/
+├── ontology-management-base   # Gaia-X ontologies, SHACL shapes, validation suite
+├── harbour-credentials        # Harbour credential definitions
+├── service-characteristics    # Gaia-X service characteristics (LinkML)
+└── w3id.org                   # W3ID redirect rules
 ```
 
 ```bash
-# First time
-git clone --recurse-submodules git@github.com:ASCS-eV/credentials.git
-# Initialize after already having cloned
-git submodule update --init --recursive
-# Pull all changes also from submodules
-git pull --recurse-submodules
+# First time (shallow, no recursion)
+git clone git@github.com:ASCS-eV/simpulse-id-credentials.git
+cd simpulse-id-credentials
+git submodule update --init
+
+# Pull all changes including submodules
+git pull && git submodule update --init
 ```
 
 ---
 
 ## Installation & Configure `pre-commit`
 
-If you want to use the validation scripts from 📁 `ontology-management-base/src` then you need to isntall the following dependencies:
+If you want to use the validation scripts from `submodules/ontology-management-base/src` then you need to install the following dependencies:
 
 ```bash
 # On Windows use python instead of python3
@@ -53,7 +55,7 @@ source .venv/bin/activate  # On Windows use: source .venv/Scripts/activate
 
 # 2. Install dependencies (Submodule + Main Project + Dev Tools)
 # This reads both pyproject.toml files and handles all versions automatically.
-python3 -m pip install -e ./ontology-management-base -e ".[dev]"
+python3 -m pip install -e ./submodules/ontology-management-base -e ".[dev]"
 
 # 3. Verify
 pre-commit install
@@ -65,14 +67,29 @@ pre-commit run --all-files
 ## Generate and validate
 
 ```bash
-# 1. Generate ontologies, SHACL shapes and Contexts from LinkML models
-# We generate artifacts for core, harbour, and simpulseid so they are available in generated/
-python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/
+# 1. Generate ontologies, SHACL shapes and JSON-LD contexts from LinkML models
+#    SimpulseID artifacts -> artifacts/simpulseid/
+#    Harbour/core artifacts -> submodules/harbour-credentials/artifacts/{harbour,core}/
+python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/ and submodules
 
-# 2. Example check
-# The script now automatically finds the 'generated/' folder and 'ontology-management-base/' submodule
-python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py examples/simpulseid-administrator-credential.json
+# 2. Validate a single credential example against SHACL shapes
+#    --artifacts registers local artifact directories for schema discovery and context inlining
+cd submodules/ontology-management-base
+python3 -m src.tools.validators.validation_suite \
+  --run check-data-conformance \
+  --path ../../examples/simpulseid-administrator-credential.json \
+  --artifacts ../../artifacts ../../submodules/harbour-credentials/artifacts \
+  --no-catalog
+
+# 3. Validate all credential examples
+python3 -m src.tools.validators.validation_suite \
+  --run check-data-conformance \
+  --path ../../examples/simpulseid-*.json \
+  --artifacts ../../artifacts ../../submodules/harbour-credentials/artifacts \
+  --no-catalog
 ```
+
+The `--artifacts` flag tells the validator where to find locally generated ontologies, SHACL shapes, and JSON-LD contexts. Without it, the validator only knows about the ontology-management-base's own artifacts (Gaia-X, ENVITED-X domains) and cannot resolve SimpulseID or Harbour schemas.
 
 ---
 
@@ -93,7 +110,7 @@ JSON-LD context documents used by SimpulseID credentials, for example:
 
 These files are meant to be hosted under:
 
-- `https://schema.ascs.digital/...`
+- `https://w3id.org/ascs-ev/simpulse-id/...`
 
 and are referenced from the example credentials via their `@context` arrays.
 

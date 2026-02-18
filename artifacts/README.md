@@ -4,23 +4,27 @@ This folder contains the downstream artefacts (JSON-LD contexts, SHACL shapes, a
 
 ## Directory Structure
 
-Artefacts are generated into subfolders based on their schema model:
+Artefacts are generated into flat subfolders per model, matching the ontology-management-base pattern:
 
 ```txt
-generated/
-├── simpulseid/
-│   ├── simpulseid_context.jsonld
-│   ├── simpulseid_ontology.ttl
-│   └── simpulseid_shacl.ttl
-├── harbour/
-│   ├── harbour_context.jsonld
-│   ├── harbour_ontology.ttl
-│   └── harbour_shacl.ttl
-└── core/
-    ├── core_context.jsonld
-    ├── core_ontology.ttl
-    └── core_shacl.ttl
+artifacts/
+└── simpulseid/
+    ├── simpulseid.context.jsonld
+    ├── simpulseid.shacl.ttl
+    └── simpulseid.owl.ttl
+
+submodules/harbour-credentials/artifacts/
+├── core/
+│   ├── core.context.jsonld
+│   ├── core.shacl.ttl
+│   └── core.owl.ttl
+└── harbour/
+    ├── harbour.context.jsonld
+    ├── harbour.shacl.ttl
+    └── harbour.owl.ttl
 ```
+
+Core and Harbour artefacts are generated into their own repository (`harbour-credentials`), since those schemas are owned by Harbour/ReachHaven. Only SimpulseID artefacts live in this repository.
 
 ---
 
@@ -31,7 +35,7 @@ The JSON-LD context documents define how JSON properties, classes, and identifie
 All contexts are intended to be hosted under:
 
 ```txt
-<https://schema.ascs.digital/name/v1>
+<https://w3id.org/ascs-ev/simpulse-id/{ontology}/v1>
 ```
 
 with the following MIME type:
@@ -46,7 +50,7 @@ Hosting contexts in this way ensures:
 - SSI wallets can resolve schemas consistently.
 - JSON-LD processors interpret IRIs deterministically.
 
-### `simpulseid/simpulseid_context.jsonld`
+### `simpulseid/simpulseid.context.jsonld`
 
 The main JSON-LD context for SimpulseID credentials. It defines all SimpulseID-specific classes and properties:
 
@@ -66,9 +70,9 @@ It maps JSON fields to:
 
 The context uses `@protected: true` to guarantee a stable schema.
 
-### `harbour/harbour_context.jsonld`
+### `harbour/harbour.context.jsonld`
 
-Context for revocation metadata following the Harbour Status model.
+Context for revocation metadata following the Harbour Status model (in `harbour-credentials` repo).
 
 Defines:
 
@@ -85,7 +89,7 @@ A SKOS vocabulary for legal forms (e.g., AG, GmbH, LLC, CIC, BenCom). Each entry
 Credentials reference these IRIs like:
 
 ```txt
-<https://schema.ascs.digital/simpulse-id/v1/legal-form/AG>
+<https://w3id.org/ascs-ev/simpulse-id/legal-form/v1/AG>
 ```
 
 ---
@@ -108,7 +112,7 @@ The ontology defines:
 
 By using shared IRIs and clear semantics, SimpulseID ensures interoperability across the ENVITED Ecosystem and other data spaces.
 
-### `simpulseid/simpulseid_ontology.ttl`
+### `simpulseid/simpulseid.owl.ttl`
 
 Defines:
 

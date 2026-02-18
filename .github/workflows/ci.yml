@@ -14,13 +14,11 @@ concurrency:
 jobs:
   # --- JOB 1: Standards & Syntax ---
   standards-and-syntax:
-    name: 🎨 Standards & Syntax
+    name: Standards & Syntax
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          # Use 'true' (non-recursive) to fetch just the top level submodule.
-          # This works if you don't need the nested gitlab dependencies for linting.
           submodules: true
 
       - name: Set up Python
@@ -30,58 +28,92 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: python3 -m pip install -e ./ontology-management-base -e ".[dev]"
-      
-      - name: Install pre-commit hooks
-        run: pre-commit install
+        run: python3 -m pip install -e ./submodules/ontology-management-base -e ".[dev]"
 
       - name: Run pre-commit (Lint + Syntax)
         run: pre-commit run --all-files
 
-  # --- JOB 2: Examples Validation ---
-  validate-examples:
-    name: ⚖️ Validate Examples
+  # --- JOB 2: Test Suite (Python) ---
+  test-python:
+    name: Test Suite (Python)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # Do NOT set submodules here. We handle them manually.
-
-      - name: Fix Submodule URLs and Update
-        run: |
-          # 1. Fix top-level .gitmodules (GitHub SSH -> HTTPS)
-          sed -i 's/git@github.com:/https:\/\/github.com\//g' .gitmodules
-          
-          # 2. Init and Update ONLY the top-level submodule first
-          git submodule update --init ontology-management-base
-          
-          # 3. Now enter the submodule and fix ITS .gitmodules (GitLab SSH -> HTTPS)
-          cd ontology-management-base
-          sed -i 's/git@gitlab.com:/https:\/\/gitlab.com\//g' .gitmodules
-          
-          # 4. Now safe to recurse inside
-          git submodule update --init --recursive
+        with:
+          submodules: true
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: 'pip'
-          
-      - name: Install dependencies
-        run: python3 -m pip install -e ./ontology-management-base -e ".[dev]"
 
-      - name: Generate Ontology from LinkML
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python dependencies
+        run: python3 -m pip install -e "./submodules/harbour-credentials[dev]" -e ./submodules/ontology-management-base -e ".[dev]"
+
+      - name: Install JS dependencies (for interop tests)
+        working-directory: submodules/harbour-credentials/js
+        run: npm ci
+
+      - name: Run harbour-credentials JOSE tests
+        run: pytest submodules/harbour-credentials/tests/ -v --tb=short
+
+      - name: Run claim mapping tests
+        run: pytest tests/test_claim_mapping.py -v --tb=short
+
+      - name: Run all main repo tests
+        run: pytest tests/ -v --tb=short
+
+  # --- JOB 3: Test Suite (JS) ---
+  test-js:
+    name: Test Suite (JS)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        working-directory: submodules/harbour-credentials/js
+        run: npm ci
+
+      - name: Run JS tests
+        working-directory: submodules/harbour-credentials/js
+        run: npx vitest run
+
+  # --- JOB 4: Examples Validation ---
+  validate-examples:
+    name: Validate Examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: python3 -m pip install -e ./submodules/ontology-management-base -e ".[dev]"
+
+      - name: Generate artifacts from LinkML
         run: python3 src/generate_from_linkml.py
 
-      - name: Run SHACL Validation on Examples
+      - name: SHACL-validate example credentials
         run: |
-          FILES=$(find examples -name "*.json" -o -name "*.jsonld")
-          
+          FILES=$(find examples -name "*.json" -o -name "*.jsonld" | sort)
           if [ -z "$FILES" ]; then
-            echo "No example files found to test."
+            echo "No example files found."
             exit 0
           fi
-          
-          echo "Testing the following files:"
-          echo "$FILES"
-          
-          python3 ontology-management-base/src/check_jsonld_against_shacl_schema.py $FILES --force-load
+          echo "Validating: $FILES"
+          onto-validate --run check-data-conformance --path $FILES --no-catalog

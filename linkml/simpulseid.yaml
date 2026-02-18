@@ -1,15 +1,15 @@
-id: https://schema.ascs.digital/linkml/v1#SimpulseId
+id: https://w3id.org/ascs-ev/simpulse-id/credentials/v1
 name: simpulseid
 description: >
   LinkML schema for SimpulseID credentials.
-  Inherits Evidence structure from Harbour and enforces specific business rules.
-  Extends the Gaia-X Service Characteristics ontology.
+  Inherits Evidence and TermsAndConditions from Harbour/Gaia-X, constrains
+  the W3C VC envelope, and enforces Gaia-X compliance plus ASCS-specific rules.
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  simpulseid: https://schema.ascs.digital/simpulse-id/v1/credentials/
-  harbour: https://schema.reachhaven.com/harbour/v1/credentials/
-  core: https://schema.reachhaven.com/harbour/v1/core/
+  simpulseid: https://w3id.org/ascs-ev/simpulse-id/credentials/v1/
+  harbour: https://w3id.org/reachhaven/harbour/credentials/v1/
+  core: https://w3id.org/reachhaven/harbour/core/v1/
   cs: https://www.w3.org/ns/credentials/status#
   gx: https://w3id.org/gaia-x/development#
   schema: http://schema.org/
@@ -17,56 +17,41 @@ prefixes:
   vcard: http://www.w3.org/2006/vcard/ns#
   xsd: http://www.w3.org/2001/XMLSchema#
   skos: http://www.w3.org/2004/02/skos/core#
-  lf: https://schema.ascs.digital/simpulse-id/v1/legal-form/
+  lf: https://w3id.org/ascs-ev/simpulse-id/legal-form/v1/
 
 default_prefix: simpulseid
 default_range: string
 
 imports:
   - linkml:types
-  - ./core
-  - ../service-characteristics/linkml/gaia-x
-  - ./harbour
+  - core
+  - gaia-x
+  - harbour
 
 slots:
-  # --- Verifiable Credential Slots (Standard W3C) ---
-  # These are not defined in Gaia-X upstream and must be defined locally.
+  # --- W3C VC v2 Envelope Slots ---
+  # validFrom and validUntil are defined in harbour (our constraints on cred:)
+
   issuer:
     slot_uri: cred:issuer
     range: SimpulseIdIssuer
     required: true
-    aliases: [issuer]
 
-  issuance_date:
-    slot_uri: cred:issuanceDate
-    range: datetime
-    required: true
-    aliases: [issuanceDate]
-
-  expiration_date:
-    slot_uri: cred:expirationDate
-    range: datetime
-    required: false
-    aliases: [expirationDate]
-
-  credential_subject:
+  credentialSubject:
     slot_uri: cred:credentialSubject
     range: CredentialSubject
     required: true
-    aliases: [credentialSubject]
 
-  credential_status:
+  credentialStatus:
     slot_uri: cred:credentialStatus
     range: CRSetEntry
     multivalued: true
     required: false
-    aliases: [credentialStatus]
 
   proof:
     slot_uri: cred:proof
     range: string
     required: false
-    aliases: [proof]
 
   # --- SimpulseID Specific Business Slots ---
 
@@ -74,63 +59,57 @@ slots:
     description: The Data Universal Numbering System (DUNS) number.
     slot_uri: simpulseid:duns
     range: string
-    aliases: [duns]
 
-  censored:
-    description: Flag indicating if the credential subject data has been redacted.
-    slot_uri: simpulseid:censored
-    range: boolean
-    required: false
-    aliases: [censored]
-
-  base_membership_credential:
+  baseMembershipCredential:
     description: Reference to the base membership credential required for nested memberships.
     slot_uri: simpulseid:baseMembershipCredential
     range: uri
-    aliases: [baseMembershipCredential]
+
+  member:
+    description: The participant (organization or person) that holds this membership.
+    slot_uri: schema:member
+    range: uri
 
   # --- Schema.org Mappings (Natural Person & Memberships) ---
-  # Gaia-X upstream focuses on LegalPerson; these map generic Schema.org concepts.
 
-  given_name:
+  givenName:
     slot_uri: schema:givenName
     range: string
-    aliases: [givenName]
 
-  family_name:
+  familyName:
     slot_uri: schema:familyName
     range: string
-    aliases: [familyName]
 
-  member_of:
+  memberOf:
     slot_uri: schema:memberOf
     multivalued: true
     range: uri
-    aliases: [memberOf]
 
-  program_name:
+  programName:
     slot_uri: schema:programName
     range: string
-    aliases: [programName]
 
-  hosting_organization:
+  hostingOrganization:
+    description: Reference to the organization hosting the membership program.
     slot_uri: schema:hostingOrganization
-    range: SimpulseIdHostingOrganization
-    aliases: [hostingOrganization]
+    range: uri
 
-  member_since:
+  memberSince:
     slot_uri: schema:memberSince
     range: date
-    aliases: [memberSince]
 
-  # --- Missing Upstream Slots ---
-  # 'legalForm' is missing from upstream slots.yaml and legal-person.yaml.
+  # --- SimpulseID Extensions ---
 
   legalForm:
-    description: The legal form of the entity (e.g., AG, GmbH).
-    slot_uri: gx:legalForm
+    description: The legal form of the entity (e.g., AG, GmbH). Not defined in Gaia-X upstream.
+    slot_uri: simpulseid:legalForm
     range: SimpulseIdLegalForm
-    aliases: [legalForm]
+
+  legalPerson:
+    slot_uri: simpulseid:legalPerson
+    range: LegalPerson
+    inlined: true
+    description: Gaia-X LegalPerson information for this participant.
 
 enums:
   SimpulseIdLegalForm:
@@ -162,16 +141,23 @@ classes:
   SimpulseIdIssuer:
     is_a: Issuer
     class_uri: simpulseid:Issuer
+    description: >
+      SimpulseID issuer extends Gaia-X Issuer. The member slot identifies
+      which participant this credential is issued for.
+    slots:
+      - member
+    slot_usage:
+      member: { required: true }
 
   SimpulseIdAddress:
     is_a: Address
     class_uri: gx:Address
     slots:
-      - streetAddress # Imported from Gaia-X slots.yaml
-      - postalCode # Imported from Gaia-X slots.yaml
-      - locality # Imported from Gaia-X slots.yaml
-      - countryCode # Imported from Gaia-X slots.yaml
-      - region # Imported from Gaia-X slots.yaml
+      - streetAddress
+      - postalCode
+      - locality
+      - countryCode
+      - region
     slot_usage:
       countryCode:
         required: true
@@ -181,25 +167,22 @@ classes:
   CredentialSubject:
     abstract: true
     class_uri: schema:Thing
-    # 'termsAndConditions' is imported from Gaia-X slots.yaml
     slots: [id, type, termsAndConditions]
     slot_usage:
-      # Upstream range is string; we override to TermsAndConditions for nested object structure
       termsAndConditions:
         range: TermsAndConditions
         multivalued: true
 
   NaturalPerson:
-    # NaturalPerson is not defined in the upstream list provided; defining locally.
     class_uri: gx:NaturalPerson
     slots:
-      - given_name
-      - family_name
-      - email # Imported from Gaia-X slots.yaml
-      - member_of
+      - givenName
+      - familyName
+      - email
+      - memberOf
       - address
     slot_usage:
-      address: { range: SimpulseIdAddress, required: false, aliases: [address] }
+      address: { range: SimpulseIdAddress, required: false }
 
   Administrator:
     is_a: NaturalPerson
@@ -207,113 +190,83 @@ classes:
     class_uri: simpulseid:Administrator
     slot_usage:
       address: { required: true }
-      given_name: { required: true }
-      family_name: { required: true }
+      givenName: { required: true }
+      familyName: { required: true }
       email: { required: true }
 
   User:
     is_a: NaturalPerson
     mixins: [CredentialSubject]
     class_uri: simpulseid:User
-    slots: [censored]
-
-  SimpulseIdHostingOrganization:
-    is_a: LegalPerson
-    class_uri: gx:LegalPerson
-    slots: [legalName] # Imported from Gaia-X slots.yaml
-    slot_usage:
-      legalName: { aliases: [legalName] }
-      legalAddress: { required: false, aliases: [legalAddress] }
-      headquartersAddress: { required: false, aliases: [headquartersAddress] }
 
   SimpulseidParticipant:
-    is_a: LegalPerson
     mixins: [CredentialSubject]
     class_uri: simpulseid:Participant
-    slots:
-      - legalName # Imported from Gaia-X slots.yaml
-      - legalForm # Local (Missing Upstream)
-      - legalAddress # Imported from Gaia-X slots.yaml
-      - headquartersAddress # Imported from Gaia-X slots.yaml
-      - email # Imported from Gaia-X slots.yaml
-      - url # Imported from Gaia-X slots.yaml (replaces simpulse_website)
-      - duns # Local
-      - termsAndConditions # Imported from Gaia-X slots.yaml
+    slots: [legalPerson, legalForm, email, url, duns, termsAndConditions]
     slot_usage:
-      legalName: { aliases: [legalName] }
-      legalForm: { range: SimpulseIdLegalForm, aliases: [legalForm] }
-      legalAddress:
-        { range: SimpulseIdAddress, required: true, aliases: [legalAddress] }
-      headquartersAddress:
-        { range: SimpulseIdAddress, aliases: [headquartersAddress] }
-      # Map generic 'url' to 'website' alias
-      url: { aliases: [website] }
-      duns: { aliases: [duns] }
-      # Override upstream 'termsAndConditions' range (string) to TermsAndConditions
-      termsAndConditions: { range: TermsAndConditions, multivalued: true }
+      legalPerson:
+        range: LegalPerson
+        required: true
 
   AscsBaseMembership:
     is_a: CredentialSubject
     class_uri: simpulseid:AscsBaseMembership
-    slots: [program_name, hosting_organization, member_of, member_since]
+    slots: [member, programName, hostingOrganization, memberSince]
+    slot_usage:
+      member: { required: true }
 
   AscsEnvitedMembership:
     is_a: CredentialSubject
     class_uri: simpulseid:AscsEnvitedMembership
-    slots:
-      [
-        program_name,
-        hosting_organization,
-        member_of,
-        member_since,
-        base_membership_credential,
-      ]
+    slots: [member, programName, hostingOrganization, memberSince, baseMembershipCredential]
+    slot_usage:
+      member: { required: true }
+      baseMembershipCredential: { required: true }
 
   VerifiableCredential:
+    abstract: true
     class_uri: cred:VerifiableCredential
     slots:
-      [
-        id,
-        type,
-        issuer,
-        issuance_date,
-        expiration_date,
-        credential_subject,
-        credential_status,
-        evidence,
-        proof,
-      ]
+      - id
+      - type
+      - issuer
+      - validFrom
+      - validUntil
+      - credentialSubject
+      - credentialStatus
+      - evidence
+      - proof
 
   ParticipantCredential:
     is_a: VerifiableCredential
     class_uri: simpulseid:ParticipantCredential
     slot_usage:
-      credential_subject: { range: SimpulseidParticipant, required: true }
+      credentialSubject: { range: SimpulseidParticipant, required: true }
       evidence: { required: true }
 
   AscsBaseMembershipCredential:
     is_a: VerifiableCredential
     class_uri: simpulseid:AscsBaseMembershipCredential
     slot_usage:
-      credential_subject: { range: AscsBaseMembership, required: true }
+      credentialSubject: { range: AscsBaseMembership, required: true }
       evidence: { required: true }
 
   AscsEnvitedMembershipCredential:
     is_a: VerifiableCredential
     class_uri: simpulseid:AscsEnvitedMembershipCredential
     slot_usage:
-      credential_subject: { range: AscsEnvitedMembership, required: true }
+      credentialSubject: { range: AscsEnvitedMembership, required: true }
       evidence: { required: true }
 
   AdministratorCredential:
     is_a: VerifiableCredential
     class_uri: simpulseid:AdministratorCredential
     slot_usage:
-      credential_subject: { range: Administrator, required: true }
+      credentialSubject: { range: Administrator, required: true }
 
   UserCredential:
     is_a: VerifiableCredential
     class_uri: simpulseid:UserCredential
     slot_usage:
-      credential_subject: { range: User, required: true }
+      credentialSubject: { range: User, required: true }
       evidence: { required: true }

@@ -19,14 +19,15 @@
   "validFrom": "2025-08-06T10:15:22Z",
   "validUntil": "2030-08-05T00:00:00Z",
   "credentialSubject": {
-    "id": "urn:uuid:22423d4a-4281-4251-b1e4-1afaa96f1a15",
+    "id": "did:web:did.ascs.digital:participants:bmw",
     "type": [
       "simpulseid:AscsBaseMembership",
       "schema:ProgramMembership"
     ],
-    "member": "did:web:did.ascs.digital:participants:bmw",
     "programName": "ASCS e.V. Base Membership",
-    "hostingOrganization": "did:web:did.ascs.digital:participants:ascs",
+    "hostingOrganization": {
+      "@id": "did:web:did.ascs.digital:participants:ascs"
+    },
     "memberSince": "2023-01-01",
     "termsAndConditions": [
       {
@@ -35,32 +36,5 @@
         "hash": "c5d6e7f8091a2b3c4d5e6f7081920a1b2c3d4e5f6071829304a5b6c7d8e9f01"
       }
     ]
-  },
-  "credentialStatus": [
-    {
-      "id": "did:web:did.ascs.digital:services:revocation-registry#6239c5abac53d33fff4a9babaaae70f6c71ac495cface74d26ac1e3affee8c61",
-      "type": "harbour:CRSetEntry",
-      "statusPurpose": "revocation"
-    }
-  ],
-  "evidence": [
-    {
-      "type": "harbour:IssuanceEvidence",
-      "verifiablePresentation": {
-        "@context": ["https://www.w3.org/ns/credentials/v2"],
-        "type": ["VerifiablePresentation"],
-        "verifiableCredential": [
-          {
-            "@context": ["https://www.w3.org/ns/credentials/v2"],
-            "type": ["VerifiableCredential"],
-            "id": "urn:uuid:576fbefb-35e8-4b71-bb1a-53d1803c86de",
-            "issuer": {
-              "id": "did:web:did.ascs.digital:participants:ascs"
-            },
-            "validFrom": "2025-08-06T10:15:22Z"
-          }
-        ]
-      }
-    }
-  ]
+  }
 }
