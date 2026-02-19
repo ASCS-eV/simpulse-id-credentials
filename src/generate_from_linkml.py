@@ -16,147 +16,6 @@ from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
 from linkml_runtime.utils.schemaview import SchemaView
 
 
-def _remove_shape_props(g, shape_uri, predicates):
-    """Remove specific predicates from a SHACL shape node. Returns count removed."""
-    removed = 0
-    for pred in predicates:
-        for s, p, o in list(g.triples((shape_uri, pred, None))):
-            g.remove((s, p, o))
-            removed += 1
-    return removed
-
-
-def postprocess_shacl(
-    shacl_path: Path, model_path: Path, import_map: Dict[str, str]
-) -> None:
-    """Post-process generated SHACL to fix known LinkML generator issues.
-
-    Fixes applied:
-    1. Abstract classes: remove sh:targetClass (prevents matching nested instances)
-    2. All shapes: remove sh:closed and sh:ignoredProperties (incompatible with
-       RDFS inference — inferred parent types cause nodes to match multiple closed
-       shapes with conflicting property sets)
-    3. Identifier slots: remove sh:minCount from property shapes
-       (identifier: true maps to @id in JSON-LD, never emits a property triple)
-    4. designates_type slots: remove property shapes for rdf:type
-       (designates_type maps to @type; values are IRIs, not xsd:anyURI literals)
-    5. linkml:Any: remove sh:class constraints and the Any node shape
-       (range: Any means unconstrained, not "must be typed linkml:Any")
-    """
-    from rdflib import Graph, Namespace, URIRef
-    from rdflib.namespace import RDF
-
-    SH = Namespace("http://www.w3.org/ns/shacl#")
-    LINKML = Namespace("https://w3id.org/linkml/")
-
-    base_dir = str(model_path.parent)
-    sv = SchemaView(str(model_path), importmap=import_map, base_dir=base_dir)
-
-    g = Graph()
-    g.parse(shacl_path, format="turtle")
-    removed = 0
-
-    # --- 1. Abstract classes: remove sh:targetClass ---
-    for cls_name, cls_def in sv.all_classes().items():
-        if cls_def.abstract:
-            uri = sv.get_uri(cls_def, expand=True)
-            if uri:
-                shape = URIRef(str(uri))
-                removed += _remove_shape_props(g, shape, [SH.targetClass])
-
-    # --- 2. All shapes: remove sh:closed and sh:ignoredProperties ---
-    for shape in g.subjects(SH.closed, None):
-        removed += _remove_shape_props(g, shape, [SH.closed, SH.ignoredProperties])
-
-    # --- 3. Identifier slots: remove sh:minCount (maps to @id, not a triple) ---
-    for slot_name, slot_def in sv.all_slots().items():
-        if slot_def.identifier:
-            uri = sv.get_uri(slot_def, expand=True)
-            if uri:
-                id_uri = URIRef(str(uri))
-                for bnode in g.subjects(SH.path, id_uri):
-                    for s, p, o in list(g.triples((bnode, SH.minCount, None))):
-                        g.remove((s, p, o))
-                        removed += 1
-
-    # --- 4. designates_type: remove rdf:type property shapes ---
-    # The type slot (designates_type: true) generates sh:datatype xsd:anyURI
-    # and sh:nodeKind sh:Literal for rdf:type, but rdf:type values are IRIs.
-    # Remove the entire property shape for rdf:type from all node shapes.
-    rdf_type = RDF.type
-    for bnode in list(g.subjects(SH.path, rdf_type)):
-        # Remove all triples on this blank node (the property shape)
-        for s, p, o in list(g.triples((bnode, None, None))):
-            g.remove((s, p, o))
-            removed += 1
-        # Remove references to this blank node from parent shapes
-        for s, p, o in list(g.triples((None, SH.property, bnode))):
-            g.remove((s, p, o))
-            removed += 1
-
-    # --- 5. linkml:Any: remove class constraints and node shape ---
-    any_uri = LINKML.Any
-    for s, p, o in list(g.triples((None, SH["class"], any_uri))):
-        g.remove((s, p, o))
-        removed += 1
-    # Remove the linkml:Any node shape entirely
-    for s, p, o in list(g.triples((any_uri, None, None))):
-        g.remove((s, p, o))
-        removed += 1
-
-    # --- 6. Enum sh:in: remove all enum constraints ---
-    # LinkML-generated sh:in constraints are incompatible with JSON-LD data in
-    # several ways: meaning URIs vs string literals, sh:or wrapping, and datatype
-    # mismatches. Structural validation (cardinality, class, datatype) is sufficient.
-    from rdflib.collection import Collection
-
-    for s, p, list_node in list(g.triples((None, SH["in"], None))):
-        try:
-            coll = Collection(g, list_node)
-            coll.clear()
-        except Exception:
-            pass
-        g.remove((s, p, list_node))
-        removed += 1
-
-    if removed:
-        shacl_path.write_text(g.serialize(format="turtle"), encoding="utf-8")
-        print(f"  Post-processed SHACL: {removed} triples removed")
-
-
-def postprocess_owl(owl_path: Path) -> None:
-    """Add rdfs:subClassOf for classes with external class_uri mappings.
-
-    LinkML maps classes to external IRIs via class_uri (e.g., Evidence → cred:Evidence).
-    The OWL generator creates the local class (harbour:Evidence) with skos:exactMatch
-    to the external IRI, but RDFS inference needs rdfs:subClassOf to propagate type
-    assertions through the class hierarchy.
-    """
-    from rdflib import Graph, Namespace
-    from rdflib.namespace import OWL, RDF, RDFS
-
-    SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
-
-    g = Graph()
-    g.parse(owl_path, format="turtle")
-
-    added = 0
-    for local_uri, _, external_uri in list(g.triples((None, SKOS.exactMatch, None))):
-        if local_uri == external_uri:
-            continue
-        if (local_uri, RDF.type, OWL.Class) not in g:
-            continue
-        if (local_uri, RDFS.subClassOf, external_uri) not in g:
-            g.add((local_uri, RDFS.subClassOf, external_uri))
-            added += 1
-
-    if added:
-        owl_path.write_text(g.serialize(format="turtle"), encoding="utf-8")
-        print(
-            f"  Post-processed OWL: added {added} rdfs:subClassOf for external class_uri"
-        )
-
-
 def debug(msg: str) -> None:
     print(f"[DEBUG] {msg}")
 
@@ -311,14 +170,12 @@ def generate_one(model_path: Path, out_root: Path, import_map: Dict[str, str]) -
             str(model_path), importmap=import_map, base_dir=base_dir
         )
         out_shacl.write_text(shacl_gen.serialize(), encoding="utf-8")
-        postprocess_shacl(out_shacl, model_path, import_map)
 
         print(f"Generating OWL ontology -> {out_owl}")
         owl_gen = OwlSchemaGenerator(
             str(model_path), importmap=import_map, base_dir=base_dir
         )
         out_owl.write_text(owl_gen.serialize(), encoding="utf-8")
-        postprocess_owl(out_owl)
 
         print(f"Done: {model_name}")
     finally:

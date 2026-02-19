@@ -11,8 +11,8 @@ import json
 from pathlib import Path
 
 import pytest
-from harbour.jose.signer import sign_vc_jose, sign_vp_jose
-from harbour.jose.verifier import verify_vc_jose, verify_vp_jose
+from harbour.signer import sign_vc_jose, sign_vp_jose
+from harbour.verifier import verify_vc_jose, verify_vp_jose
 
 EXAMPLES_DIR = Path(__file__).parent.parent / "examples"
 

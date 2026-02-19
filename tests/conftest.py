@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.asymmetric.ec import (
     EllipticCurvePublicNumbers,
 )
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-from harbour.jose.keys import p256_public_key_to_did_key, public_key_to_did_key
+from harbour.keys import p256_public_key_to_did_key, public_key_to_did_key
 
 EXAMPLES_DIR = Path(__file__).parent.parent / "examples"
 HARBOUR_FIXTURES_DIR = (

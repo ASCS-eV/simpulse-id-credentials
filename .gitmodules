@@ -2,6 +2,7 @@
 	path = submodules/ontology-management-base
 	url = https://github.com/ASCS-eV/ontology-management-base.git
 	shallow = true
+	fetchRecurseSubmodules = false
 [submodule "submodules/harbour-credentials"]
 	path = submodules/harbour-credentials
 	url = https://github.com/reachhaven/harbour-credentials.git

@@ -8,3 +8,6 @@
 .ontology_iri_cache.json
 examples/signed/
 .pytest_cache/
+.coverage
+htmlcov/
+/.playground/

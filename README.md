@@ -53,9 +53,10 @@ sudo apt-get install python3-full
 python3 -m venv .venv/
 source .venv/bin/activate  # On Windows use: source .venv/Scripts/activate
 
-# 2. Install dependencies (Submodule + Main Project + Dev Tools)
-# This reads both pyproject.toml files and handles all versions automatically.
-python3 -m pip install -e ./submodules/ontology-management-base -e ".[dev]"
+# 2. Install dependencies (Submodules + Main Project + Dev Tools)
+# This reads all pyproject.toml files and handles all versions automatically.
+python3 -m pip install -e "./submodules/harbour-credentials[dev]" \
+  -e ./submodules/ontology-management-base -e ".[dev]"
 
 # 3. Verify
 pre-commit install
@@ -77,16 +78,22 @@ python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/ and subm
 cd submodules/ontology-management-base
 python3 -m src.tools.validators.validation_suite \
   --run check-data-conformance \
-  --path ../../examples/simpulseid-administrator-credential.json \
-  --artifacts ../../artifacts ../../submodules/harbour-credentials/artifacts \
-  --no-catalog
+  --data-paths ../../examples/simpulseid-administrator-credential.json \
+  --artifacts ../../artifacts ../../submodules/harbour-credentials/artifacts
+
 
 # 3. Validate all credential examples
 python3 -m src.tools.validators.validation_suite \
   --run check-data-conformance \
-  --path ../../examples/simpulseid-*.json \
-  --artifacts ../../artifacts ../../submodules/harbour-credentials/artifacts \
-  --no-catalog
+  --data-paths ../../examples/simpulseid-*.json \
+  --artifacts ../../artifacts ../../submodules/harbour-credentials/artifacts
+
+# 4. Validate with specific inference mode (rdfs, owlrl, none, both)
+python3 -m src.tools.validators.validation_suite \
+  --run check-data-conformance \
+  --data-paths ../../examples/simpulseid-*.json \
+  --artifacts ../../artifacts \
+  --inference-mode rdfs
 ```
 
 The `--artifacts` flag tells the validator where to find locally generated ontologies, SHACL shapes, and JSON-LD contexts. Without it, the validator only knows about the ontology-management-base's own artifacts (Gaia-X, ENVITED-X domains) and cannot resolve SimpulseID or Harbour schemas.
