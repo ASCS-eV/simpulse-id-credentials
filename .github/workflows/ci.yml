@@ -51,12 +51,15 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install Python dependencies
         run: python3 -m pip install -e "./submodules/harbour-credentials[dev]" -e ./submodules/ontology-management-base -e ".[dev]"
 
       - name: Install JS dependencies (for interop tests)
         working-directory: submodules/harbour-credentials/src/typescript/harbour
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Run harbour-credentials JOSE tests
         run: |
@@ -80,13 +83,16 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install dependencies
         working-directory: submodules/harbour-credentials/src/typescript/harbour
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Run TypeScript tests
         working-directory: submodules/harbour-credentials/src/typescript/harbour
-        run: npx vitest run
+        run: yarn test
 
   # --- JOB 4: Examples Validation ---
   validate-examples:
