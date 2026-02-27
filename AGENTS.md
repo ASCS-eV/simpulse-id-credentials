@@ -7,18 +7,22 @@ Read these before making changes; they are authoritative for repo workflows.
 | Topic              | File                                                               |
 | ------------------ | ------------------------------------------------------------------ |
 | Agent instructions | [.github/copilot-instructions.md](.github/copilot-instructions.md) |
-| Documentation      | [docs/README.md](docs/README.md)                                   |
+| Documentation      | [docs/index.md](docs/index.md)                                     |
 
 ## Project Structure
 
 - `linkml/` contains LinkML schema definitions for credential types
 - `artifacts/` contains generated OWL, SHACL, and JSON-LD context files
 - `examples/` contains example credential instances for testing
+- `manifests/` contains wallet rendering manifests
 - `src/` contains Python source code for the credentials pipeline
+- `docs/` contains MkDocs source pages
 - `tests/` contains pytest tests
 - `submodules/` contains git submodules:
   - `harbour-credentials` — cryptographic signing/verification library
   - `ontology-management-base` — ontology validation pipeline
+  - `service-characteristics` — Gaia-X service characteristics schemas
+  - `w3id.org` — W3ID redirect rules
 
 ## Build, Test, and Development Commands
 

@@ -1,6 +1,7 @@
 {
   "@context": [
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/credentials/v1/",
     "https://www.w3.org/ns/did/v1",
     "https://schema.org"
   ],
@@ -40,42 +41,18 @@
   "service": [
     {
       "id": "did:web:did.ascs.digital:participants:bmw#org-metadata",
-      "type": "OrganizationMetadataService",
-      "serviceEndpoint": "https://www.bmwgroup.com/"
-    }
-  ],
-  "organization": {
-    "@id": "did:web:did.ascs.digital:participants:bmw",
-    "type": [
-      "simpulseid:Participant",
-      "gx:LegalPerson",
-      "schema:Organization"
-    ],
-    "legalName": "Bayerische Motoren Werke Aktiengesellschaft",
-    "legalForm": "AG",
-    "registrationNumber": {
-      "@type": "gx:VatID",
-      "countryCode": "DE",
-      "vatID": "DE129273398"
+      "type": "harbour:TrustAnchorService",
+      "serviceEndpoint": {
+        "@type": "schema:Organization",
+        "@id": "did:web:did.ascs.digital:participants:bmw",
+        "name": "Bayerische Motoren Werke Aktiengesellschaft",
+        "url": "https://www.bmwgroup.com/"
+      }
     },
-    "duns": "313995269",
-    "email": "imprint@bmw.com",
-    "website": "https://www.bmwgroup.com/",
-    "legalAddress": {
-      "@type": "gx:Address",
-      "streetAddress": "Petuelring 130",
-      "postalCode": "80809",
-      "addressLocality": "München",
-      "countrySubdivisionCode": "DE-BY",
-      "country": "DE"
-    },
-    "headquartersAddress": {
-      "@type": "gx:Address",
-      "streetAddress": "Petuelring 130",
-      "postalCode": "80809",
-      "addressLocality": "München",
-      "countrySubdivisionCode": "DE-BY",
-      "country": "DE"
+    {
+      "id": "did:web:did.ascs.digital:participants:bmw#self-signed-credential",
+      "type": "harbour:LinkedCredentialService",
+      "serviceEndpoint": "https://did.ascs.digital/participants/bmw/.well-known/participant-credential.jwt"
     }
-  }
+  ]
 }

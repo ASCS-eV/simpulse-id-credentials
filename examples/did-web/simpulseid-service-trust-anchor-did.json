@@ -1,6 +1,7 @@
 {
   "@context": [
     "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/reachhaven/harbour/credentials/v1/",
     "https://schema.org"
   ],
   "id": "did:web:did.ascs.digital:services:trust-anchor",
@@ -26,10 +27,7 @@
   "service": [
     {
       "id": "did:web:did.ascs.digital:services:trust-anchor#owner",
-      "type": [
-        "TrustAnchorService",
-        "OrganizationMetadataService"
-      ],
+      "type": "harbour:TrustAnchorService",
       "serviceEndpoint": {
         "@type": "schema:Organization",
         "@id": "did:web:did.ascs.digital:participants:ascs",
@@ -42,6 +40,11 @@
           "email": "info@ascs.digital"
         }
       }
+    },
+    {
+      "id": "did:web:did.ascs.digital:services:trust-anchor#self-signed-credential",
+      "type": "harbour:LinkedCredentialService",
+      "serviceEndpoint": "https://did.ascs.digital/.well-known/trust-anchor-credential.jwt"
     }
   ]
 }

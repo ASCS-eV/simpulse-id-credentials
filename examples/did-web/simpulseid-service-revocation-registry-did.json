@@ -8,10 +8,10 @@
   "service": [
     {
       "id": "did:web:did.ascs.digital:services:revocation-registry#crset",
-      "type": "CRSetRevocationRegistryService",
+      "type": "harbour:CRSetRevocationRegistryService",
       "serviceEndpoint": {
         "@type": "harbour:CRSetServiceEndpoint",
-        "endpoint": "https://gatehouse.reachhaven.com/services/harbour/crset",
+        "registryEndpoint": "https://gatehouse.reachhaven.com/services/harbour/crset",
         "statusPurpose": "revocation",
         "contractURN": "urn:blockchain:eip155:42793:contract:0x646B92C8f21e55DF67E766047E4bD7bEdF8DfA14",
         "sourceRepository": "https://github.com/ASCS-eV/smart-contracts",

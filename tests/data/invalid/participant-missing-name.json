@@ -11,11 +11,11 @@
   ],
   "id": "urn:uuid:576fbefb-35e8-4b71-bb1a-53d1803c86de",
   "issuer": "did:web:did.ascs.digital:participants:ascs",
+  "validFrom": "2025-08-06T10:15:22Z",
   "validUntil": "2030-08-05T00:00:00Z",
   "credentialSubject": {
     "id": "did:web:did.ascs.digital:participants:bmw",
     "type": "simpulseid:Participant",
-    "name": "Bayerische Motoren Werke Aktiengesellschaft",
     "legalForm": "AG",
     "duns": "313995269",
     "email": "imprint@bmw.com",
@@ -31,10 +31,16 @@
       ],
       "gx:legalAddress": {
         "@type": "gx:Address",
+        "gx:streetAddress": "Petuelring 130",
+        "gx:postalCode": "80809",
+        "gx:locality": "München",
         "gx:countryCode": "DE"
       },
       "gx:headquartersAddress": {
         "@type": "gx:Address",
+        "gx:streetAddress": "Petuelring 130",
+        "gx:postalCode": "80809",
+        "gx:locality": "München",
         "gx:countryCode": "DE"
       }
     }

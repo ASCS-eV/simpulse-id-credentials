@@ -3,28 +3,50 @@
 Defines how each SimpulseID credential type maps between nested JSON-LD
 (credentialSubject) and flat SD-JWT-VC claims, plus which claims are
 selectively disclosable.
+
+Base mappings cover harbour-native fields. Gaia-X extension mappings
+add paths through the gxParticipant composition node.
 """
 
 VCT_BASE = "https://w3id.org/ascs-ev/simpulse-id/credentials/v1"
+GAIAX_CONTEXT = "https://w3id.org/gaia-x/development#"
+
+# ---------------------------------------------------------------------------
+# Base mappings (harbour-native fields only)
+# ---------------------------------------------------------------------------
 
 PARTICIPANT_MAPPING = {
     "vct": f"{VCT_BASE}/ParticipantCredential",
     "claims": {
-        "credentialSubject.legalName": "legalName",
+        "credentialSubject.name": "name",
         "credentialSubject.legalForm": "legalForm",
         "credentialSubject.duns": "duns",
         "credentialSubject.email": "email",
         "credentialSubject.url": "url",
-        "credentialSubject.legalAddress": "legalAddress",
-        "credentialSubject.headquartersAddress": "headquartersAddress",
-        "credentialSubject.registrationNumber": "registrationNumber",
         "credentialSubject.termsAndConditions": "termsAndConditions",
     },
-    "always_disclosed": ["iss", "vct", "iat", "exp", "legalName", "legalForm"],
+    "always_disclosed": ["iss", "vct", "iat", "exp", "name", "legalForm"],
     "selectively_disclosed": [
-        "legalAddress",
-        "headquartersAddress",
-        "registrationNumber",
+        "email",
+        "url",
+        "duns",
+    ],
+}
+
+PARTICIPANT_GX_MAPPING = {
+    "vct": f"{VCT_BASE}/ParticipantCredential",
+    "claims": {
+        "credentialSubject.name": "name",
+        "credentialSubject.legalForm": "legalForm",
+        "credentialSubject.duns": "duns",
+        "credentialSubject.email": "email",
+        "credentialSubject.url": "url",
+        "credentialSubject.gxParticipant": "gxParticipant",
+        "credentialSubject.termsAndConditions": "termsAndConditions",
+    },
+    "always_disclosed": ["iss", "vct", "iat", "exp", "name", "legalForm"],
+    "selectively_disclosed": [
+        "gxParticipant",
         "email",
         "url",
         "duns",
@@ -38,15 +60,12 @@ ADMINISTRATOR_MAPPING = {
         "credentialSubject.familyName": "familyName",
         "credentialSubject.email": "email",
         "credentialSubject.memberOf": "memberOf",
-        "credentialSubject.address": "address",
-        "credentialSubject.termsAndConditions": "termsAndConditions",
     },
     "always_disclosed": ["iss", "vct", "iat", "exp", "memberOf"],
     "selectively_disclosed": [
         "givenName",
         "familyName",
         "email",
-        "address",
     ],
 }
 
@@ -57,7 +76,6 @@ USER_MAPPING = {
         "credentialSubject.familyName": "familyName",
         "credentialSubject.email": "email",
         "credentialSubject.memberOf": "memberOf",
-        "credentialSubject.termsAndConditions": "termsAndConditions",
     },
     "always_disclosed": ["iss", "vct", "iat", "exp", "memberOf"],
     "selectively_disclosed": [
@@ -70,18 +88,17 @@ USER_MAPPING = {
 BASE_MEMBERSHIP_MAPPING = {
     "vct": f"{VCT_BASE}/AscsBaseMembershipCredential",
     "claims": {
-        "credentialSubject.memberOf": "memberOf",
+        "credentialSubject.member": "member",
         "credentialSubject.programName": "programName",
         "credentialSubject.hostingOrganization": "hostingOrganization",
         "credentialSubject.memberSince": "memberSince",
-        "credentialSubject.termsAndConditions": "termsAndConditions",
     },
     "always_disclosed": [
         "iss",
         "vct",
         "iat",
         "exp",
-        "memberOf",
+        "member",
         "programName",
     ],
     "selectively_disclosed": ["memberSince", "hostingOrganization"],
@@ -90,19 +107,18 @@ BASE_MEMBERSHIP_MAPPING = {
 ENVITED_MEMBERSHIP_MAPPING = {
     "vct": f"{VCT_BASE}/AscsEnvitedMembershipCredential",
     "claims": {
-        "credentialSubject.memberOf": "memberOf",
+        "credentialSubject.member": "member",
         "credentialSubject.programName": "programName",
         "credentialSubject.hostingOrganization": "hostingOrganization",
         "credentialSubject.memberSince": "memberSince",
         "credentialSubject.baseMembershipCredential": "baseMembershipCredential",
-        "credentialSubject.termsAndConditions": "termsAndConditions",
     },
     "always_disclosed": [
         "iss",
         "vct",
         "iat",
         "exp",
-        "memberOf",
+        "member",
         "programName",
         "baseMembershipCredential",
     ],
@@ -118,6 +134,11 @@ MAPPINGS = {
     "simpulseid:AscsEnvitedMembershipCredential": ENVITED_MEMBERSHIP_MAPPING,
 }
 
+# Gaia-X extended mappings (selected when gx context is present)
+GX_MAPPINGS = {
+    "simpulseid:ParticipantCredential": PARTICIPANT_GX_MAPPING,
+}
+
 
 def vc_to_sd_jwt_claims(vc: dict, mapping: dict) -> tuple[dict, list[str]]:
     """Convert a W3C VCDM JSON-LD VC to flat SD-JWT-VC claims.
@@ -131,12 +152,12 @@ def vc_to_sd_jwt_claims(vc: dict, mapping: dict) -> tuple[dict, list[str]]:
     """
     claims = {}
 
-    # Map issuer
+    # Map issuer (now always a string DID)
     issuer = vc.get("issuer")
-    if isinstance(issuer, dict):
-        claims["iss"] = issuer.get("id", "")
-    elif isinstance(issuer, str):
+    if isinstance(issuer, str):
         claims["iss"] = issuer
+    elif isinstance(issuer, dict):
+        claims["iss"] = issuer.get("id", "")
 
     # Map subject ID
     subject = vc.get("credentialSubject", {})
@@ -177,13 +198,13 @@ def sd_jwt_claims_to_vc(claims: dict, mapping: dict, vc_type: str) -> dict:
             "https://www.w3.org/ns/credentials/v2",
             "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
             "https://w3id.org/reachhaven/harbour/credentials/v1/",
-            "https://w3id.org/gaia-x/development/",
+            "https://w3id.org/gaia-x/development#",
         ],
         "type": ["VerifiableCredential", vc_type],
     }
 
     if "iss" in claims:
-        vc["issuer"] = {"id": claims["iss"]}
+        vc["issuer"] = claims["iss"]
     if "iat" in claims:
         vc["validFrom"] = claims["iat"]
     if "exp" in claims:
@@ -208,10 +229,19 @@ def sd_jwt_claims_to_vc(claims: dict, mapping: dict, vc_type: str) -> dict:
 
 
 def get_mapping_for_vc(vc: dict) -> dict | None:
-    """Find the matching mapping for a VC based on its type."""
+    """Find the matching mapping for a VC based on its type and @context.
+
+    When the Gaia-X context is present and a gx-extended mapping exists,
+    returns the gx mapping. Otherwise returns the base mapping.
+    """
     vc_types = vc.get("type", [])
+    contexts = vc.get("@context", [])
+    has_gx = GAIAX_CONTEXT in contexts
+
     for vc_type, mapping in MAPPINGS.items():
         if vc_type in vc_types:
+            if has_gx and vc_type in GX_MAPPINGS:
+                return GX_MAPPINGS[vc_type]
             return mapping
     return None
 

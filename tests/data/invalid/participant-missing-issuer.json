@@ -7,24 +7,20 @@
   ],
   "type": [
     "VerifiableCredential",
-    "simpulseid:AdministratorCredential"
+    "simpulseid:ParticipantCredential"
   ],
-  "id": "urn:uuid:9d3a0c1b-4d4e-4f9a-9b0c-1d2e3f4a5b6d",
-  "issuer": "did:web:did.ascs.digital:participants:ascs",
+  "id": "urn:uuid:576fbefb-35e8-4b71-bb1a-53d1803c86de",
   "validFrom": "2025-08-06T10:15:22Z",
   "validUntil": "2030-08-05T00:00:00Z",
   "credentialSubject": {
-    "id": "did:web:did.ascs.digital:users:21c7c8bc-6860-490b-8ec7-219c89d93e2c",
-    "type": "simpulseid:Administrator",
-    "familyName": "Admin",
-    "email": "andreas.admin@bmw.com",
-    "memberOf": [
-      "did:web:did.ascs.digital:participants:bmw"
-    ]
+    "id": "did:web:did.ascs.digital:participants:bmw",
+    "type": "simpulseid:Participant",
+    "name": "Bayerische Motoren Werke Aktiengesellschaft",
+    "legalForm": "AG"
   },
   "credentialStatus": [
     {
-      "id": "did:web:did.ascs.digital:services:revocation-registry#f8b8a815",
+      "id": "did:web:did.ascs.digital:services:revocation-registry#608101d3",
       "type": "harbour:CRSetEntry",
       "statusPurpose": "revocation"
     }

@@ -1,13 +1,20 @@
-"""SHACL validation tests for SimpulseID credentials."""
+"""SHACL validation tests for SimpulseID credentials.
+
+Uses the ontology-management-base validation suite with harbour + simpulseid
+artifacts registered, matching the Makefile validate target pattern.
+"""
 
 from pathlib import Path
 
 import pytest
 
+from src.tools.utils.registry_resolver import RegistryResolver
 from src.tools.validators.shacl.validator import ShaclValidator
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 OMB_ROOT = REPO_ROOT / "submodules" / "ontology-management-base"
+HARBOUR_ARTIFACTS = REPO_ROOT / "submodules" / "harbour-credentials" / "artifacts"
+SIMPULSEID_ARTIFACTS = REPO_ROOT / "artifacts"
 EXAMPLES_DIR = REPO_ROOT / "examples"
 INVALID_DIR = REPO_ROOT / "tests" / "data" / "invalid"
 
@@ -18,14 +25,17 @@ def _discover_files(directory: Path, pattern: str = "*.json") -> list[Path]:
     return sorted(directory.glob(pattern))
 
 
-VALID_FILES = _discover_files(EXAMPLES_DIR)
+VALID_FILES = _discover_files(EXAMPLES_DIR, "simpulseid-*.json")
 INVALID_FILES = _discover_files(INVALID_DIR)
 
 
 @pytest.fixture(scope="module")
 def shacl_validator():
-    """Create a ShaclValidator instance for the test module."""
-    return ShaclValidator(root_dir=OMB_ROOT, verbose=False)
+    """Create a ShaclValidator with harbour + simpulseid artifacts registered."""
+    resolver = RegistryResolver(root_dir=OMB_ROOT)
+    resolver.register_artifact_directory(HARBOUR_ARTIFACTS)
+    resolver.register_artifact_directory(SIMPULSEID_ARTIFACTS)
+    return ShaclValidator(root_dir=OMB_ROOT, verbose=False, resolver=resolver)
 
 
 @pytest.mark.parametrize(

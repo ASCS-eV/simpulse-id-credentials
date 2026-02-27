@@ -3,7 +3,7 @@
 Verifies that:
 1. Expanded evidence VPs can be signed and produce valid JWTs
 2. Outer credentials with JWT evidence can be signed and verified
-3. The full chain (outer VC → evidence VP → inner EmailPass VC) is decodable
+3. The full chain (outer VC -> evidence VP -> inner VC) is decodable
 """
 
 import base64
@@ -50,10 +50,10 @@ def _get_evidence_vp(vc: dict) -> dict | None:
 class TestEvidenceVPSigning:
     """Test signing of evidence VPs extracted from example credentials."""
 
-    def test_sign_email_verification_vp(
+    def test_sign_credential_evidence_vp(
         self, p256_private_key, p256_public_key, p256_did_key_vm
     ):
-        """Sign an EmailVerification evidence VP and verify it."""
+        """Sign a CredentialEvidence VP and verify it."""
         vc = _load_example("simpulseid-participant-credential.json")
         vp = _get_evidence_vp(vc)
         assert vp is not None, "Expected expanded evidence VP"
@@ -84,10 +84,10 @@ class TestEvidenceVPSigning:
         assert result["type"] == ["VerifiablePresentation"]
         assert len(result["verifiableCredential"]) == 1
 
-    def test_sign_issuance_evidence_vp(
+    def test_sign_membership_evidence_vp(
         self, p256_private_key, p256_public_key, p256_did_key_vm
     ):
-        """Sign an IssuanceEvidence VP and verify it."""
+        """Sign a membership CredentialEvidence VP and verify it."""
         vc = _load_example("simpulseid-ascs-base-membership-credential.json")
         vp = _get_evidence_vp(vc)
         assert vp is not None, "Expected expanded evidence VP"
@@ -116,7 +116,7 @@ class TestEvidenceVPSigning:
 
 
 class TestFullProofChain:
-    """Test the full signing chain: inner VC → evidence VP → outer VC."""
+    """Test the full signing chain: inner VC -> evidence VP -> outer VC."""
 
     @pytest.fixture()
     def signed_participant(self, p256_private_key, p256_public_key, p256_did_key_vm):
@@ -196,18 +196,25 @@ class TestFullProofChain:
 
         # Decode outer VC
         outer = _decode_jwt(vc_jwt)
-        assert outer["header"]["typ"] == "vc+ld+jwt"
+        assert outer["header"]["typ"] == "vc+jwt"
         assert outer["header"]["alg"] == "ES256"
 
         # Decode evidence VP
         vp = _decode_jwt(evidence_vp_jwt)
-        assert vp["header"]["typ"] == "vp+ld+jwt"
+        assert vp["header"]["typ"] == "vp+jwt"
 
         # Decode inner EmailPass VC
         inner_jwt = vp["payload"]["verifiableCredential"][0]
         inner = _decode_jwt(inner_jwt)
-        assert inner["header"]["typ"] == "vc+ld+jwt"
+        assert inner["header"]["typ"] == "vc+jwt"
         assert "EmailPass" in inner["payload"]["type"]
+
+    def test_issuer_is_string_did(self, signed_participant, p256_public_key):
+        """The issuer should be a string DID (not an object)."""
+        vc_jwt, _ = signed_participant
+        result = verify_vc_jose(vc_jwt, p256_public_key)
+        assert isinstance(result["issuer"], str)
+        assert result["issuer"].startswith("did:")
 
 
 # ---------------------------------------------------------------------------
@@ -221,6 +228,8 @@ class TestSignVerifyFixture:
     @pytest.fixture()
     def fixture_data(self):
         path = Path(__file__).parent / "fixtures" / "participant-sign-verify.json"
+        if not path.exists():
+            pytest.skip("Sign-verify fixture not found")
         return json.loads(path.read_text())
 
     def test_sign_fixture_vc(

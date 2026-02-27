@@ -1,7 +1,8 @@
 """Generate signed VC-JOSE-COSE JWT artifacts from example credentials.
 
-Reads expanded (human-readable) examples from examples/*.json and produces
-wire-format signed JWTs plus decoded companion files in examples/signed/.
+Reads expanded (human-readable) examples from examples/*.json and
+examples/gaiax/*.json, then produces wire-format signed JWTs plus
+decoded companion files in examples/signed/.
 
 Output per credential:
   - <name>.jwt                      — VC-JOSE-COSE compact JWS (wire format)
@@ -9,7 +10,7 @@ Output per credential:
   - <name>.evidence-vp.jwt          — Evidence VP JWT (if evidence present)
   - <name>.evidence-vp.decoded.json — Decoded evidence VP with inner VCs decoded
 
-Source examples/*.json are NEVER modified.
+Source examples are NEVER modified.
 """
 
 import base64
@@ -23,8 +24,8 @@ from cryptography.hazmat.primitives.asymmetric.ec import (
     EllipticCurvePrivateNumbers,
     EllipticCurvePublicNumbers,
 )
-from harbour.jose.keys import p256_public_key_to_did_key
-from harbour.jose.signer import sign_vc_jose, sign_vp_jose
+from harbour.keys import p256_public_key_to_did_key
+from harbour.signer import sign_vc_jose, sign_vp_jose
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 EXAMPLES_DIR = REPO_ROOT / "examples"
@@ -46,7 +47,7 @@ def _decode_jwt(token: str) -> dict:
 
 def load_test_p256_keypair():
     """Load the committed P-256 test keypair."""
-    jwk_path = FIXTURES_DIR / "test-keypair-p256.json"
+    jwk_path = FIXTURES_DIR / "keys" / "test-keypair-p256.json"
     jwk = json.loads(jwk_path.read_text())
     x = int.from_bytes(_b64url_decode(jwk["x"]), "big")
     y = int.from_bytes(_b64url_decode(jwk["y"]), "big")
@@ -109,14 +110,21 @@ def decode_evidence_vp(vp_jwt: str) -> dict:
     return decoded
 
 
-def process_example(example_path: Path, private_key, kid: str):
+def discover_examples() -> list[tuple[Path, str]]:
+    """Discover example credentials from examples/.
+
+    Returns list of (path, prefix) tuples. Prefix is used for output naming.
+    """
+    return [(f, f.stem) for f in sorted(EXAMPLES_DIR.glob("simpulseid-*.json"))]
+
+
+def process_example(example_path: Path, output_prefix: str, private_key, kid: str):
     """Process a single example credential.
 
     Reads the expanded example, signs evidence and outer VC, writes all
     artifacts to examples/signed/. Never modifies the source file.
     """
     vc = json.loads(example_path.read_text())
-    stem = example_path.stem
 
     evidence_vp_jwt = None
 
@@ -138,14 +146,14 @@ def process_example(example_path: Path, private_key, kid: str):
     SIGNED_DIR.mkdir(parents=True, exist_ok=True)
 
     # 1. Outer VC JWT
-    jwt_path = SIGNED_DIR / f"{stem}.jwt"
+    jwt_path = SIGNED_DIR / f"{output_prefix}.jwt"
     jwt_path.write_text(vc_jwt + "\n")
 
     # 2. Decoded outer JWT
     decoded = _decode_jwt(vc_jwt)
-    decoded_path = SIGNED_DIR / f"{stem}.decoded.json"
+    decoded_path = SIGNED_DIR / f"{output_prefix}.decoded.json"
     decoded_obj = {
-        "_description": f"Decoded VC-JOSE-COSE JWT for {stem}",
+        "_description": f"Decoded VC-JOSE-COSE JWT for {output_prefix}",
         **decoded,
     }
     decoded_path.write_text(
@@ -154,14 +162,14 @@ def process_example(example_path: Path, private_key, kid: str):
 
     # 3. Evidence VP JWT (if applicable)
     if evidence_vp_jwt:
-        ev_jwt_path = SIGNED_DIR / f"{stem}.evidence-vp.jwt"
+        ev_jwt_path = SIGNED_DIR / f"{output_prefix}.evidence-vp.jwt"
         ev_jwt_path.write_text(evidence_vp_jwt + "\n")
 
         # 4. Decoded evidence VP
         ev_decoded = decode_evidence_vp(evidence_vp_jwt)
-        ev_decoded_path = SIGNED_DIR / f"{stem}.evidence-vp.decoded.json"
+        ev_decoded_path = SIGNED_DIR / f"{output_prefix}.evidence-vp.decoded.json"
         ev_decoded_obj = {
-            "_description": f"Decoded evidence VP JWT for {stem}",
+            "_description": f"Decoded evidence VP JWT for {output_prefix}",
             **ev_decoded,
         }
         ev_decoded_path.write_text(
@@ -177,7 +185,7 @@ def main():
     kid_vm = f"{kid}#{kid.split(':')[-1]}"
 
     # Find all example credentials
-    examples = sorted(EXAMPLES_DIR.glob("simpulseid-*.json"))
+    examples = discover_examples()
     if not examples:
         print("No example credentials found in examples/", file=sys.stderr)
         sys.exit(1)
@@ -185,9 +193,9 @@ def main():
     print(f"Signing {len(examples)} example credentials with test P-256 key...")
     print(f"  kid: {kid_vm}")
 
-    for path in examples:
-        jwt_path = process_example(path, private_key, kid_vm)
-        print(f"  {path.name} -> {jwt_path.relative_to(REPO_ROOT)}")
+    for path, prefix in examples:
+        jwt_path = process_example(path, prefix, private_key, kid_vm)
+        print(f"  {path.relative_to(REPO_ROOT)} -> {jwt_path.relative_to(REPO_ROOT)}")
 
     # List all generated files
     signed_files = sorted(SIGNED_DIR.iterdir())

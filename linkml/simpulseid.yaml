@@ -2,57 +2,30 @@ id: https://w3id.org/ascs-ev/simpulse-id/credentials/v1
 name: simpulseid
 description: >
   LinkML schema for SimpulseID credentials.
-  Inherits Evidence and TermsAndConditions from Harbour/Gaia-X, constrains
-  the W3C VC envelope, and enforces Gaia-X compliance plus ASCS-specific rules.
+  Domain layer on top of Harbour credentials base. Defines ASCS-specific
+  credential types and subject types extending HarbourCredential.
+  Gaia-X compliance data is carried via composition (gxParticipant).
 
 prefixes:
   linkml: https://w3id.org/linkml/
   simpulseid: https://w3id.org/ascs-ev/simpulse-id/credentials/v1/
   harbour: https://w3id.org/reachhaven/harbour/credentials/v1/
-  core: https://w3id.org/reachhaven/harbour/core/v1/
-  cs: https://www.w3.org/ns/credentials/status#
-  gx: https://w3id.org/gaia-x/development#
   schema: http://schema.org/
   cred: https://www.w3.org/2018/credentials#
-  vcard: http://www.w3.org/2006/vcard/ns#
   xsd: http://www.w3.org/2001/XMLSchema#
-  skos: http://www.w3.org/2004/02/skos/core#
-  lf: https://w3id.org/ascs-ev/simpulse-id/legal-form/v1/
 
 default_prefix: simpulseid
 default_range: string
 
 imports:
   - linkml:types
-  - core
-  - gaia-x
-  - harbour
+  - ./harbour
+
+# ==========================================
+# Slots
+# ==========================================
 
 slots:
-  # --- W3C VC v2 Envelope Slots ---
-  # validFrom and validUntil are defined in harbour (our constraints on cred:)
-
-  issuer:
-    slot_uri: cred:issuer
-    range: SimpulseIdIssuer
-    required: true
-
-  credentialSubject:
-    slot_uri: cred:credentialSubject
-    range: CredentialSubject
-    required: true
-
-  credentialStatus:
-    slot_uri: cred:credentialStatus
-    range: CRSetEntry
-    multivalued: true
-    required: false
-
-  proof:
-    slot_uri: cred:proof
-    range: string
-    required: false
-
   # --- SimpulseID Specific Business Slots ---
 
   duns:
@@ -101,172 +74,182 @@ slots:
   # --- SimpulseID Extensions ---
 
   legalForm:
-    description: The legal form of the entity (e.g., AG, GmbH). Not defined in Gaia-X upstream.
+    description: The legal form of the entity (e.g., AG, GmbH).
     slot_uri: simpulseid:legalForm
     range: SimpulseIdLegalForm
 
-  legalPerson:
-    slot_uri: simpulseid:legalPerson
-    range: LegalPerson
-    inlined: true
-    description: Gaia-X LegalPerson information for this participant.
+  # --- Composition Slots ---
+
+  gxParticipant:
+    description: >
+      Nested Gaia-X participant compliance data (opaque blank node).
+      When Gaia-X compliance is needed, the gx data (legalAddress,
+      headquartersAddress, registrationNumber, etc.) goes inside this node.
+    slot_uri: harbour:gxParticipant
+    range: Any
+    required: false
+
+  termsAndConditions:
+    description: Terms and conditions accepted by the credential subject.
+    slot_uri: simpulseid:termsAndConditions
+    range: Any
+    multivalued: true
+    required: false
+
+# ==========================================
+# Enums
+# ==========================================
 
 enums:
   SimpulseIdLegalForm:
     permissible_values:
-      LLC: { meaning: lf:LLC }
-      Corporation: { meaning: lf:Corporation }
-      LimitedPartnership: { meaning: lf:LimitedPartnership }
-      NonprofitCorporation: { meaning: lf:NonprofitCorporation }
-      GmbH: { meaning: lf:GmbH }
-      AG: { meaning: lf:AG }
-      Einzelunternehmen: { meaning: lf:Einzelunternehmen }
-      GbR: { meaning: lf:GbR }
-      OHG: { meaning: lf:OHG }
-      KG: { meaning: lf:KG }
-      UG: { meaning: lf:UG }
-      SoleTrader: { meaning: lf:SoleTrader }
-      UnincorporatedAssociation: { meaning: lf:UnincorporatedAssociation }
-      Partnership: { meaning: lf:Partnership }
-      Trust: { meaning: lf:Trust }
-      LimitedCompany: { meaning: lf:LimitedCompany }
-      LLP: { meaning: lf:LLP }
-      CIC: { meaning: lf:CIC }
-      CIO: { meaning: lf:CIO }
-      CooperativeSociety: { meaning: lf:CooperativeSociety }
-      BenCom: { meaning: lf:BenCom }
-      other: { meaning: lf:other }
+      LLC: {}
+      Corporation: {}
+      LimitedPartnership: {}
+      NonprofitCorporation: {}
+      GmbH: {}
+      AG: {}
+      Einzelunternehmen: {}
+      GbR: {}
+      OHG: {}
+      KG: {}
+      UG: {}
+      SoleTrader: {}
+      UnincorporatedAssociation: {}
+      Partnership: {}
+      Trust: {}
+      LimitedCompany: {}
+      LLP: {}
+      CIC: {}
+      CIO: {}
+      CooperativeSociety: {}
+      BenCom: {}
+      other: {}
+
+# ==========================================
+# Classes
+# ==========================================
 
 classes:
-  SimpulseIdIssuer:
-    is_a: Issuer
-    class_uri: simpulseid:Issuer
+  # ------------------------------------------
+  # 1. CREDENTIAL TYPES (extend HarbourCredential)
+  # ------------------------------------------
+
+  ParticipantCredential:
+    is_a: HarbourCredential
     description: >
-      SimpulseID issuer extends Gaia-X Issuer. The member slot identifies
-      which participant this credential is issued for.
-    slots:
-      - member
-    slot_usage:
-      member: { required: true }
-
-  SimpulseIdAddress:
-    is_a: Address
-    class_uri: gx:Address
-    slots:
-      - streetAddress
-      - postalCode
-      - locality
-      - countryCode
-      - region
-    slot_usage:
-      countryCode:
-        required: true
-      region:
-        required: false
-
-  CredentialSubject:
-    abstract: true
-    class_uri: schema:Thing
-    slots: [id, type, termsAndConditions]
-    slot_usage:
-      termsAndConditions:
-        range: TermsAndConditions
+      Credential attesting to a simpulseid:Participant (organization) identity.
+    class_uri: simpulseid:ParticipantCredential
+    attributes:
+      credentialStatus:
+        slot_uri: cred:credentialStatus
+        range: CRSetEntry
         multivalued: true
-
-  NaturalPerson:
-    class_uri: gx:NaturalPerson
-    slots:
-      - givenName
-      - familyName
-      - email
-      - memberOf
-      - address
+        required: false
     slot_usage:
-      address: { range: SimpulseIdAddress, required: false }
+      evidence: { required: false }
 
-  Administrator:
-    is_a: NaturalPerson
-    mixins: [CredentialSubject]
+  AdministratorCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to a simpulseid:Administrator (person with elevated permissions).
+    class_uri: simpulseid:AdministratorCredential
+    attributes:
+      credentialStatus:
+        slot_uri: cred:credentialStatus
+        range: CRSetEntry
+        multivalued: true
+        required: false
+    slot_usage:
+      evidence: { required: false }
+
+  UserCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to a simpulseid:User (natural person).
+    class_uri: simpulseid:UserCredential
+    attributes:
+      credentialStatus:
+        slot_uri: cred:credentialStatus
+        range: CRSetEntry
+        multivalued: true
+        required: false
+    slot_usage:
+      evidence: { required: false }
+
+  AscsBaseMembershipCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to ASCS e.V. base membership.
+    class_uri: simpulseid:AscsBaseMembershipCredential
+    attributes:
+      credentialStatus:
+        slot_uri: cred:credentialStatus
+        range: CRSetEntry
+        multivalued: true
+        required: false
+    slot_usage:
+      evidence: { required: false }
+
+  AscsEnvitedMembershipCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to ASCS e.V. ENVITED membership.
+    class_uri: simpulseid:AscsEnvitedMembershipCredential
+    attributes:
+      credentialStatus:
+        slot_uri: cred:credentialStatus
+        range: CRSetEntry
+        multivalued: true
+        required: false
+    slot_usage:
+      evidence: { required: false }
+
+  # ------------------------------------------
+  # 2. SUBJECT TYPES
+  # ------------------------------------------
+
+  SimpulseidParticipant:
+    description: >
+      An organization participating in the SimpulseID ecosystem.
+      In skeleton form only harbour properties are present. When Gaia-X
+      compliance is needed, gxParticipant carries the gx blank node.
+    class_uri: simpulseid:Participant
+    slots: [name, gxParticipant, legalForm, duns, email, url, termsAndConditions]
+    slot_usage:
+      name: { required: false }
+      gxParticipant: { required: false }
+
+  SimpulseidAdministrator:
+    description: >
+      An administrator (natural person with elevated permissions) in the
+      SimpulseID ecosystem.
     class_uri: simpulseid:Administrator
+    slots: [name, givenName, familyName, email, memberOf]
     slot_usage:
-      address: { required: true }
       givenName: { required: true }
       familyName: { required: true }
       email: { required: true }
 
-  User:
-    is_a: NaturalPerson
-    mixins: [CredentialSubject]
+  SimpulseidUser:
+    description: >
+      A standard user (natural person) in the SimpulseID ecosystem.
     class_uri: simpulseid:User
-
-  SimpulseidParticipant:
-    mixins: [CredentialSubject]
-    class_uri: simpulseid:Participant
-    slots: [legalPerson, legalForm, email, url, duns, termsAndConditions]
-    slot_usage:
-      legalPerson:
-        range: LegalPerson
-        required: true
+    slots: [name, givenName, familyName, email, memberOf]
 
   AscsBaseMembership:
-    is_a: CredentialSubject
+    description: >
+      ASCS e.V. base membership subject.
     class_uri: simpulseid:AscsBaseMembership
     slots: [member, programName, hostingOrganization, memberSince]
     slot_usage:
       member: { required: true }
 
   AscsEnvitedMembership:
-    is_a: CredentialSubject
+    description: >
+      ASCS e.V. ENVITED membership subject (requires base membership).
     class_uri: simpulseid:AscsEnvitedMembership
     slots: [member, programName, hostingOrganization, memberSince, baseMembershipCredential]
     slot_usage:
       member: { required: true }
       baseMembershipCredential: { required: true }
-
-  VerifiableCredential:
-    abstract: true
-    class_uri: cred:VerifiableCredential
-    slots:
-      - id
-      - type
-      - issuer
-      - validFrom
-      - validUntil
-      - credentialSubject
-      - credentialStatus
-      - evidence
-      - proof
-
-  ParticipantCredential:
-    is_a: VerifiableCredential
-    class_uri: simpulseid:ParticipantCredential
-    slot_usage:
-      credentialSubject: { range: SimpulseidParticipant, required: true }
-      evidence: { required: true }
-
-  AscsBaseMembershipCredential:
-    is_a: VerifiableCredential
-    class_uri: simpulseid:AscsBaseMembershipCredential
-    slot_usage:
-      credentialSubject: { range: AscsBaseMembership, required: true }
-      evidence: { required: true }
-
-  AscsEnvitedMembershipCredential:
-    is_a: VerifiableCredential
-    class_uri: simpulseid:AscsEnvitedMembershipCredential
-    slot_usage:
-      credentialSubject: { range: AscsEnvitedMembership, required: true }
-      evidence: { required: true }
-
-  AdministratorCredential:
-    is_a: VerifiableCredential
-    class_uri: simpulseid:AdministratorCredential
-    slot_usage:
-      credentialSubject: { range: Administrator, required: true }
-
-  UserCredential:
-    is_a: VerifiableCredential
-    class_uri: simpulseid:UserCredential
-    slot_usage:
-      credentialSubject: { range: User, required: true }
-      evidence: { required: true }

@@ -1,141 +1,73 @@
-.PHONY: setup install install-dev lint format generate validate check test test-harbour test-cov all clean help
+# SimpulseID Credentials Makefile
+# ================================
 
-VENV      := .venv
+.PHONY: setup install install-dev submodule-setup generate validate lint format test test-harbour test-cov check all clean help
 
-# Use venv if it exists, otherwise use system python
-ifneq ($(wildcard $(VENV)/bin/python3),)
-    PYTHON    := $(VENV)/bin/python3
-    PIP       := $(VENV)/bin/pip
-    PRECOMMIT := $(VENV)/bin/pre-commit
-    PYTEST    := $(VENV)/bin/pytest
+OMB_SUBMODULE_DIR := submodules/ontology-management-base
+HARBOUR_SUBMODULE_DIR := submodules/harbour-credentials
+
+# In CI, use system Python; locally, prefer parent venv then local .venv
+ifdef CI
+    VENV := $(dir $(shell which python3))..
+    PYTHON := python3
 else
-    PYTHON    := python3
-    PIP       := python3 -m pip
-    PRECOMMIT := pre-commit
-    PYTEST    := pytest
+    ifneq ($(wildcard ../../.venv/bin/python3),)
+        VENV := ../../.venv
+    else
+        VENV := .venv
+    endif
+    PYTHON := $(VENV)/bin/python3
 endif
 
-# Check if dev environment is set up
+# Bootstrap interpreter used only to create the venv
+BOOTSTRAP_PYTHON := python3
+
+# Tooling inside the selected virtual environment
+PIP := $(PYTHON) -m pip
+PRECOMMIT := $(PYTHON) -m pre_commit
+PYTEST := $(PYTHON) -m pytest
+
+# Check if dev environment is set up (skipped in CI)
 define check_dev_setup
-	@if [ ! -d "$(VENV)" ]; then \
+	@if [ -z "$$CI" ] && [ ! -x "$(PYTHON)" ]; then \
 		echo ""; \
-		echo "❌ Development environment not set up."; \
+		echo "ERROR: Development environment not set up."; \
 		echo ""; \
 		echo "Please run first:"; \
 		echo "  make setup"; \
 		echo ""; \
 		exit 1; \
 	fi
-	@if ! $(PYTHON) -c "import pre_commit" 2>/dev/null; then \
+	@if ! $(PYTHON) -c "import linkml, harbour; from importlib.metadata import version; version('credentials'); version('ontology-management-base')" 2>/dev/null; then \
 		echo ""; \
-		echo "❌ Dev dependencies not installed."; \
+		echo "ERROR: Dev dependencies not installed."; \
 		echo ""; \
 		echo "Please run:"; \
-		echo "  source $(VENV)/bin/activate"; \
-		echo "  make install-dev"; \
+		echo "  make setup"; \
 		echo ""; \
 		exit 1; \
 	fi
 endef
 
-EXAMPLES  := $(wildcard examples/*.json examples/*.jsonld)
+EXAMPLES := $(wildcard examples/simpulseid-*.json)
 
-# ---------- Setup ----------
-
-$(VENV)/bin/activate:
-	@python3 -m venv $(VENV)
-
-setup: $(VENV)/bin/activate ## Create venv, install deps, install pre-commit hooks
-	@$(PIP) install --upgrade pip
-	@$(PIP) install -e "./submodules/harbour-credentials[dev]" -e ./submodules/ontology-management-base -e ".[dev]"
-	@$(PYTHON) -m pre_commit install
-	@echo ""
-	@echo "✅ Setup complete. Activate with: source $(VENV)/bin/activate"
-
-# ---------- Install ----------
-
-install: ## Install package (user mode)
-	@$(PIP) install -e ./submodules/ontology-management-base -e ./submodules/harbour-credentials -e .
-
-install-dev: ## Install with dev dependencies + pre-commit
-	@$(PIP) install -e "./submodules/harbour-credentials[dev]" -e ./submodules/ontology-management-base -e ".[dev]"
-	@$(PYTHON) -m pre_commit install
-
-# ---------- Lint ----------
-
-lint: ## Run pre-commit (black, isort, flake8, JSON-LD parse, Turtle parse)
-	$(call check_dev_setup)
-	@$(PYTHON) -m pre_commit run --all-files
-
-format: ## Format code with black and isort
-	$(call check_dev_setup)
-	@$(PYTHON) -m black src/ tests/
-	@$(PYTHON) -m isort src/ tests/
-
-# ---------- Generate ----------
-
-generate: ## Generate JSON-LD contexts, SHACL shapes, OWL ontologies from LinkML
-	@$(PYTHON) src/generate_from_linkml.py
-
-# ---------- Validate ----------
-
-validate: ## SHACL-validate all example credentials
-	@if [ -z "$(EXAMPLES)" ]; then \
-		echo "No example files found."; \
-		exit 0; \
-	fi
-	@$(PYTHON) -m src.tools.validators.validation_suite --run check-data-conformance \
-		--data-paths $(EXAMPLES)
-
-# ---------- Test ----------
-
-test-harbour: ## Run harbour-credentials JOSE tests
-	@cd submodules/harbour-credentials && PYTHONPATH=src/python:$$PYTHONPATH $(abspath $(PYTHON)) -m pytest tests/ -v
-
-test: test-harbour ## Run all tests (harbour + main repo)
-	@PYTHONPATH=submodules/harbour-credentials/src/python:$$PYTHONPATH $(PYTEST) tests/ -v
-
-test-cov: ## Run tests with coverage report
-	$(call check_dev_setup)
-	@PYTHONPATH=submodules/harbour-credentials/src/python:$$PYTHONPATH $(PYTEST) tests/ --cov=src --cov-report=html --cov-report=term
-
-# ---------- Compound targets ----------
-
-check: generate validate ## Generate artifacts then validate examples
-
-all: setup lint check test ## Full end-to-end: setup, lint, generate, validate, test
-
-# ---------- Clean ----------
-
-clean: ## Remove generated artifacts (keeps venv)
-	@rm -rf artifacts/simpulseid
-	@rm -rf submodules/harbour-credentials/artifacts/core
-	@rm -rf submodules/harbour-credentials/artifacts/harbour
-	@rm -rf build/ dist/ *.egg-info/
-	@rm -rf .pytest_cache/ htmlcov .coverage
-	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@echo "✅ Cleaned"
-
-# ---------- Help ----------
-
+# Default target
 help: ## Show this help
-	@echo "Credentials - Available Commands"
+	@echo "SimpulseID Credentials - Available Commands"
 	@echo ""
 	@echo "Installation:"
-	@echo "  make setup        - Create venv and install all dependencies"
-	@echo "  make install      - Install packages (user mode)"
+	@echo "  make setup        - Create venv, install all dependencies, setup submodules"
+	@echo "  make install      - Install package (user mode)"
 	@echo "  make install-dev  - Install with dev dependencies + pre-commit"
+	@echo ""
+	@echo "Artifacts:"
+	@echo "  make generate     - Generate OWL/SHACL/context from LinkML"
+	@echo "  make validate     - SHACL-validate example credentials"
+	@echo "  make check        - Generate + validate"
 	@echo ""
 	@echo "Linting:"
 	@echo "  make lint         - Run pre-commit checks"
 	@echo "  make format       - Format code with black/isort"
-	@echo ""
-	@echo "Artifacts:"
-	@echo "  make generate     - Generate OWL/SHACL/context from LinkML"
-	@echo ""
-	@echo "Validation:"
-	@echo "  make validate     - SHACL-validate example credentials"
-	@echo "  make check        - Generate + validate"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test         - Run all tests"
@@ -147,3 +79,152 @@ help: ## Show this help
 	@echo ""
 	@echo "Cleaning:"
 	@echo "  make clean        - Remove generated artifacts and caches"
+
+# ---------- Setup ----------
+
+setup: ## Create venv, install deps, setup submodules
+	@echo "Setting up development environment..."
+	@echo "Checking Python virtual environment and dependencies..."
+	@set -e; \
+	if [ ! -x "$(PYTHON)" ]; then \
+		echo "Python virtual environment not found; bootstrapping..."; \
+		$(MAKE) --no-print-directory $(VENV)/bin/activate; \
+	elif $(PYTHON) -c "import pre_commit, linkml, harbour; from importlib.metadata import version; version('credentials'); version('ontology-management-base')" >/dev/null 2>&1; then \
+		echo "OK: Python virtual environment and dependencies are ready at $(VENV)"; \
+	else \
+		echo "Python virtual environment found but dependencies are missing; bootstrapping..."; \
+		$(MAKE) --no-print-directory -B $(VENV)/bin/activate; \
+	fi
+	@echo ""
+	@echo "Setup complete. Activate with: source $(VENV)/bin/activate"
+
+$(VENV)/bin/python3:
+	@echo "Creating Python virtual environment at $(VENV)..."
+	@$(BOOTSTRAP_PYTHON) -m venv $(VENV)
+	@$(PIP) install --upgrade pip
+	@echo "OK: Python virtual environment ready"
+
+$(VENV)/bin/activate: $(VENV)/bin/python3
+	@echo "Installing submodule dependencies..."
+	@$(MAKE) --no-print-directory submodule-setup
+	@echo "Installing Python dependencies..."
+	@$(PIP) install -e ".[dev]"
+	@$(PRECOMMIT) install
+	@echo "OK: Python development environment ready"
+
+# Setup submodules using the same active venv (pip install preferred, make -C fallback)
+submodule-setup:
+	@echo "Setting up harbour-credentials submodule..."
+	@set -e; \
+	if [ -f "$(HARBOUR_SUBMODULE_DIR)/pyproject.toml" ]; then \
+		$(PIP) install -e "$(HARBOUR_SUBMODULE_DIR)[dev]"; \
+		echo "OK: harbour-credentials submodule setup complete"; \
+	elif [ -f "$(HARBOUR_SUBMODULE_DIR)/Makefile" ]; then \
+		$(MAKE) --no-print-directory -C $(HARBOUR_SUBMODULE_DIR) setup \
+			VENV="$(abspath $(VENV))" \
+			PYTHON="$(abspath $(PYTHON))" \
+			PIP="$(abspath $(PYTHON)) -m pip" \
+			PRECOMMIT="$(abspath $(PYTHON)) -m pre_commit" \
+			PYTEST="$(abspath $(PYTHON)) -m pytest"; \
+		echo "OK: harbour-credentials submodule setup complete"; \
+	else \
+		echo "WARNING: Skipping harbour-credentials submodule setup (not found)"; \
+	fi
+	@echo "Setting up ontology-management-base submodule..."
+	@set -e; \
+	if [ -f "$(OMB_SUBMODULE_DIR)/pyproject.toml" ]; then \
+		$(PIP) install -e "$(OMB_SUBMODULE_DIR)"; \
+		echo "OK: ontology-management-base submodule setup complete"; \
+	elif [ -f "$(OMB_SUBMODULE_DIR)/Makefile" ]; then \
+		$(MAKE) --no-print-directory -C $(OMB_SUBMODULE_DIR) setup \
+			VENV="$(abspath $(VENV))" \
+			PYTHON="$(abspath $(PYTHON))" \
+			PIP="$(abspath $(PYTHON)) -m pip" \
+			PRECOMMIT="$(abspath $(PYTHON)) -m pre_commit" \
+			PYTEST="$(abspath $(PYTHON)) -m pytest"; \
+		echo "OK: ontology-management-base submodule setup complete"; \
+	else \
+		echo "WARNING: Skipping ontology-management-base submodule setup (not found)"; \
+	fi
+
+# ---------- Install ----------
+
+install: ## Install package (user mode)
+	@echo "Installing package in editable mode..."
+ifndef CI
+	@$(MAKE) --no-print-directory $(VENV)/bin/python3
+endif
+	@$(PIP) install -e $(HARBOUR_SUBMODULE_DIR) -e $(OMB_SUBMODULE_DIR) -e .
+	@echo "OK: Package installation complete"
+
+install-dev: ## Install with dev dependencies + pre-commit
+	@echo "Installing development dependencies..."
+ifndef CI
+	@$(MAKE) --no-print-directory $(VENV)/bin/python3
+endif
+	@$(PIP) install -e "$(HARBOUR_SUBMODULE_DIR)[dev]" -e $(OMB_SUBMODULE_DIR) -e ".[dev]"
+ifndef CI
+	@$(PRECOMMIT) install
+endif
+	@echo "OK: Development dependencies installed"
+
+# ---------- Lint ----------
+
+lint: ## Run pre-commit (black, isort, flake8, JSON-LD parse, Turtle parse)
+	$(call check_dev_setup)
+	@$(PRECOMMIT) run --all-files
+
+format: ## Format code with black and isort
+	$(call check_dev_setup)
+	@$(PYTHON) -m black src/ tests/
+	@$(PYTHON) -m isort src/ tests/
+
+# ---------- Generate ----------
+
+generate: ## Generate JSON-LD contexts, SHACL shapes, OWL ontologies from LinkML
+	$(call check_dev_setup)
+	@$(PYTHON) src/generate_artifacts.py
+
+# ---------- Validate ----------
+
+validate: ## SHACL-validate all example credentials
+	$(call check_dev_setup)
+	@if [ -z "$(EXAMPLES)" ]; then \
+		echo "No example files found."; \
+		exit 0; \
+	fi
+	@echo "Running SHACL data conformance check on examples..."
+	@cd $(OMB_SUBMODULE_DIR) && \
+		$(abspath $(PYTHON)) -m src.tools.validators.validation_suite \
+			--run check-data-conformance \
+			--data-paths $(addprefix ../../,$(EXAMPLES)) \
+			--artifacts ../../artifacts ../../$(HARBOUR_SUBMODULE_DIR)/artifacts
+
+# ---------- Test ----------
+
+test-harbour: ## Run harbour-credentials JOSE tests
+	@cd $(HARBOUR_SUBMODULE_DIR) && PYTHONPATH=src/python:$$PYTHONPATH $(abspath $(PYTEST)) tests/ -v
+
+test: test-harbour ## Run all tests (harbour + main repo)
+	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTEST) tests/ -v
+
+test-cov: ## Run tests with coverage report
+	$(call check_dev_setup)
+	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTEST) tests/ --cov=src --cov-report=html --cov-report=term
+
+# ---------- Compound targets ----------
+
+check: generate validate ## Generate artifacts then validate examples
+
+all: setup lint check test ## Full end-to-end: setup, lint, generate, validate, test
+
+# ---------- Clean ----------
+
+clean: ## Remove generated artifacts (keeps venv)
+	@echo "Cleaning generated files and caches..."
+	@rm -rf artifacts/simpulseid
+	@rm -rf build/ dist/ *.egg-info/
+	@rm -rf .pytest_cache/ htmlcov .coverage
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	@echo "OK: Cleaned"

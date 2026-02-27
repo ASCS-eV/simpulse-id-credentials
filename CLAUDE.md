@@ -9,6 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Key submodules:**
 - `submodules/harbour-credentials` — Cryptographic signing/verification library (Python + TypeScript)
 - `submodules/ontology-management-base` — Ontology validation pipeline
+- `submodules/service-characteristics` — Gaia-X service characteristics schemas
+- `submodules/w3id.org` — W3ID redirect rules
 
 ## Essential Commands
 
@@ -39,17 +41,19 @@ pytest tests/ --cov=src --cov-report=html
 ### Directory Structure
 
 ```
-credentials/
+simpulse-id-credentials/
 ├── linkml/           # LinkML schema definitions (.yaml)
 ├── artifacts/        # Generated OWL, SHACL, JSON-LD context files
 ├── examples/         # Example credential instances
 ├── src/              # Python source code
 ├── tests/            # Pytest tests
 ├── docs/             # Documentation
-├── manifests/        # Kubernetes/deployment manifests
+├── manifests/        # Wallet rendering manifests
 └── submodules/
     ├── harbour-credentials/        # Signing library
-    └── ontology-management-base/   # Validation pipeline
+    ├── ontology-management-base/   # Validation pipeline
+    ├── service-characteristics/    # Gaia-X service characteristics
+    └── w3id.org/                   # W3ID redirect rules
 ```
 
 ### LinkML Schema Pipeline
@@ -118,7 +122,7 @@ Read these before making changes:
 | Topic | File |
 |-------|------|
 | Agent instructions | [AGENTS.md](AGENTS.md) |
-| Documentation | [docs/README.md](docs/README.md) |
+| Documentation | [docs/index.md](docs/index.md) |
 
 ## Common Mistakes to Avoid
 

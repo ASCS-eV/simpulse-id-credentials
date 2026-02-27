@@ -28,14 +28,14 @@ repos:
 
       - id: jsonld-lint
         name: JSON-LD Parser
-        entry: python -m src.tools.validators.syntax_validator --json
+        entry: python3 -m src.tools.validators.syntax_validator --json
         language: system
         types: [json]
         files: \.json$
 
       - id: turtle-lint
         name: Turtle Parser
-        entry: python -m src.tools.validators.syntax_validator --turtle
+        entry: python3 -m src.tools.validators.syntax_validator --turtle
         language: system
         types: [text]
         files: \.(ttl)$

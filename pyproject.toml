@@ -12,7 +12,8 @@ dependencies = [
     "pyld>=2.0.4",
     "PyYAML>=6.0.3",
     "click>=8.0.0, <8.2",
-    "harbour-credentials",
+    # harbour-credentials: installed from submodule via make setup (not on PyPI)
+    # ontology-management-base: installed from submodule via make setup (not on PyPI)
 ]
 
 [project.optional-dependencies]

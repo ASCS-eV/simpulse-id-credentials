@@ -7,19 +7,14 @@
         "https://www.w3.org/ns/credentials/v2",
         "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
         "https://w3id.org/reachhaven/harbour/credentials/v1/",
-        "https://w3id.org/gaia-x/development/"
+        "https://w3id.org/gaia-x/development#"
       ],
       "type": [
         "VerifiableCredential",
         "simpulseid:ParticipantCredential"
       ],
       "id": "urn:uuid:576fbefb-35e8-4b71-bb1a-53d1803c86de",
-      "issuer": {
-        "id": "did:web:did.ascs.digital:participants:ascs",
-        "type": "simpulseid:Issuer",
-        "gaiaxTermsAndConditions": "067dcac5efd18c1927deb1ffed3feab6d0ad044c0a9a263e6d5d8bdc43224515",
-        "member": "did:web:did.ascs.digital:participants:bmw"
-      },
+      "issuer": "did:web:did.ascs.digital:participants:ascs",
       "validFrom": "2025-08-06T10:15:22Z",
       "validUntil": "2030-08-05T00:00:00Z",
       "credentialSubject": {
@@ -29,19 +24,60 @@
           "gx:LegalPerson",
           "schema:Organization"
         ],
-        "legalName": "Bayerische Motoren Werke Aktiengesellschaft",
+        "name": "Bayerische Motoren Werke Aktiengesellschaft",
         "legalForm": "AG",
         "duns": "313995269",
         "email": "imprint@bmw.com",
         "url": "https://www.bmwgroup.com/",
-        "legalAddress": {
-          "@type": "gx:Address",
-          "streetAddress": "Petuelring 130",
-          "postalCode": "80809",
-          "locality": "München",
-          "countryCode": "DE"
+        "gxParticipant": {
+          "type": "gx:LegalPerson",
+          "gx:legalAddress": {
+            "type": "gx:Address",
+            "gx:streetAddress": "Petuelring 130",
+            "gx:postalCode": "80809",
+            "gx:locality": "München",
+            "gx:countryCode": "DE"
+          },
+          "gx:registrationNumber": [
+            {
+              "type": "gx:RegistrationNumber",
+              "gx:vatID": "DE129273398"
+            }
+          ]
         }
-      }
+      },
+      "credentialStatus": [
+        {
+          "type": "harbour:CRSetEntry",
+          "harbour:registryId": "urn:uuid:abc12345-0000-0000-0000-000000000001",
+          "harbour:index": 0
+        }
+      ],
+      "evidence": [
+        {
+          "type": "harbour:CredentialEvidence",
+          "verifiablePresentation": {
+            "@context": [
+              "https://www.w3.org/ns/credentials/v2"
+            ],
+            "type": ["VerifiablePresentation"],
+            "verifiableCredential": [
+              {
+                "@context": [
+                  "https://www.w3.org/ns/credentials/v2",
+                  "https://w3id.org/reachhaven/harbour/credentials/v1/"
+                ],
+                "type": ["VerifiableCredential", "harbour:EmailPass"],
+                "issuer": "did:web:did.ascs.digital:participants:ascs",
+                "validFrom": "2025-08-06T10:00:00Z",
+                "credentialSubject": {
+                  "email": "admin1@asc-s.de"
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
   },
   "signing": {
@@ -51,7 +87,7 @@
   },
   "output": {
     "_description": "Expected values in the signed JWT",
-    "decoded_header_typ": "vc+ld+jwt",
+    "decoded_header_typ": "vc+jwt",
     "decoded_header_alg": "ES256",
     "decoded_payload_type": [
       "VerifiableCredential",
