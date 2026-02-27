@@ -34,7 +34,7 @@ Read these BEFORE making changes:
 | ------------------ | ---------------------- |
 | Agent instructions | [../AGENTS.md](../AGENTS.md) |
 | Claude guidance    | [../CLAUDE.md](../CLAUDE.md) |
-| Documentation      | [../docs/README.md](../docs/README.md) |
+| Documentation      | [../docs/index.md](../docs/index.md) |
 
 ## Core Principles
 
@@ -45,13 +45,18 @@ Read these BEFORE making changes:
 ## Project Structure
 
 ```
-credentials/
+simpulse-id-credentials/
 ├── linkml/           # LinkML schema definitions (.yaml)
 ├── artifacts/        # Generated OWL, SHACL, JSON-LD context files
 ├── examples/         # Example credential instances
+├── manifests/        # Wallet rendering manifests
 ├── src/              # Python source code
 ├── tests/            # Pytest tests
-└── submodules/       # Git submodules
+├── docs/             # MkDocs source pages
+└── submodules/
+    ├── harbour-credentials/      # Signing and verification library
+    ├── ontology-management-base/ # Ontology validation pipeline
+    └── w3id.org/                 # W3ID redirect rules
 ```
 
 ## Key Conventions
