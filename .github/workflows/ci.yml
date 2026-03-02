@@ -16,6 +16,8 @@ jobs:
   standards-and-syntax:
     name: Standards & Syntax
     runs-on: ubuntu-latest
+    env:
+      CI: "1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,15 +30,43 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: python3 -m pip install -e ./submodules/ontology-management-base -e ".[dev]"
+        run: make install-dev
 
-      - name: Run pre-commit (Lint + Syntax)
-        run: pre-commit run --all-files
+      - name: Lint
+        run: make lint
 
-  # --- JOB 2: Test Suite (Python) ---
+  # --- JOB 2: Generate & Validate ---
+  generate-validate:
+    name: Generate & Validate
+    runs-on: ubuntu-latest
+    env:
+      CI: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Generate artifacts
+        run: make generate
+
+      - name: Validate examples
+        run: make validate
+
+  # --- JOB 3: Test Suite (Python) ---
   test-python:
     name: Test Suite (Python)
     runs-on: ubuntu-latest
+    env:
+      CI: "1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,30 +77,13 @@ jobs:
           python-version: "3.12"
           cache: 'pip'
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
+      - name: Install dependencies
+        run: make install-dev
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Run tests
+        run: make test
 
-      - name: Install Python dependencies
-        run: python3 -m pip install -e "./submodules/harbour-credentials[dev]" -e ./submodules/ontology-management-base -e ".[dev]"
-
-      - name: Install JS dependencies (for interop tests)
-        working-directory: submodules/harbour-credentials/src/typescript/harbour
-        run: yarn install --immutable
-
-      - name: Run harbour-credentials JOSE tests
-        run: |
-          cd submodules/harbour-credentials
-          PYTHONPATH=src/python:$PYTHONPATH pytest tests/ -v --tb=short
-
-      - name: Run all main repo tests
-        run: |
-          PYTHONPATH=submodules/harbour-credentials/src/python:$PYTHONPATH pytest tests/ -v --tb=short
-
-  # --- JOB 3: Test Suite (TypeScript) ---
+  # --- JOB 4: Test Suite (TypeScript) ---
   test-ts:
     name: Test Suite (TypeScript)
     runs-on: ubuntu-latest
@@ -93,33 +106,3 @@ jobs:
       - name: Run TypeScript tests
         working-directory: submodules/harbour-credentials/src/typescript/harbour
         run: yarn test
-
-  # --- JOB 4: Examples Validation ---
-  validate-examples:
-    name: Validate Examples
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: python3 -m pip install -e ./submodules/ontology-management-base -e ".[dev]"
-
-      - name: Generate artifacts from LinkML
-        run: python3 src/generate_from_linkml.py
-
-      - name: SHACL-validate example credentials
-        run: |
-          FILES=$(find examples -name "*.json" -o -name "*.jsonld" | sort)
-          if [ -z "$FILES" ]; then
-            echo "No example files found."
-            exit 0
-          fi
-          echo "Validating: $FILES"
-          onto-validate --run check-data-conformance --path $FILES --no-catalog

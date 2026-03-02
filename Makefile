@@ -22,6 +22,15 @@ endif
 # Bootstrap interpreter used only to create the venv
 BOOTSTRAP_PYTHON := python3
 
+# Absolute path to Python (for use after cd into subdirectories).
+# In CI, PYTHON is a bare command ('python3') so resolve via PATH;
+# locally it is a relative venv path so abspath works.
+ifdef CI
+    PYTHON_ABS := $(shell which $(PYTHON))
+else
+    PYTHON_ABS := $(abspath $(PYTHON))
+endif
+
 # Tooling inside the selected virtual environment
 PIP := $(PYTHON) -m pip
 PRECOMMIT := $(PYTHON) -m pre_commit
@@ -195,15 +204,15 @@ validate: ## SHACL-validate all example credentials
 	fi
 	@echo "Running SHACL data conformance check on examples..."
 	@cd $(OMB_SUBMODULE_DIR) && \
-		$(abspath $(PYTHON)) -m src.tools.validators.validation_suite \
+		$(PYTHON_ABS) -m src.tools.validators.validation_suite \
 			--run check-data-conformance \
 			--data-paths $(addprefix ../../,$(EXAMPLES)) \
 			--artifacts ../../artifacts ../../$(HARBOUR_SUBMODULE_DIR)/artifacts
 
 # ---------- Test ----------
 
-test-harbour: ## Run harbour-credentials JOSE tests
-	@cd $(HARBOUR_SUBMODULE_DIR) && PYTHONPATH=src/python:$$PYTHONPATH $(abspath $(PYTEST)) tests/ -v
+test-harbour: ## Run harbour-credentials JOSE tests (excludes interop — covered by harbour CI)
+	@cd $(HARBOUR_SUBMODULE_DIR) && PYTHONPATH=src/python:$$PYTHONPATH $(PYTHON_ABS) -m pytest tests/ -v --ignore=tests/interop
 
 test: test-harbour ## Run all tests (harbour + main repo)
 	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTEST) tests/ -v
