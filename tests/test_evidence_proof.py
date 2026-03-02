@@ -1,9 +1,9 @@
 """Tests for the evidence proof chain in SimpulseID credentials.
 
 Verifies that:
-1. Expanded evidence VPs can be signed and produce valid JWTs
+1. Empty evidence VPs (holder + nonce, no inner VCs) can be signed and verified
 2. Outer credentials with JWT evidence can be signed and verified
-3. The full chain (outer VC -> evidence VP -> inner VC) is decodable
+3. The full chain (outer VC -> evidence VP) is decodable
 """
 
 import base64
@@ -48,28 +48,21 @@ def _get_evidence_vp(vc: dict) -> dict | None:
 
 
 class TestEvidenceVPSigning:
-    """Test signing of evidence VPs extracted from example credentials."""
+    """Test signing of empty evidence VPs extracted from example credentials."""
 
-    def test_sign_credential_evidence_vp(
+    def test_sign_empty_evidence_vp(
         self, p256_private_key, p256_public_key, p256_did_key_vm
     ):
-        """Sign a CredentialEvidence VP and verify it."""
+        """Sign an empty CredentialEvidence VP and verify it."""
         vc = _load_example("simpulseid-participant-credential.json")
         vp = _get_evidence_vp(vc)
         assert vp is not None, "Expected expanded evidence VP"
+        assert "verifiableCredential" not in vp, "VP should be empty (no inner VCs)"
 
-        # Sign inner VCs first
-        inner_vcs = vp.get("verifiableCredential", [])
-        inner_jwts = []
-        for inner_vc in inner_vcs:
-            jwt = sign_vc_jose(inner_vc, p256_private_key, kid=p256_did_key_vm)
-            inner_jwts.append(jwt)
-
-        # Build VP with JWT inner VCs
+        # Build VP for signing
         signed_vp = {
             "@context": vp["@context"],
             "type": vp["type"],
-            "verifiableCredential": inner_jwts,
         }
         if "holder" in vp:
             signed_vp["holder"] = vp["holder"]
@@ -82,7 +75,7 @@ class TestEvidenceVPSigning:
         # Verify VP
         result = verify_vp_jose(vp_jwt, p256_public_key, expected_nonce=nonce)
         assert result["type"] == ["VerifiablePresentation"]
-        assert len(result["verifiableCredential"]) == 1
+        assert "verifiableCredential" not in result
 
     def test_sign_membership_evidence_vp(
         self, p256_private_key, p256_public_key, p256_did_key_vm
@@ -92,22 +85,62 @@ class TestEvidenceVPSigning:
         vp = _get_evidence_vp(vc)
         assert vp is not None, "Expected expanded evidence VP"
 
-        inner_vcs = vp.get("verifiableCredential", [])
-        inner_jwts = []
-        for inner_vc in inner_vcs:
-            jwt = sign_vc_jose(inner_vc, p256_private_key, kid=p256_did_key_vm)
-            inner_jwts.append(jwt)
+        signed_vp = {
+            "@context": vp["@context"],
+            "type": vp["type"],
+        }
+        if "holder" in vp:
+            signed_vp["holder"] = vp["holder"]
+
+        nonce = vp.get("nonce")
+        vp_jwt = sign_vp_jose(
+            signed_vp, p256_private_key, kid=p256_did_key_vm, nonce=nonce
+        )
+
+        result = verify_vp_jose(vp_jwt, p256_public_key, expected_nonce=nonce)
+        assert result["type"] == ["VerifiablePresentation"]
+
+    def test_evidence_vp_has_holder(
+        self, p256_private_key, p256_public_key, p256_did_key_vm
+    ):
+        """Evidence VP should carry the holder DID after signing."""
+        vc = _load_example("simpulseid-participant-credential.json")
+        vp = _get_evidence_vp(vc)
 
         signed_vp = {
             "@context": vp["@context"],
             "type": vp["type"],
-            "verifiableCredential": inner_jwts,
+            "holder": vp["holder"],
         }
+        nonce = vp.get("nonce")
+        vp_jwt = sign_vp_jose(
+            signed_vp, p256_private_key, kid=p256_did_key_vm, nonce=nonce
+        )
 
-        vp_jwt = sign_vp_jose(signed_vp, p256_private_key, kid=p256_did_key_vm)
+        result = verify_vp_jose(vp_jwt, p256_public_key, expected_nonce=nonce)
+        assert result["holder"] == vp["holder"]
+        assert result["holder"].startswith("did:")
 
-        result = verify_vp_jose(vp_jwt, p256_public_key)
-        assert result["type"] == ["VerifiablePresentation"]
+    def test_evidence_vp_has_nonce(
+        self, p256_private_key, p256_public_key, p256_did_key_vm
+    ):
+        """Evidence VP should carry the nonce after signing."""
+        vc = _load_example("simpulseid-participant-credential.json")
+        vp = _get_evidence_vp(vc)
+        nonce = vp.get("nonce")
+        assert nonce is not None, "Expected nonce in evidence VP"
+
+        signed_vp = {
+            "@context": vp["@context"],
+            "type": vp["type"],
+            "holder": vp["holder"],
+        }
+        vp_jwt = sign_vp_jose(
+            signed_vp, p256_private_key, kid=p256_did_key_vm, nonce=nonce
+        )
+
+        result = verify_vp_jose(vp_jwt, p256_public_key, expected_nonce=nonce)
+        assert "nonce" in result
 
 
 # ---------------------------------------------------------------------------
@@ -116,11 +149,11 @@ class TestEvidenceVPSigning:
 
 
 class TestFullProofChain:
-    """Test the full signing chain: inner VC -> evidence VP -> outer VC."""
+    """Test the full signing chain: evidence VP -> outer VC."""
 
     @pytest.fixture()
     def signed_participant(self, p256_private_key, p256_public_key, p256_did_key_vm):
-        """Sign the participant credential with full evidence chain."""
+        """Sign the participant credential with empty evidence VP."""
         import copy
 
         vc = _load_example("simpulseid-participant-credential.json")
@@ -130,16 +163,9 @@ class TestFullProofChain:
         for ev in vc_copy.get("evidence", []):
             vp = ev.get("verifiablePresentation")
             if isinstance(vp, dict):
-                # Sign inner VCs
-                inner_jwts = []
-                for inner_vc in vp.get("verifiableCredential", []):
-                    inner_jwts.append(
-                        sign_vc_jose(inner_vc, p256_private_key, kid=p256_did_key_vm)
-                    )
                 signed_vp = {
                     "@context": vp["@context"],
                     "type": vp["type"],
-                    "verifiableCredential": inner_jwts,
                 }
                 if "holder" in vp:
                     signed_vp["holder"] = vp["holder"]
@@ -180,16 +206,6 @@ class TestFullProofChain:
         result = verify_vp_jose(evidence_vp_jwt, p256_public_key)
         assert result["type"] == ["VerifiablePresentation"]
 
-    def test_inner_emailpass_vc_verifies(self, signed_participant, p256_public_key):
-        """The inner EmailPass VC JWT inside the evidence VP should verify."""
-        _, evidence_vp_jwt = signed_participant
-        vp_result = verify_vp_jose(evidence_vp_jwt, p256_public_key)
-        inner_jwt = vp_result["verifiableCredential"][0]
-        assert isinstance(inner_jwt, str)
-        inner_result = verify_vc_jose(inner_jwt, p256_public_key)
-        assert "EmailPass" in inner_result["type"]
-        assert inner_result["credentialSubject"]["email"] == "admin1@asc-s.de"
-
     def test_full_chain_decoded(self, signed_participant):
         """Decode the full chain and verify structure."""
         vc_jwt, evidence_vp_jwt = signed_participant
@@ -202,12 +218,8 @@ class TestFullProofChain:
         # Decode evidence VP
         vp = _decode_jwt(evidence_vp_jwt)
         assert vp["header"]["typ"] == "vp+jwt"
-
-        # Decode inner EmailPass VC
-        inner_jwt = vp["payload"]["verifiableCredential"][0]
-        inner = _decode_jwt(inner_jwt)
-        assert inner["header"]["typ"] == "vc+jwt"
-        assert "EmailPass" in inner["payload"]["type"]
+        # Empty VP — no verifiableCredential array
+        assert "verifiableCredential" not in vp["payload"]
 
     def test_issuer_is_string_did(self, signed_participant, p256_public_key):
         """The issuer should be a string DID (not an object)."""
@@ -215,6 +227,16 @@ class TestFullProofChain:
         result = verify_vc_jose(vc_jwt, p256_public_key)
         assert isinstance(result["issuer"], str)
         assert result["issuer"].startswith("did:")
+
+    def test_credential_subject_has_harbour_credential(
+        self, signed_participant, p256_public_key
+    ):
+        """The credential subject should have a harbourCredential IRI."""
+        vc_jwt, _ = signed_participant
+        result = verify_vc_jose(vc_jwt, p256_public_key)
+        subject = result["credentialSubject"]
+        assert "harbourCredential" in subject
+        assert subject["harbourCredential"].startswith("urn:uuid:")
 
 
 # ---------------------------------------------------------------------------

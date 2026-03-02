@@ -32,8 +32,9 @@ Each credential in this folder uses:
 
 Types included:
 
-- **Participant Credential**  
-  Identity of an organization (e.g., BMW), aligned with Gaia-X `gx:LegalPerson`.
+- **Participant Credential**
+  Identity of an organization (e.g., BMW). References a Harbour Gaia-X credential
+  via `harbourCredential` IRI as the baseline of trust.
 
 - **ASCS Base Membership Credential**  
   Proof of base membership in ASCS e.V.

@@ -1,7 +1,6 @@
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://w3id.org/gaia-x/development#",
     "https://w3id.org/reachhaven/harbour/credentials/v1/",
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
   ],
@@ -16,6 +15,7 @@
     "id": "did:web:did.ascs.digital:participants:bmw",
     "type": "simpulseid:Participant",
     "name": "Bayerische Motoren Werke Aktiengesellschaft",
+    "harbourCredential": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "legalForm": "AG"
   },
   "credentialStatus": [

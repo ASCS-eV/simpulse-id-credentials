@@ -9,8 +9,8 @@ This folder contains downstream artefacts generated from LinkML schemas:
 Each schema is generated into its own flat subfolder, matching the ontology-management-base pattern:
 
 - `artifacts/simpulseid/` (this repo)
-- `submodules/harbour-credentials/artifacts/core/` (harbour-credentials repo)
-- `submodules/harbour-credentials/artifacts/harbour/` (harbour-credentials repo)
+- `submodules/harbour-credentials/artifacts/harbour-core-credential/` (harbour-credentials repo)
+- `submodules/harbour-credentials/artifacts/harbour-gx-credential/` (harbour-credentials repo)
 
 ## 1) Generate
 

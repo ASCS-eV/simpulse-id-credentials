@@ -5,9 +5,8 @@
     "vc": {
       "@context": [
         "https://www.w3.org/ns/credentials/v2",
-        "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
         "https://w3id.org/reachhaven/harbour/credentials/v1/",
-        "https://w3id.org/gaia-x/development#"
+        "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
       ],
       "type": [
         "VerifiableCredential",
@@ -19,32 +18,13 @@
       "validUntil": "2030-08-05T00:00:00Z",
       "credentialSubject": {
         "id": "did:web:did.ascs.digital:participants:bmw",
-        "type": [
-          "simpulseid:Participant",
-          "gx:LegalPerson",
-          "schema:Organization"
-        ],
+        "type": "simpulseid:Participant",
         "name": "Bayerische Motoren Werke Aktiengesellschaft",
+        "harbourCredential": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
         "legalForm": "AG",
         "duns": "313995269",
         "email": "imprint@bmw.com",
-        "url": "https://www.bmwgroup.com/",
-        "gxParticipant": {
-          "type": "gx:LegalPerson",
-          "gx:legalAddress": {
-            "type": "gx:Address",
-            "gx:streetAddress": "Petuelring 130",
-            "gx:postalCode": "80809",
-            "gx:locality": "München",
-            "gx:countryCode": "DE"
-          },
-          "gx:registrationNumber": [
-            {
-              "type": "gx:RegistrationNumber",
-              "gx:vatID": "DE129273398"
-            }
-          ]
-        }
+        "url": "https://www.bmwgroup.com/"
       },
       "credentialStatus": [
         {
@@ -61,20 +41,8 @@
               "https://www.w3.org/ns/credentials/v2"
             ],
             "type": ["VerifiablePresentation"],
-            "verifiableCredential": [
-              {
-                "@context": [
-                  "https://www.w3.org/ns/credentials/v2",
-                  "https://w3id.org/reachhaven/harbour/credentials/v1/"
-                ],
-                "type": ["VerifiableCredential", "harbour:EmailPass"],
-                "issuer": "did:web:did.ascs.digital:participants:ascs",
-                "validFrom": "2025-08-06T10:00:00Z",
-                "credentialSubject": {
-                  "email": "admin1@asc-s.de"
-                }
-              }
-            ]
+            "holder": "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd",
+            "nonce": "d3931310 ISSUE_PAYLOAD 4d50761d2d4c28f93eb268b7b0b442bcef039b5a8672113e8ff53de73c13c189"
           }
         }
       ]

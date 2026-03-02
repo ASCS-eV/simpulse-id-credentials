@@ -1,14 +1,13 @@
 """Generate signed VC-JOSE-COSE JWT artifacts from example credentials.
 
-Reads expanded (human-readable) examples from examples/*.json and
-examples/gaiax/*.json, then produces wire-format signed JWTs plus
-decoded companion files in examples/signed/.
+Reads expanded (human-readable) examples from examples/*.json, then produces
+wire-format signed JWTs plus decoded companion files in examples/signed/.
 
 Output per credential:
   - <name>.jwt                      — VC-JOSE-COSE compact JWS (wire format)
   - <name>.decoded.json             — Decoded JWT header + payload
   - <name>.evidence-vp.jwt          — Evidence VP JWT (if evidence present)
-  - <name>.evidence-vp.decoded.json — Decoded evidence VP with inner VCs decoded
+  - <name>.evidence-vp.decoded.json — Decoded evidence VP
 
 Source examples are NEVER modified.
 """
@@ -59,10 +58,10 @@ def load_test_p256_keypair():
 
 
 def sign_evidence_vp(vp: dict, private_key, kid: str) -> str:
-    """Sign an evidence VP and its inner VCs as VC-JOSE-COSE JWTs.
+    """Sign an evidence VP as a VC-JOSE-COSE JWT.
 
-    Takes the expanded VP object, signs each inner VC, replaces them with
-    JWT strings, then signs the VP envelope.
+    Takes the expanded VP object (empty VP with holder + nonce, no inner VCs)
+    and signs it.
     """
     clean_vp = {
         "@context": vp.get("@context", ["https://www.w3.org/ns/credentials/v2"]),
@@ -72,42 +71,13 @@ def sign_evidence_vp(vp: dict, private_key, kid: str) -> str:
     if "holder" in vp:
         clean_vp["holder"] = vp["holder"]
 
-    # Sign inner VCs
-    inner_vcs = vp.get("verifiableCredential", [])
-    inner_jwts = []
-    for vc in inner_vcs:
-        if isinstance(vc, dict):
-            inner_jwt = sign_vc_jose(vc, private_key, kid=kid)
-            inner_jwts.append(inner_jwt)
-        else:
-            # Already a JWT string
-            inner_jwts.append(vc)
-    if inner_jwts:
-        clean_vp["verifiableCredential"] = inner_jwts
-
     nonce = vp.get("nonce")
     return sign_vp_jose(clean_vp, private_key, kid=kid, nonce=nonce)
 
 
 def decode_evidence_vp(vp_jwt: str) -> dict:
-    """Decode an evidence VP JWT with nested inner VC JWTs decoded inline."""
-    decoded = _decode_jwt(vp_jwt)
-    inner_vcs = decoded["payload"].get("verifiableCredential", [])
-    decoded_inners = []
-    for inner in inner_vcs:
-        if isinstance(inner, str) and "." in inner:
-            inner_decoded = _decode_jwt(inner)
-            decoded_inners.append(
-                {
-                    "_jwt": inner,
-                    "_decoded": inner_decoded,
-                }
-            )
-        else:
-            decoded_inners.append(inner)
-    if decoded_inners:
-        decoded["payload"]["verifiableCredential"] = decoded_inners
-    return decoded
+    """Decode an evidence VP JWT."""
+    return _decode_jwt(vp_jwt)
 
 
 def discover_examples() -> list[tuple[Path, str]]:

@@ -1,4 +1,4 @@
 {
-  "./harbour": "../submodules/harbour-credentials/linkml/harbour",
-  "harbour": "../submodules/harbour-credentials/linkml/harbour"
+  "./harbour": "../submodules/harbour-credentials/linkml/harbour-core-credential",
+  "harbour": "../submodules/harbour-credentials/linkml/harbour-core-credential"
 }

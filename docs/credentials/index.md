@@ -36,7 +36,7 @@ All credentials follow the W3C Verifiable Credentials Data Model v2.0:
 Credential types are defined in LinkML YAML files under `linkml/`:
 
 - `linkml/simpulseid.yaml` — Main schema with credential classes
-- `linkml/harbour.yaml` — Harbour-specific types
+- `linkml/harbour-core-credential.yaml` — Harbour core types (imported via `importmap.json`)
 
 ## Generating Artifacts
 

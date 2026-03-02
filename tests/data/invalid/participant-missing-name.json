@@ -1,7 +1,6 @@
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://w3id.org/gaia-x/development#",
     "https://w3id.org/reachhaven/harbour/credentials/v1/",
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
   ],
@@ -16,34 +15,11 @@
   "credentialSubject": {
     "id": "did:web:did.ascs.digital:participants:bmw",
     "type": "simpulseid:Participant",
+    "harbourCredential": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "legalForm": "AG",
     "duns": "313995269",
     "email": "imprint@bmw.com",
-    "url": "https://www.bmwgroup.com/",
-    "gxParticipant": {
-      "@type": "gx:LegalPerson",
-      "gx:registrationNumber": [
-        {
-          "@type": "gx:VatID",
-          "gx:countryCode": "DE",
-          "gx:vatID": "DE129273398"
-        }
-      ],
-      "gx:legalAddress": {
-        "@type": "gx:Address",
-        "gx:streetAddress": "Petuelring 130",
-        "gx:postalCode": "80809",
-        "gx:locality": "München",
-        "gx:countryCode": "DE"
-      },
-      "gx:headquartersAddress": {
-        "@type": "gx:Address",
-        "gx:streetAddress": "Petuelring 130",
-        "gx:postalCode": "80809",
-        "gx:locality": "München",
-        "gx:countryCode": "DE"
-      }
-    }
+    "url": "https://www.bmwgroup.com/"
   },
   "credentialStatus": [
     {

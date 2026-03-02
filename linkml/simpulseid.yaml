@@ -4,7 +4,8 @@ description: >
   LinkML schema for SimpulseID credentials.
   Domain layer on top of Harbour credentials base. Defines ASCS-specific
   credential types and subject types extending HarbourCredential.
-  Gaia-X compliance data is carried via composition (gxParticipant).
+  Gaia-X compliance is delegated to the Harbour baseline credential,
+  referenced via harbourCredential IRI.
 
 prefixes:
   linkml: https://w3id.org/linkml/
@@ -78,16 +79,15 @@ slots:
     slot_uri: simpulseid:legalForm
     range: SimpulseIdLegalForm
 
-  # --- Composition Slots ---
+  # --- Reference Slots ---
 
-  gxParticipant:
+  harbourCredential:
     description: >
-      Nested Gaia-X participant compliance data (opaque blank node).
-      When Gaia-X compliance is needed, the gx data (legalAddress,
-      headquartersAddress, registrationNumber, etc.) goes inside this node.
-    slot_uri: harbour:gxParticipant
-    range: Any
-    required: false
+      IRI reference to the Harbour Gaia-X credential that serves as the
+      baseline of trust for this SimpulseID credential.
+    slot_uri: simpulseid:harbourCredential
+    range: uri
+    required: true
 
   termsAndConditions:
     description: Terms and conditions accepted by the credential subject.
@@ -212,20 +212,19 @@ classes:
   SimpulseidParticipant:
     description: >
       An organization participating in the SimpulseID ecosystem.
-      In skeleton form only harbour properties are present. When Gaia-X
-      compliance is needed, gxParticipant carries the gx blank node.
+      References a Harbour Gaia-X credential via harbourCredential IRI
+      for the baseline of trust.
     class_uri: simpulseid:Participant
-    slots: [name, gxParticipant, legalForm, duns, email, url, termsAndConditions]
+    slots: [name, harbourCredential, legalForm, duns, email, url, termsAndConditions]
     slot_usage:
       name: { required: false }
-      gxParticipant: { required: false }
 
   SimpulseidAdministrator:
     description: >
       An administrator (natural person with elevated permissions) in the
       SimpulseID ecosystem.
     class_uri: simpulseid:Administrator
-    slots: [name, givenName, familyName, email, memberOf]
+    slots: [name, harbourCredential, givenName, familyName, email, memberOf]
     slot_usage:
       givenName: { required: true }
       familyName: { required: true }
@@ -235,7 +234,7 @@ classes:
     description: >
       A standard user (natural person) in the SimpulseID ecosystem.
     class_uri: simpulseid:User
-    slots: [name, givenName, familyName, email, memberOf]
+    slots: [name, harbourCredential, givenName, familyName, email, memberOf]
 
   AscsBaseMembership:
     description: >
