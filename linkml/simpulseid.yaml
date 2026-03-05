@@ -12,6 +12,7 @@ prefixes:
   simpulseid: https://w3id.org/ascs-ev/simpulse-id/credentials/v1/
   harbour: https://w3id.org/reachhaven/harbour/credentials/v1/
   schema: http://schema.org/
+  sdo: https://schema.org/
   cred: https://www.w3.org/2018/credentials#
   xsd: http://www.w3.org/2001/XMLSchema#
 
@@ -21,6 +22,7 @@ default_range: string
 imports:
   - linkml:types
   - ./harbour
+  - ./simpulseid-credentials
 
 # ==========================================
 # Slots
@@ -92,9 +94,16 @@ slots:
   termsAndConditions:
     description: Terms and conditions accepted by the credential subject.
     slot_uri: simpulseid:termsAndConditions
-    range: Any
+    range: TermsAndConditions
     multivalued: true
+    inlined: true
+    inlined_as_list: true
     required: false
+
+  hash:
+    description: Cryptographic hash of the referenced document.
+    slot_uri: simpulseid:hash
+    range: string
 
 # ==========================================
 # Enums
@@ -132,78 +141,14 @@ enums:
 
 classes:
   # ------------------------------------------
-  # 1. CREDENTIAL TYPES (extend HarbourCredential)
+  # 1. NESTED TYPES (blank node / inlined)
   # ------------------------------------------
 
-  ParticipantCredential:
-    is_a: HarbourCredential
+  TermsAndConditions:
     description: >
-      Credential attesting to a simpulseid:Participant (organization) identity.
-    class_uri: simpulseid:ParticipantCredential
-    attributes:
-      credentialStatus:
-        slot_uri: cred:credentialStatus
-        range: CRSetEntry
-        multivalued: true
-        required: false
-    slot_usage:
-      evidence: { required: false }
-
-  AdministratorCredential:
-    is_a: HarbourCredential
-    description: >
-      Credential attesting to a simpulseid:Administrator (person with elevated permissions).
-    class_uri: simpulseid:AdministratorCredential
-    attributes:
-      credentialStatus:
-        slot_uri: cred:credentialStatus
-        range: CRSetEntry
-        multivalued: true
-        required: false
-    slot_usage:
-      evidence: { required: false }
-
-  UserCredential:
-    is_a: HarbourCredential
-    description: >
-      Credential attesting to a simpulseid:User (natural person).
-    class_uri: simpulseid:UserCredential
-    attributes:
-      credentialStatus:
-        slot_uri: cred:credentialStatus
-        range: CRSetEntry
-        multivalued: true
-        required: false
-    slot_usage:
-      evidence: { required: false }
-
-  AscsBaseMembershipCredential:
-    is_a: HarbourCredential
-    description: >
-      Credential attesting to ASCS e.V. base membership.
-    class_uri: simpulseid:AscsBaseMembershipCredential
-    attributes:
-      credentialStatus:
-        slot_uri: cred:credentialStatus
-        range: CRSetEntry
-        multivalued: true
-        required: false
-    slot_usage:
-      evidence: { required: false }
-
-  AscsEnvitedMembershipCredential:
-    is_a: HarbourCredential
-    description: >
-      Credential attesting to ASCS e.V. ENVITED membership.
-    class_uri: simpulseid:AscsEnvitedMembershipCredential
-    attributes:
-      credentialStatus:
-        slot_uri: cred:credentialStatus
-        range: CRSetEntry
-        multivalued: true
-        required: false
-    slot_usage:
-      evidence: { required: false }
+      Terms and conditions document reference with integrity hash.
+    class_uri: simpulseid:TermsAndConditions
+    slots: [url, hash]
 
   # ------------------------------------------
   # 2. SUBJECT TYPES
@@ -215,16 +160,26 @@ classes:
       References a Harbour Gaia-X credential via harbourCredential IRI
       for the baseline of trust.
     class_uri: simpulseid:Participant
-    slots: [name, harbourCredential, legalForm, duns, email, url, termsAndConditions]
-    slot_usage:
-      name: { required: false }
+    slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions]
+    attributes:
+      # W3C VC v2 context maps name → https://schema.org/name (@protected).
+      # Harbour defines schema:name as http://. Use attribute with sdo:name
+      # (HTTPS) so SHACL sh:path matches the actual RDF predicate.
+      name:
+        slot_uri: sdo:name
+        range: string
+        required: false
 
   SimpulseidAdministrator:
     description: >
       An administrator (natural person with elevated permissions) in the
       SimpulseID ecosystem.
     class_uri: simpulseid:Administrator
-    slots: [name, harbourCredential, givenName, familyName, email, memberOf]
+    slots: [harbourCredential, givenName, familyName, email, memberOf]
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
     slot_usage:
       givenName: { required: true }
       familyName: { required: true }
@@ -234,7 +189,11 @@ classes:
     description: >
       A standard user (natural person) in the SimpulseID ecosystem.
     class_uri: simpulseid:User
-    slots: [name, harbourCredential, givenName, familyName, email, memberOf]
+    slots: [harbourCredential, givenName, familyName, email, memberOf]
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
 
   AscsBaseMembership:
     description: >

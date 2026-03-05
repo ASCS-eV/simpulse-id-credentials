@@ -199,7 +199,7 @@ Credentials refer to status entries using:
 ```json
 "credentialStatus": {
   "type": "harbour:CRSetEntry",
-  "id": "did:web:did.ascs.digital:services:revocation-registry#<entry-hash>"
+  "id": "did:web:did.ascs.digital:services:revocation-registry/<entry-hash>"
 }
 ```
 
