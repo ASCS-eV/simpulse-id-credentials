@@ -12,7 +12,13 @@ from src.tools.utils.registry_resolver import RegistryResolver
 from src.tools.validators.shacl.validator import ShaclValidator
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
-OMB_ROOT = REPO_ROOT / "submodules" / "ontology-management-base"
+OMB_ROOT = (
+    REPO_ROOT
+    / "submodules"
+    / "harbour-credentials"
+    / "submodules"
+    / "ontology-management-base"
+)
 HARBOUR_ARTIFACTS = REPO_ROOT / "submodules" / "harbour-credentials" / "artifacts"
 SIMPULSEID_ARTIFACTS = REPO_ROOT / "artifacts"
 EXAMPLES_DIR = REPO_ROOT / "examples"

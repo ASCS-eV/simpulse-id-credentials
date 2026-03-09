@@ -28,11 +28,11 @@ python3 src/generate_from_linkml.py \
 
 ## 2) Validate examples against generated SHACL + schema (recommended)
 
-Examples are validated using the `submodules/ontology-management-base` validator.
+Examples are validated using the `submodules/harbour-credentials/submodules/ontology-management-base` validator.
 It discovers artifacts automatically from `artifacts/` directories:
 
 ```bash
-python3 submodules/ontology-management-base/src/check_jsonld_against_shacl_schema.py \
+python3 submodules/harbour-credentials/submodules/ontology-management-base/src/check_jsonld_against_shacl_schema.py \
   examples/simpulseid-administrator-credential.json
 ```
 

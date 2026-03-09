@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 EXAMPLES_DIR = Path(__file__).parent.parent / "examples"
-DID_WEB_DIR = EXAMPLES_DIR / "did-web"
+DID_ETHR_DIR = EXAMPLES_DIR / "did-ethr"
 
 
 def _load_all_examples():
@@ -26,7 +26,7 @@ def _load_all_examples():
 def _load_all_did_docs():
     """Load all DID document JSON files."""
     docs = {}
-    for f in sorted(DID_WEB_DIR.glob("*.json")):
+    for f in sorted(DID_ETHR_DIR.glob("*.json")):
         data = json.loads(f.read_text())
         did_id = data.get("id", "")
         docs[did_id] = data
@@ -72,7 +72,7 @@ def test_issuer_has_did_document(path):
     issuer = vc.get("issuer", "")
     assert issuer in DID_DOCS, (
         f"Credential {path.name} has issuer '{issuer}' "
-        f"but no DID document exists in examples/did-web/."
+        f"but no DID document exists in examples/did-ethr/."
     )
 
 

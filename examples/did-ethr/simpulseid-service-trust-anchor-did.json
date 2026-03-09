@@ -1,0 +1,51 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://schema.org",
+    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+  ],
+  "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B",
+  "controller": "did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001",
+  "verificationMethod": [
+    {
+      "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B#controller",
+      "type": "EcdsaSecp256k1RecoveryMethod2020",
+      "controller": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B",
+      "blockchainAccountId": "eip155:84532:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B"
+    },
+    {
+      "id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#base-key-1",
+      "type": "EcdsaSecp256k1VerificationKey2019",
+      "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+      "blockchainAccountId": "eip155:84532:0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+    }
+  ],
+  "assertionMethod": [
+    "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B#controller",
+    "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#base-key-1"
+  ],
+  "service": [
+    {
+      "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B#owner",
+      "type": "harbour:TrustAnchorService",
+      "serviceEndpoint": {
+        "@type": "schema:Organization",
+        "@id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+        "name": "Automotive Solution Center for Simulation e.V. (ASCS)",
+        "url": "https://ascs.digital/",
+        "description": "Trust anchor and operator of the SimpulseID / ENVITED identity infrastructure at did.ascs.digital.",
+        "contactPoint": {
+          "@type": "schema:ContactPoint",
+          "contactType": "support",
+          "email": "info@ascs.digital"
+        }
+      }
+    },
+    {
+      "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B#self-signed-credential",
+      "type": "harbour:LinkedCredentialService",
+      "serviceEndpoint": "https://did.ascs.digital/.well-known/trust-anchor-credential.jwt"
+    }
+  ]
+}

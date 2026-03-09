@@ -7,7 +7,7 @@ These examples demonstrate:
 
 - the JSON-LD structure using the public contexts in `/contexts`
 - the semantics defined in `/ontologies`
-- correct use of did:web identifiers for:
+- correct use of `did:ethr` identifiers for:
   - participants (organizations)
   - ASCS programs (base membership, ENVITED membership)
   - users and administrators (opaque non-PII identifiers)
@@ -48,20 +48,18 @@ Types included:
 - **User Credential**  
   Natural person affiliated with a participant, issued by the participant’s admin.
 
-All credentials use **did:web subject identifiers** for users and admins:
+All credentials use **`did:ethr` subject identifiers** (on Base Sepolia) for users and admins:
 
 - opaque
 - non-PII
-- key-rotation capable
-- hosted under:  
-  `https://did.ascs.digital/users/...`
+- key-rotation capable (via ERC-1056 on-chain key management)
 
 **Note on membership credential subjects:** Membership credentials
 (`AscsBaseMembershipCredential`, `AscsEnvitedMembershipCredential`) use
 `urn:uuid:` subject identifiers instead of DIDs. This is intentional —
 memberships are abstract resources (not DID-resolvable entities). The
 `member` field within the credential subject provides the link to the
-participant's DID (`did:web:...`). Per **W3C VCDM 2.0 §4.3**, `urn:uuid:`
+participant's DID (`did:ethr:...`). Per **W3C VCDM 2.0 §4.3**, `urn:uuid:`
 is a valid URI for credentialSubject.id.
 
 All credentials include the **Gaia-X development context**
@@ -72,30 +70,29 @@ composition with `gx:LegalPerson` or `gx:Participant` properties per
 All credentials use the `evidence` field to show that the credential was requested by an admin before being signed by the service. The evidence nonce follows the harbour delegation challenge format: `<random_hex> <sha256_payload_hash>` per **OID4VP §8.4**. Checking this is possible by:
 
 - checking the cryptographic and syntactical integrity of the `evidence`
-- retrieving the issuer's DID document (a participant `did:web`)
+- retrieving the issuer's DID document (a participant `did:ethr`)
 - verifying the `kid` in the JWT header resolves to a key in the issuer's `assertionMethod` (per **W3C VC-JOSE-COSE §3.3.2**)
 - verifying the delegation nonce matches the SHA-256 hash of the credential payload
 
 ---
 
-## 2. did:web Documents
+## 2. did:ethr DID Documents
 
-Examples under `examples/did-web/` illustrate:
+Examples under `examples/did-ethr/` illustrate:
 
-- Participant DIDs controlled by organizations  
-  (`did:web:did.ascs.digital:participants:ascs`, `participants:bmw`, …)
+- Participant DIDs controlled by organizations
+  (e.g., `did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03`)
 
-- Program DIDs controlled by ASCS  
-  (`did:web:did.ascs.digital:programs:ascs-base-membership`, …)
+- Program DIDs controlled by the smart contract controller
 
-- User and Administrator DIDs:  
+- User and Administrator DIDs:
   Opaque, privacy-preserving identifiers that _only_ expose verification keys.
 
 Each DID document supports:
 
-- Tezos account (did:pkh)
-- Etherlink/EVM account (`blockchainAccountId: eip155:42793:...`)
-- Key rotation (through verificationMethod lists)
+- Base chain account (`blockchainAccountId: eip155:84532:...`)
+- P-256 verification keys (registered as on-chain attributes)
+- Key rotation (through ERC-1056 `setAttribute` / `revokeAttribute`)
 
 No DID document contains personal data.
 
@@ -111,7 +108,7 @@ Each manifest:
 - references the correct SimpulseID credential type
 - defines which properties appear on the card
 - includes human-readable fallback titles
-- is issued by the ASCS organizational DID (`did:web:did.ascs.digital:participants:ascs`)
+- is issued by the ASCS organizational DID (`did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03`)
 
 ---
 
@@ -135,8 +132,8 @@ Issued by participant administrators to individuals.
 These credentials use an opaque user DID under `did.ascs.digital` to support:
 
 - privacy (no PII in DID)
-- key rotation
-- multi-chain keys (Tezos + Etherlink)
+- key rotation (via ERC-1056 on-chain attribute management)
+- Base chain account binding
 
 ---
 
@@ -146,7 +143,7 @@ Example credentials reference a `credentialStatus` entry:
 
 - `harbour:CRSetEntry`
 - `statusPurpose: "revocation"`
-- `id` pointing to a `did:web` revocation registry fragment
+- `id` pointing to a `did:ethr` revocation registry fragment
 
 The DID document for the registry includes a **service endpoint** pointing to the actual registry.
 

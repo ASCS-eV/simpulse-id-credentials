@@ -32,7 +32,7 @@ source .venv/bin/activate
 
 # Install dependencies
 pip install -e "./submodules/harbour-credentials[dev]" \
-            -e ./submodules/ontology-management-base \
+            -e ./submodules/harbour-credentials/submodules/ontology-management-base \
             -e ".[dev]"
 
 # Install pre-commit hooks

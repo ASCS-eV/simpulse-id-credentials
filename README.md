@@ -9,7 +9,7 @@ The repository provides:
 
 - JSON-LD **contexts** for all SimpulseID credential types
 - Example **Verifiable Credentials** (VC v2, OIDC4VP-ready)
-- Example **did:web** DID documents for participants, programs, users, and admins
+- Example **`did:ethr` DID documents** for participants, programs, users, and admins (on Base)
 - **Wallet manifests** for card rendering in SSI wallets (e.g. Altme)
 - RDF/OWL **ontologies** and SKOS vocabularies aligning with the Gaia-X Trust Framework and ENVITED Ecosystem Specifications (EVES)
 
@@ -43,7 +43,7 @@ git pull && git submodule update --init
 
 ## Installation & Configure `pre-commit`
 
-If you want to use the validation scripts from `submodules/ontology-management-base/src` then you need to install the following dependencies:
+If you want to use the validation scripts from `submodules/harbour-credentials/submodules/ontology-management-base/src` then you need to install the following dependencies:
 
 ```bash
 # On Windows use python instead of python3
@@ -56,7 +56,7 @@ source .venv/bin/activate  # On Windows use: source .venv/Scripts/activate
 # 2. Install dependencies (Submodules + Main Project + Dev Tools)
 # This reads all pyproject.toml files and handles all versions automatically.
 python3 -m pip install -e "./submodules/harbour-credentials[dev]" \
-  -e ./submodules/ontology-management-base -e ".[dev]"
+  -e ./submodules/harbour-credentials/submodules/ontology-management-base -e ".[dev]"
 
 # 3. Verify
 pre-commit install
@@ -75,7 +75,7 @@ python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/ and subm
 
 # 2. Validate a single credential example against SHACL shapes
 #    --artifacts registers local artifact directories for schema discovery and context inlining
-cd submodules/ontology-management-base
+cd submodules/harbour-credentials/submodules/ontology-management-base
 python3 -m src.tools.validators.validation_suite \
   --run check-data-conformance \
   --data-paths ../../examples/simpulseid-administrator-credential.json \
@@ -143,24 +143,20 @@ Each VC uses:
 - `harbour:CRSetEntry` + `statusPurpose: "revocation"` for revocation status
 - `gx:*` terms to stay compatible with the **Gaia-X Credential Format** and Trust Framework
 
-#### `examples/did-web/`
+#### `examples/did-ethr/`
 
-Example **did:web DID documents** that correspond to identifiers used in the credentials, e.g.:
-
-- Participants (`did:web:did.ascs.digital:participants:...`)
-- Programs (`did:web:did.ascs.digital:programs:...`)
-- Users & administrators (`did:web:did.ascs.digital:users:...`)
-- Services (`did:web:did.ascs.digital:services:...`)
+Example **`did:ethr` DID documents** that correspond to identifiers used in the credentials.
+All identities are managed on-chain via a custom ERC-1056 EthereumDIDRegistry on **Base**
+(chain ID `84532` / `0x14a34` for testnet, `8453` / `0x2105` for mainnet).
 
 These demonstrate:
 
 - How organizational DIDs (ASCS, ENVITED programs, participants) are modelled
 - How user/admin DIDs are defined _without leaking personal data_
-- How to support key rotation and multiple chains (e.g. Tezos + Etherlink/EVM) via `blockchainAccountId`
+- How P-256 keys are registered as on-chain attributes
+- How the smart contract controller governs identity ownership
 
-In production, these DID documents are intended to be hosted under:
-
-- `https://did.ascs.digital/...`
+DID documents are resolved by reading on-chain events from the ERC-1056 registry.
 
 ---
 
@@ -182,7 +178,7 @@ They are used by wallets like **Altme** to:
 Each manifest references:
 
 - A SimpulseID schema / type (e.g. `simpulseid:Participant`)
-- The issuer DID of the manifest (typically an ASCS did:web)
+- The issuer DID of the manifest (typically the ASCS `did:ethr`)
 
 ---
 
@@ -239,7 +235,7 @@ Typical flow:
 
 1. A participant (organization) is onboarded and receives a **Participant VC**.
 2. The organization receives **ASCS base membership** and optionally **ENVITED membership** credentials.
-3. Individual administrators and users receive **Admin/User VCs**, bound to opaque did:web identifiers under `did.ascs.digital`.
+3. Individual administrators and users receive **Admin/User VCs**, bound to opaque `did:ethr` identifiers on Base.
 4. Wallets like Altme use the **contexts** and **manifests** from this repo to display these credentials.
 5. Services behind `identity.ascs.digital` use the **ontologies** and **Gaia-X compatible structures** to perform trust and membership checks.
 

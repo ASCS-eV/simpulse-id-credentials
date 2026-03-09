@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: true
+          submodules: recursive
           ref: ${{ inputs.ref }}
 
       - name: Set up Python
@@ -47,8 +47,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: |
-          python3 -m pip install -e "./submodules/harbour-credentials[dev]" -e ./submodules/ontology-management-base -e ".[docs]"
+        run: make install-docs
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

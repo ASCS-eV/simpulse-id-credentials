@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+  ],
+  "id": "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC",
+  "controller": "did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001",
+  "verificationMethod": [
+    {
+      "id": "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC#controller",
+      "type": "EcdsaSecp256k1RecoveryMethod2020",
+      "controller": "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC",
+      "blockchainAccountId": "eip155:84532:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC"
+    },
+    {
+      "id": "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC#wallet-key-1",
+      "type": "JsonWebKey",
+      "controller": "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC",
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
+    }
+  ],
+  "authentication": [
+    "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC#controller",
+    "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC#wallet-key-1"
+  ],
+  "assertionMethod": [
+    "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC#controller",
+    "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC#wallet-key-1"
+  ]
+}

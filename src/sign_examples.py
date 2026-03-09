@@ -168,11 +168,11 @@ def main():
     # assertionMethod. Per DID-CORE-1.1 §5.3.1, assertionMethod keys are
     # used to issue Verifiable Credentials.
     ISSUER_KID_MAP = {
-        "did:web:did.ascs.digital:participants:ascs": (
-            "did:web:did.ascs.digital:participants:ascs#signing-key-1"
+        "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03": (
+            "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#signing-key-1"
         ),
-        "did:web:did.ascs.digital:participants:bmw": (
-            "did:web:did.ascs.digital:participants:bmw#signing-key-1"
+        "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048": (
+            "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#signing-key-1"
         ),
     }
 

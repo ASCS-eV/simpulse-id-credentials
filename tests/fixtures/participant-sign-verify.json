@@ -13,11 +13,11 @@
         "simpulseid:ParticipantCredential"
       ],
       "id": "urn:uuid:576fbefb-35e8-4b71-bb1a-53d1803c86de",
-      "issuer": "did:web:did.ascs.digital:participants:ascs",
+      "issuer": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
       "validFrom": "2025-08-06T10:15:22Z",
       "validUntil": "2030-08-05T00:00:00Z",
       "credentialSubject": {
-        "id": "did:web:did.ascs.digital:participants:bmw",
+        "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048",
         "type": "simpulseid:Participant",
         "name": "Bayerische Motoren Werke Aktiengesellschaft",
         "harbourCredential": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
@@ -42,7 +42,7 @@
             ],
             "type": ["VerifiablePresentation"],
             "holder": "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd",
-            "nonce": "d3931310 ISSUE_PAYLOAD 4d50761d2d4c28f93eb268b7b0b442bcef039b5a8672113e8ff53de73c13c189"
+            "nonce": "REPLACED_AT_SIGNING_TIME"
           }
         }
       ]

@@ -87,9 +87,22 @@ def main() -> None:
 
     print("Generating JSON-LD context...")
     ctx_gen = ContextGenerator(str(SCHEMA), importmap=import_map, base_dir=base_dir)
-    (OUT_DIR / "simpulseid.context.jsonld").write_text(
-        ctx_gen.serialize(), encoding="utf-8"
-    )
+    ctx_text = ctx_gen.serialize()
+
+    # Ensure "type": "@type" is present in the generated context.
+    # LinkML cannot emit this alias without declaring a ``type`` slot, which
+    # would override the W3C VCDM v2 ``"type": "@type"`` with a typed
+    # property definition (see harbour-core-credential.yaml §slots comment).
+    # The alias is required so that JSON-LD ``"type"`` maps to ``rdf:type``
+    # instead of falling through to ``@vocab``.
+    ctx_data = json.loads(ctx_text)
+    ctx_obj = ctx_data.get("@context", {})
+    if isinstance(ctx_obj, dict) and "type" not in ctx_obj:
+        ctx_obj["type"] = "@type"
+        ctx_data["@context"] = ctx_obj
+        ctx_text = json.dumps(ctx_data, indent=3, ensure_ascii=False)
+
+    (OUT_DIR / "simpulseid.context.jsonld").write_text(ctx_text, encoding="utf-8")
 
     print(f"Done: {OUT_DIR}/")
 

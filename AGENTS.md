@@ -20,9 +20,8 @@ Read these before making changes; they are authoritative for repo workflows.
 - `tests/` contains pytest tests
 - `submodules/` contains git submodules:
   - `harbour-credentials` — cryptographic signing/verification library
-  - `ontology-management-base` — ontology validation pipeline
-  - `service-characteristics` — Gaia-X service characteristics schemas
-  - `w3id.org` — W3ID redirect rules
+    - `harbour-credentials/submodules/ontology-management-base` — ontology validation pipeline
+    - `harbour-credentials/submodules/w3id.org` — W3ID redirect rules
 
 ## Build, Test, and Development Commands
 

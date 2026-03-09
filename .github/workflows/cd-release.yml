@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: true
+          submodules: recursive
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,7 +32,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: python3 -m pip install -e ./submodules/ontology-management-base -e ".[dev]"
+        run: make install-dev
 
       - name: Determine release tag
         id: tag

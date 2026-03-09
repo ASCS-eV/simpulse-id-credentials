@@ -10,10 +10,10 @@ bind them together:
 
 ```mermaid
 graph TD
-    ASCS["ASCS e.V.<br/><i>Trust Anchor & Issuer</i><br/>did:web:did.ascs.digital:participants:ascs"]
-    BMW["BMW AG<br/><i>Participant</i><br/>did:web:did.ascs.digital:participants:bmw"]
-    ADMIN["Andreas Admin<br/><i>Administrator (NaturalPerson)</i><br/>did:web:...users:21c7c8bc-..."]
-    USER["Max Mustermann<br/><i>User (NaturalPerson)</i><br/>did:web:...users:44b982bb-..."]
+    ASCS["ASCS e.V.<br/><i>Trust Anchor & Issuer</i><br/>did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03"]
+    BMW["BMW AG<br/><i>Participant</i><br/>did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048"]
+    ADMIN["Andreas Admin<br/><i>Administrator (NaturalPerson)</i><br/>did:ethr:0x14a34:0xb2F7...b39a"]
+    USER["Max Mustermann<br/><i>User (NaturalPerson)</i><br/>did:ethr:0x14a34:0x0f4D...d4fC"]
     BASE["ASCS Base Membership<br/><i>ProgramMembership</i><br/>urn:uuid:22423d4a-..."]
     ENVITED["ENVITED Membership<br/><i>ProgramMembership</i><br/>urn:uuid:bac22d92-..."]
 
@@ -105,9 +105,9 @@ Used **on the membership object**, pointing **to the member**.
 > "This membership **has** this member."
 
 Appears in:
-- **Membership credentialSubject** -- `"member": "did:web:...participants:bmw"` identifies
+- **Membership credentialSubject** -- `"member": "did:ethr:0x14a34:0x9d27...1048"` identifies
   who holds the membership.
-- **Issuer object** -- `"member": "did:web:...participants:bmw"` identifies which
+- **Issuer object** -- `"member": "did:ethr:0x14a34:0x9d27...1048"` identifies which
   participant this credential is issued for (SimpulseID convention using schema:member).
 
 ### `memberOf` (schema:memberOf)
@@ -117,9 +117,9 @@ Used **on the person/organization**, pointing **to what they belong to**.
 > "This person **belongs to** this organization."
 
 Appears in:
-- **Administrator credentialSubject** -- `"memberOf": ["did:web:...participants:bmw"]`
+- **Administrator credentialSubject** -- `"memberOf": ["did:ethr:0x14a34:0x9d27...1048"]`
   means "Andreas belongs to BMW".
-- **User credentialSubject** -- `"memberOf": ["did:web:...participants:bmw"]`
+- **User credentialSubject** -- `"memberOf": ["did:ethr:0x14a34:0x9d27...1048"]`
   means "Max belongs to BMW".
 
 ### Why membership subjects have their own URN-UUIDs

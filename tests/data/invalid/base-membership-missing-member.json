@@ -9,18 +9,18 @@
     "simpulseid:AscsBaseMembershipCredential"
   ],
   "id": "urn:uuid:7f3f7c6a-4b4d-4e9e-8f0a-9b1b2c3d4e5f",
-  "issuer": "did:web:did.ascs.digital:participants:ascs",
+  "issuer": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
   "validFrom": "2025-08-06T10:15:22Z",
   "credentialSubject": {
     "id": "urn:uuid:22423d4a-4281-4251-b1e4-1afaa96f1a15",
     "type": "simpulseid:AscsBaseMembership",
     "programName": "ASCS e.V. Base Membership",
-    "hostingOrganization": "did:web:did.ascs.digital:participants:ascs",
+    "hostingOrganization": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
     "memberSince": "2023-01-01"
   },
   "credentialStatus": [
     {
-      "id": "did:web:did.ascs.digital:services:revocation-registry/6239c5ab",
+      "id": "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A475502346d1/6239c5ab",
       "type": "harbour:CRSetEntry",
       "statusPurpose": "revocation"
     }

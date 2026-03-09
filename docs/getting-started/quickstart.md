@@ -26,9 +26,9 @@ Example credential in `examples/simpulseid-user-credential.json`:
     "./artifacts/simpulseid/simpulseid.context.jsonld"
   ],
   "type": ["VerifiableCredential", "simpulseid:UserCredential"],
-  "issuer": "did:web:example.com",
+  "issuer": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
   "credentialSubject": {
-    "id": "did:web:example.com:users:alice",
+    "id": "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC",
     "givenName": "Alice",
     "familyName": "Smith",
     "email": "alice@example.com"

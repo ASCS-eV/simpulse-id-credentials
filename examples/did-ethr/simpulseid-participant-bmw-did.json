@@ -1,0 +1,80 @@
+{
+  "@context": [
+    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://www.w3.org/ns/did/v1",
+    "https://schema.org",
+    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+  ],
+  "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048",
+  "controller": "did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001",
+  "verificationMethod": [
+    {
+      "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#controller",
+      "type": "EcdsaSecp256k1RecoveryMethod2020",
+      "controller": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048",
+      "blockchainAccountId": "eip155:84532:0x9d273DCaC2f6367968d61caf69A7E3177fd81048"
+    },
+    {
+      "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#wallet-key-1",
+      "type": "JsonWebKey",
+      "controller": "did:ethr:0x14a34:0x0f4Dc6903A4B92C6563DD3551421ebb7ACa7d4fC",
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
+    },
+    {
+      "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#wallet-key-2",
+      "type": "JsonWebKey",
+      "controller": "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a",
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "weNJy2HscCSM6AEDTDg04biOvhFhyyWvOHQfeF_PxMQ",
+        "y": "e8lnCO-AlStT-DBER57_vilrLYyKS1T_Czl-YtV0Q24"
+      }
+    },
+    {
+      "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#signing-key-1",
+      "type": "JsonWebKey",
+      "controller": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048",
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
+    }
+  ],
+  "authentication": [
+    "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#controller",
+    "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#wallet-key-1",
+    "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#wallet-key-2"
+  ],
+  "assertionMethod": [
+    "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#controller",
+    "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#wallet-key-1",
+    "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#wallet-key-2",
+    "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#signing-key-1"
+  ],
+  "service": [
+    {
+      "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#org-metadata",
+      "type": "harbour:TrustAnchorService",
+      "serviceEndpoint": {
+        "@type": "schema:Organization",
+        "@id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048",
+        "name": "Bayerische Motoren Werke Aktiengesellschaft",
+        "url": "https://www.bmwgroup.com/"
+      }
+    },
+    {
+      "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#self-signed-credential",
+      "type": "harbour:LinkedCredentialService",
+      "serviceEndpoint": "https://did.ascs.digital/participants/bmw/.well-known/participant-credential.jwt"
+    }
+  ]
+}

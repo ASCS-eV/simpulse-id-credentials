@@ -2,13 +2,14 @@
   "@context": [
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
     "https://www.w3.org/ns/did/v1",
-    "https://schema.org"
+    "https://schema.org",
+    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
   ],
-  "id": "did:web:did.ascs.digital:programs:simpulseid-user",
-  "controller": "did:web:did.ascs.digital:services:trust-anchor",
+  "id": "did:ethr:0x14a34:0xA80e2AB10F9B708af7C880C15BD378ba3b707A38",
+  "controller": "did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001",
   "service": [
     {
-      "id": "did:web:did.ascs.digital:programs:simpulseid-user#program-metadata",
+      "id": "did:ethr:0x14a34:0xA80e2AB10F9B708af7C880C15BD378ba3b707A38#program-metadata",
       "type": "ProgramMetadataService",
       "serviceEndpoint": {
         "@type": [

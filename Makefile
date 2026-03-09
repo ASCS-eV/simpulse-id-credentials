@@ -1,9 +1,9 @@
 # SimpulseID Credentials Makefile
 # ================================
 
-.PHONY: setup install install-dev submodule-setup generate validate lint format test test-harbour test-cov check all clean help
+.PHONY: setup install install-dev install-docs submodule-setup generate validate lint format test test-harbour test-cov check all clean help
 
-OMB_SUBMODULE_DIR := submodules/ontology-management-base
+OMB_SUBMODULE_DIR := submodules/harbour-credentials/submodules/ontology-management-base
 HARBOUR_SUBMODULE_DIR := submodules/harbour-credentials
 
 # In CI, use system Python; locally, prefer parent venv then local .venv
@@ -68,6 +68,7 @@ help: ## Show this help
 	@echo "  make setup        - Create venv, install all dependencies, setup submodules"
 	@echo "  make install      - Install package (user mode)"
 	@echo "  make install-dev  - Install with dev dependencies + pre-commit"
+	@echo "  make install-docs - Install with docs dependencies (MkDocs)"
 	@echo ""
 	@echo "Artifacts:"
 	@echo "  make generate     - Generate OWL/SHACL/context from LinkML"
@@ -177,6 +178,14 @@ ifndef CI
 endif
 	@echo "OK: Development dependencies installed"
 
+install-docs: ## Install with docs dependencies (for MkDocs builds)
+	@echo "Installing documentation dependencies..."
+ifndef CI
+	@$(MAKE) --no-print-directory $(VENV)/bin/python3
+endif
+	@$(PIP) install -e "$(HARBOUR_SUBMODULE_DIR)[dev]" -e $(OMB_SUBMODULE_DIR) -e ".[docs]"
+	@echo "OK: Documentation dependencies installed"
+
 # ---------- Lint ----------
 
 lint: ## Run pre-commit (black, isort, flake8, JSON-LD parse, Turtle parse)
@@ -209,15 +218,15 @@ validate: ## SHACL-validate all example credentials
 	@cd $(OMB_SUBMODULE_DIR) && \
 		$(PYTHON_ABS) -m src.tools.validators.validation_suite \
 			--run check-data-conformance \
-			--data-paths $(addprefix ../../,$(EXAMPLES)) \
-			--artifacts ../../artifacts ../../$(HARBOUR_SUBMODULE_DIR)/artifacts
+			--data-paths $(addprefix ../../../../,$(EXAMPLES)) \
+			--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts
 
 # ---------- Test ----------
 
 test-harbour: ## Run harbour-credentials JOSE tests (excludes interop — covered by harbour CI)
 	@cd $(HARBOUR_SUBMODULE_DIR) && PYTHONPATH=src/python:$$PYTHONPATH $(PYTHON_ABS) -m pytest tests/ -v --ignore=tests/interop
 
-test: test-harbour ## Run all tests (harbour + main repo)
+test: generate test-harbour ## Run all tests (harbour + main repo)
 	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTEST) tests/ -v
 
 test-cov: ## Run tests with coverage report

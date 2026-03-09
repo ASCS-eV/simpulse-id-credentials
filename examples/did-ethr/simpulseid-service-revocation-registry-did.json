@@ -1,13 +1,14 @@
 {
   "@context": [
     "https://w3id.org/reachhaven/harbour/credentials/v1/",
-    "https://www.w3.org/ns/did/v1"
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
   ],
-  "id": "did:web:did.ascs.digital:services:revocation-registry",
-  "controller": "did:web:did.ascs.digital:services:trust-anchor",
+  "id": "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A475502346d1",
+  "controller": "did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001",
   "service": [
     {
-      "id": "did:web:did.ascs.digital:services:revocation-registry#crset",
+      "id": "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A475502346d1#crset",
       "type": "harbour:CRSetRevocationRegistryService",
       "serviceEndpoint": {
         "@type": "harbour:CRSetServiceEndpoint",

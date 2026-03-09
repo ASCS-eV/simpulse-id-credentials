@@ -8,9 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Key submodules:**
 - `submodules/harbour-credentials` — Cryptographic signing/verification library (Python + TypeScript)
-- `submodules/ontology-management-base` — Ontology validation pipeline
+- `submodules/harbour-credentials/submodules/ontology-management-base` — Ontology validation pipeline (nested via harbour-credentials)
 - `submodules/service-characteristics` — Gaia-X service characteristics schemas
-- `submodules/w3id.org` — W3ID redirect rules
+- `submodules/harbour-credentials/submodules/w3id.org` — W3ID redirect rules (nested via harbour-credentials)
 
 ## Essential Commands
 
