@@ -33,6 +33,17 @@
         "x": "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU",
         "y": "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
       }
+    },
+    {
+      "id": "did:web:did.ascs.digital:participants:ascs#signing-key-1",
+      "type": "JsonWebKey",
+      "controller": "did:web:did.ascs.digital:participants:ascs",
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
     }
   ],
   "authentication": [
@@ -41,7 +52,8 @@
   "assertionMethod": [
     "did:web:did.ascs.digital:participants:ascs#tezos-key-1",
     "did:web:did.ascs.digital:participants:ascs#etherlink-key-1",
-    "did:web:did.ascs.digital:participants:ascs#wallet-key-1"
+    "did:web:did.ascs.digital:participants:ascs#wallet-key-1",
+    "did:web:did.ascs.digital:participants:ascs#signing-key-1"
   ],
   "service": [
     {

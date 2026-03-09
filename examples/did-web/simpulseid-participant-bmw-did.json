@@ -32,6 +32,17 @@
         "x": "weNJy2HscCSM6AEDTDg04biOvhFhyyWvOHQfeF_PxMQ",
         "y": "e8lnCO-AlStT-DBER57_vilrLYyKS1T_Czl-YtV0Q24"
       }
+    },
+    {
+      "id": "did:web:did.ascs.digital:participants:bmw#signing-key-1",
+      "type": "JsonWebKey",
+      "controller": "did:web:did.ascs.digital:participants:bmw",
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
     }
   ],
   "authentication": [
@@ -40,7 +51,8 @@
   ],
   "assertionMethod": [
     "did:web:did.ascs.digital:participants:bmw#wallet-key-1",
-    "did:web:did.ascs.digital:participants:bmw#wallet-key-2"
+    "did:web:did.ascs.digital:participants:bmw#wallet-key-2",
+    "did:web:did.ascs.digital:participants:bmw#signing-key-1"
   ],
   "service": [
     {

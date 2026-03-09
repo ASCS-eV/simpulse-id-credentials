@@ -11,6 +11,12 @@ prefixes:
   linkml: https://w3id.org/linkml/
   simpulseid: https://w3id.org/ascs-ev/simpulse-id/credentials/v1/
   harbour: https://w3id.org/reachhaven/harbour/credentials/v1/
+  # NOTE: Two schema.org prefixes are required for SHACL compatibility.
+  # W3C VC v2 context maps "name" → https://schema.org/name (@protected).
+  # Harbour core and most schema.org slots use http://schema.org/ (schema:).
+  # Subject type "name" attributes use sdo: (HTTPS) so the generated SHACL
+  # sh:path matches the actual RDF predicate produced by the W3C context.
+  # See: https://www.w3.org/TR/vc-data-model-2.0/ §5.2 (context processing).
   schema: http://schema.org/
   sdo: https://schema.org/
   cred: https://www.w3.org/2018/credentials#
@@ -18,6 +24,11 @@ prefixes:
 
 default_prefix: simpulseid
 default_range: string
+
+# NOTE: The generated JSON-LD context uses @vocab: simpulseid: which
+# resolves bare @id values (e.g., "duns", "hash") to simpulseid:duns etc.
+# This is correct per JSON-LD 1.1 §4.1.3 when this context is the last
+# entry in the @context array, which is the standard usage pattern.
 
 imports:
   - linkml:types
@@ -105,6 +116,15 @@ slots:
     slot_uri: simpulseid:hash
     range: string
 
+  gxParticipant:
+    description: >
+      Nested Gaia-X participant compliance data
+      (gx:LegalPerson or gx:Participant blank node).
+      Mirrors harbour:gxParticipant for the composition pattern.
+    slot_uri: harbour:gxParticipant
+    range: Any
+    required: false
+
 # ==========================================
 # Enums
 # ==========================================
@@ -160,7 +180,7 @@ classes:
       References a Harbour Gaia-X credential via harbourCredential IRI
       for the baseline of trust.
     class_uri: simpulseid:Participant
-    slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions]
+    slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, gxParticipant]
     attributes:
       # W3C VC v2 context maps name → https://schema.org/name (@protected).
       # Harbour defines schema:name as http://. Use attribute with sdo:name
@@ -175,7 +195,7 @@ classes:
       An administrator (natural person with elevated permissions) in the
       SimpulseID ecosystem.
     class_uri: simpulseid:Administrator
-    slots: [harbourCredential, givenName, familyName, email, memberOf]
+    slots: [harbourCredential, givenName, familyName, email, memberOf, gxParticipant]
     attributes:
       name:
         slot_uri: sdo:name
@@ -189,7 +209,7 @@ classes:
     description: >
       A standard user (natural person) in the SimpulseID ecosystem.
     class_uri: simpulseid:User
-    slots: [harbourCredential, givenName, familyName, email, memberOf]
+    slots: [harbourCredential, givenName, familyName, email, memberOf, gxParticipant]
     attributes:
       name:
         slot_uri: sdo:name

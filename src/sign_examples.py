@@ -14,7 +14,9 @@ Source examples are NEVER modified.
 
 import base64
 import copy
+import hashlib
 import json
+import secrets
 import sys
 from pathlib import Path
 
@@ -23,7 +25,6 @@ from cryptography.hazmat.primitives.asymmetric.ec import (
     EllipticCurvePrivateNumbers,
     EllipticCurvePublicNumbers,
 )
-from harbour.keys import p256_public_key_to_did_key
 from harbour.signer import sign_vc_jose, sign_vp_jose
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -57,11 +58,12 @@ def load_test_p256_keypair():
     return private_key, private_key.public_key()
 
 
-def sign_evidence_vp(vp: dict, private_key, kid: str) -> str:
+def sign_evidence_vp(vp: dict, private_key, kid: str, vc_payload: dict) -> str:
     """Sign an evidence VP as a VC-JOSE-COSE JWT.
 
     Takes the expanded VP object (empty VP with holder + nonce, no inner VCs)
-    and signs it.
+    and signs it. Computes a proper delegation challenge nonce from the
+    credential payload per OID4VP §8.4 and harbour delegation spec.
     """
     clean_vp = {
         "@context": vp.get("@context", ["https://www.w3.org/ns/credentials/v2"]),
@@ -71,7 +73,14 @@ def sign_evidence_vp(vp: dict, private_key, kid: str) -> str:
     if "holder" in vp:
         clean_vp["holder"] = vp["holder"]
 
-    nonce = vp.get("nonce")
+    # Compute delegation challenge nonce:
+    # Format: "<random_hex> <sha256_of_canonical_payload>"
+    # Per harbour delegation.py — canonical JSON = sorted keys, no whitespace.
+    canonical = json.dumps(vc_payload, sort_keys=True, separators=(",", ":"))
+    payload_hash = hashlib.sha256(canonical.encode()).hexdigest()
+    random_nonce = secrets.token_hex(4)
+    nonce = f"{random_nonce} {payload_hash}"
+
     return sign_vp_jose(clean_vp, private_key, kid=kid, nonce=nonce)
 
 
@@ -104,8 +113,10 @@ def process_example(example_path: Path, output_prefix: str, private_key, kid: st
         for ev in vc_for_signing["evidence"]:
             vp_obj = ev.get("verifiablePresentation")
             if isinstance(vp_obj, dict):
-                # Expanded VP — sign it
-                evidence_vp_jwt = sign_evidence_vp(vp_obj, private_key, kid)
+                # Expanded VP — sign it with a proper delegation challenge nonce
+                evidence_vp_jwt = sign_evidence_vp(
+                    vp_obj, private_key, kid, vc_payload=vc
+                )
                 # Replace with JWT string for outer VC signing
                 ev["verifiablePresentation"] = evidence_vp_jwt
 
@@ -151,8 +162,19 @@ def process_example(example_path: Path, output_prefix: str, private_key, kid: st
 
 def main():
     private_key, public_key = load_test_p256_keypair()
-    kid = p256_public_key_to_did_key(public_key)
-    kid_vm = f"{kid}#{kid.split(':')[-1]}"
+
+    # Map issuer DIDs to their verification method kid in the DID document.
+    # Per W3C VC-JOSE-COSE §3.3.2, kid MUST identify a key in the issuer's
+    # assertionMethod. Per DID-CORE-1.1 §5.3.1, assertionMethod keys are
+    # used to issue Verifiable Credentials.
+    ISSUER_KID_MAP = {
+        "did:web:did.ascs.digital:participants:ascs": (
+            "did:web:did.ascs.digital:participants:ascs#signing-key-1"
+        ),
+        "did:web:did.ascs.digital:participants:bmw": (
+            "did:web:did.ascs.digital:participants:bmw#signing-key-1"
+        ),
+    }
 
     # Find all example credentials
     examples = discover_examples()
@@ -161,10 +183,24 @@ def main():
         sys.exit(1)
 
     print(f"Signing {len(examples)} example credentials with test P-256 key...")
-    print(f"  kid: {kid_vm}")
+    print("  Issuer → kid mapping:")
+    for issuer, kid in ISSUER_KID_MAP.items():
+        print(f"    {issuer} → {kid}")
 
     for path, prefix in examples:
-        jwt_path = process_example(path, prefix, private_key, kid_vm)
+        # Determine kid from credential issuer
+        vc = json.loads(path.read_text())
+        issuer = vc.get("issuer", "")
+        kid = ISSUER_KID_MAP.get(issuer)
+        if kid is None:
+            print(
+                f"  WARNING: No kid mapping for issuer {issuer}, "
+                f"skipping {path.name}",
+                file=sys.stderr,
+            )
+            continue
+
+        jwt_path = process_example(path, prefix, private_key, kid)
         print(f"  {path.relative_to(REPO_ROOT)} -> {jwt_path.relative_to(REPO_ROOT)}")
 
     # List all generated files

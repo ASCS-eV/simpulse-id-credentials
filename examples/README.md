@@ -56,14 +56,25 @@ All credentials use **did:web subject identifiers** for users and admins:
 - hosted under:  
   `https://did.ascs.digital/users/...`
 
-All credentials use the `evidence` field to show that the credential was requested by an admin before being signed by the service. Checking this is possible by:
+**Note on membership credential subjects:** Membership credentials
+(`AscsBaseMembershipCredential`, `AscsEnvitedMembershipCredential`) use
+`urn:uuid:` subject identifiers instead of DIDs. This is intentional —
+memberships are abstract resources (not DID-resolvable entities). The
+`member` field within the credential subject provides the link to the
+participant's DID (`did:web:...`). Per **W3C VCDM 2.0 §4.3**, `urn:uuid:`
+is a valid URI for credentialSubject.id.
+
+All credentials include the **Gaia-X development context**
+(`https://w3id.org/gaia-x/development#`) to enable `gxParticipant`
+composition with `gx:LegalPerson` or `gx:Participant` properties per
+**Gaia-X ICAM 25.11**.
+
+All credentials use the `evidence` field to show that the credential was requested by an admin before being signed by the service. The evidence nonce follows the harbour delegation challenge format: `<random_hex> <sha256_payload_hash>` per **OID4VP §8.4**. Checking this is possible by:
 
 - checking the cryptographic and syntactical integrity of the `evidence`
-- retrieving the issuer's DID document, which is a participant `did:web`
-- iterating over the `verificationMethod` array
-  - retrieving DID document of `controller`
-  - checking if that document contains the `did:key` that signed the `evidence` vp
-- if a match was found, the `evidence` is valid
+- retrieving the issuer's DID document (a participant `did:web`)
+- verifying the `kid` in the JWT header resolves to a key in the issuer's `assertionMethod` (per **W3C VC-JOSE-COSE §3.3.2**)
+- verifying the delegation nonce matches the SHA-256 hash of the credential payload
 
 ---
 

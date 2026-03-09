@@ -14,16 +14,33 @@ from pathlib import Path
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
+from rdflib import Namespace
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCHEMA = REPO_ROOT / "linkml" / "simpulseid.yaml"
 IMPORTMAP_FILE = REPO_ROOT / "linkml" / "importmap.json"
 OUT_DIR = REPO_ROOT / "artifacts" / "simpulseid"
 
+SH = Namespace("http://www.w3.org/ns/shacl#")
+LINKML = Namespace("https://w3id.org/linkml/")
+
 
 class DomainShaclGenerator(_BaseShaclGenerator):
     """SHACL generator that bypasses ShaclGenerator.__post_init__'s broken
-    SchemaView construction (which ignores importmap)."""
+    SchemaView construction (which ignores importmap).
+
+    Workaround for https://github.com/linkml/linkml/issues/2913 —
+    ``ShaclGenerator.__post_init__`` creates ``SchemaView(self.schema)``
+    without forwarding ``importmap`` / ``base_dir``, so cross-directory
+    imports fail.  Still unfixed as of LinkML 1.10.0.
+
+    Also removes ``sh:class linkml:Any`` constraints from the generated graph.
+    LinkML emits these for ``range: Any`` slots, but ``linkml:Any`` is a
+    meta-schema type that is never asserted as ``rdf:type`` on instance data,
+    so the constraint always fails SHACL validation.  Removing it preserves
+    ``sh:nodeKind sh:BlankNodeOrIRI`` which is the correct structural check.
+    See https://github.com/linkml/linkml/issues/2914
+    """
 
     uses_schemaloader = False
 
@@ -32,6 +49,12 @@ class DomainShaclGenerator(_BaseShaclGenerator):
 
         Generator.__post_init__(self)
         self.generate_header()
+
+    def as_graph(self):
+        g = super().as_graph()
+        for s, p, o in list(g.triples((None, SH["class"], LINKML.Any))):
+            g.remove((s, p, o))
+        return g
 
 
 def load_importmap() -> dict:
