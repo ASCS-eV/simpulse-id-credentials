@@ -80,6 +80,9 @@ jobs:
       - name: Install dependencies
         run: make install-dev
 
+      - name: Generate artifacts
+        run: make generate
+
       - name: Run tests
         run: make test
 

@@ -192,6 +192,9 @@ format: ## Format code with black and isort
 
 generate: ## Generate JSON-LD contexts, SHACL shapes, OWL ontologies from LinkML
 	$(call check_dev_setup)
+	@echo "Generating harbour artifacts..."
+	@cd $(HARBOUR_SUBMODULE_DIR) && PYTHONPATH=src/python:$$PYTHONPATH $(PYTHON_ABS) src/python/harbour/generate_artifacts.py
+	@echo "Generating simpulseid artifacts..."
 	@$(PYTHON) src/generate_artifacts.py
 
 # ---------- Validate ----------
