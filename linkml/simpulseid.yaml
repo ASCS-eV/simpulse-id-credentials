@@ -61,15 +61,7 @@ slots:
     slot_uri: schema:member
     range: uri
 
-  # --- Schema.org Mappings (Natural Person & Memberships) ---
-
-  givenName:
-    slot_uri: schema:givenName
-    range: string
-
-  familyName:
-    slot_uri: schema:familyName
-    range: string
+  # --- Schema.org Mappings (Memberships) ---
 
   memberOf:
     slot_uri: schema:memberOf
@@ -132,7 +124,7 @@ slots:
   gxParticipant:
     description: >
       Nested Gaia-X participant compliance data
-      (gx:LegalPerson or gx:Participant blank node).
+      (gx:LegalPerson, gx:NaturalPerson, or gx:Participant blank node).
       Mirrors harbour:gxParticipant for the composition pattern.
     slot_uri: harbour:gxParticipant
     range: Any
@@ -214,42 +206,26 @@ classes:
     description: >
       An organization participating in the SimpulseID ecosystem.
       References a Harbour Gaia-X credential via harbourCredential IRI
-      for the baseline of trust.
+      for the baseline of trust. The organization name lives inside the
+      gxParticipant node as a gx:LegalPerson blank node.
     class_uri: simpulseid:Participant
     slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, gxParticipant]
-    attributes:
-      # W3C VC v2 context maps name → https://schema.org/name (@protected).
-      # Harbour defines schema:name as http://. Use attribute with sdo:name
-      # (HTTPS) so SHACL sh:path matches the actual RDF predicate.
-      name:
-        slot_uri: sdo:name
-        range: string
-        required: false
 
   SimpulseidAdministrator:
     description: >
       An administrator (natural person with elevated permissions) in the
-      SimpulseID ecosystem.
+      SimpulseID ecosystem. Personal attributes (givenName, familyName, email)
+      live inside the gxParticipant node as a gx:NaturalPerson blank node.
     class_uri: simpulseid:Administrator
-    slots: [harbourCredential, givenName, familyName, email, memberOf, gxParticipant]
-    attributes:
-      name:
-        slot_uri: sdo:name
-        range: string
-    slot_usage:
-      givenName: { required: true }
-      familyName: { required: true }
-      email: { required: true }
+    slots: [harbourCredential, memberOf, gxParticipant]
 
   SimpulseidUser:
     description: >
       A standard user (natural person) in the SimpulseID ecosystem.
+      Personal attributes (givenName, familyName, email) live inside the
+      gxParticipant node as a gx:NaturalPerson blank node.
     class_uri: simpulseid:User
-    slots: [harbourCredential, givenName, familyName, email, memberOf, gxParticipant]
-    attributes:
-      name:
-        slot_uri: sdo:name
-        range: string
+    slots: [harbourCredential, memberOf, gxParticipant]
 
   AscsBaseMembership:
     description: >

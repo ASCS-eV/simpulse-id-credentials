@@ -14,7 +14,7 @@ VCT_BASE = "https://w3id.org/ascs-ev/simpulse-id/credentials/v1"
 PARTICIPANT_MAPPING = {
     "vct": f"{VCT_BASE}/ParticipantCredential",
     "claims": {
-        "credentialSubject.name": "name",
+        "credentialSubject.gxParticipant.name": "name",
         "credentialSubject.harbourCredential": "harbourCredential",
         "credentialSubject.legalForm": "legalForm",
         "credentialSubject.duns": "duns",
@@ -42,9 +42,9 @@ ADMINISTRATOR_MAPPING = {
     "vct": f"{VCT_BASE}/AdministratorCredential",
     "claims": {
         "credentialSubject.harbourCredential": "harbourCredential",
-        "credentialSubject.givenName": "givenName",
-        "credentialSubject.familyName": "familyName",
-        "credentialSubject.email": "email",
+        "credentialSubject.gxParticipant.givenName": "givenName",
+        "credentialSubject.gxParticipant.familyName": "familyName",
+        "credentialSubject.gxParticipant.email": "email",
         "credentialSubject.memberOf": "memberOf",
     },
     "always_disclosed": ["iss", "vct", "iat", "exp", "memberOf", "harbourCredential"],
@@ -59,9 +59,9 @@ USER_MAPPING = {
     "vct": f"{VCT_BASE}/UserCredential",
     "claims": {
         "credentialSubject.harbourCredential": "harbourCredential",
-        "credentialSubject.givenName": "givenName",
-        "credentialSubject.familyName": "familyName",
-        "credentialSubject.email": "email",
+        "credentialSubject.gxParticipant.givenName": "givenName",
+        "credentialSubject.gxParticipant.familyName": "familyName",
+        "credentialSubject.gxParticipant.email": "email",
         "credentialSubject.memberOf": "memberOf",
     },
     "always_disclosed": ["iss", "vct", "iat", "exp", "memberOf", "harbourCredential"],

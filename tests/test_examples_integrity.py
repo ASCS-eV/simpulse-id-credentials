@@ -152,6 +152,11 @@ def test_gaiax_context_present(path):
 
 PERSON_TYPES = {"simpulseid:ParticipantCredential"}
 
+NATURAL_PERSON_TYPES = {
+    "simpulseid:UserCredential",
+    "simpulseid:AdministratorCredential",
+}
+
 
 @pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
 def test_participant_has_gx_composition(path):
@@ -176,6 +181,32 @@ def test_participant_has_gx_composition(path):
     assert (
         gx.get("type") == "gx:LegalPerson"
     ), f"gxParticipant type must be gx:LegalPerson, got {gx.get('type')}"
+
+
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
+def test_natural_person_has_gx_composition(path):
+    """User/Admin credentials must have gxParticipant with gx:NaturalPerson.
+
+    Personal attributes (givenName, familyName, email) live inside the
+    gxParticipant node as a gx:NaturalPerson blank node.
+    """
+    vc = json.loads(path.read_text())
+    vc_types = vc.get("type", [])
+
+    if not NATURAL_PERSON_TYPES.intersection(vc_types):
+        pytest.skip("Not a User or Administrator credential")
+
+    subject = vc.get("credentialSubject", {})
+    gx = subject.get("gxParticipant")
+    assert gx is not None, (
+        f"{path.name} missing gxParticipant composition. "
+        f"Personal attributes must live in gx:NaturalPerson inner node."
+    )
+    assert (
+        gx.get("type") == "gx:NaturalPerson"
+    ), f"gxParticipant type must be gx:NaturalPerson, got {gx.get('type')}"
+    assert "givenName" in gx, f"{path.name}: gxParticipant missing givenName"
+    assert "familyName" in gx, f"{path.name}: gxParticipant missing familyName"
 
 
 # ---------------------------------------------------------------------------
