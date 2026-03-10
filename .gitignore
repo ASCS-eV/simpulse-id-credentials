@@ -11,3 +11,4 @@ examples/signed/
 .coverage
 htmlcov/
 /.playground/
+site/

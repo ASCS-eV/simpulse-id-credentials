@@ -69,4 +69,5 @@ nav:
       - Validation: integration/validation.md
   - Reference:
       - LinkML Schemas: reference/linkml.md
+      - Credential Data Model: reference/credential-model.md
       - JSON-LD Contexts: reference/jsonld.md

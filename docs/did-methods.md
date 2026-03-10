@@ -7,7 +7,7 @@ the SimpulseID / ENVITED ecosystem and the Harbour credentials library.
 
 | Method     | Spec                                                                                       | Root of Trust                   | Used By              |
 |------------|--------------------------------------------------------------------------------------------|---------------------------------|----------------------|
-| `did:ethr` | [ERC-1056](https://eips.ethereum.org/EIPS/eip-1056) / [did:ethr spec](../references/did-ethr-method-spec.md) | EVM smart contract (on-chain)   | SimpulseID + Harbour |
+| `did:ethr` | [ERC-1056](https://eips.ethereum.org/EIPS/eip-1056) / [did:ethr spec](references/did-ethr-method-spec.md) | EVM smart contract (on-chain)   | SimpulseID + Harbour |
 | `did:key`  | [W3C CCG](https://w3c-ccg.github.io/did-method-key/)                                      | Self-certifying                 | Ephemeral / evidence |
 
 ## Policy
@@ -67,7 +67,7 @@ A verifier processing SimpulseID credentials needs to:
 
 - [W3C DID Core v1.1](https://www.w3.org/TR/did-1.1/)
 - [W3C DID Resolution v0.3](https://www.w3.org/TR/did-resolution/)
-- [did:ethr Method Specification](../references/did-ethr-method-spec.md)
+- [did:ethr Method Specification](references/did-ethr-method-spec.md)
 - [ERC-1056: Ethereum Lightweight Identity](https://eips.ethereum.org/EIPS/eip-1056)
 - [EthereumDIDRegistry](https://github.com/uport-project/ethr-did-registry)
 - [Gaia-X ICAM 25.11](https://docs.gaia-x.eu/technical-committee/identity-credential-access-management/25.11/)
