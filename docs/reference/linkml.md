@@ -20,7 +20,7 @@ Credential types (e.g., `ParticipantCredential`) and subject types (e.g., `Simpu
 
 All credential types extend `HarbourCredential`:
 
-```
+```text
 HarbourCredential (harbour base)
 ├── ParticipantCredential
 ├── AdministratorCredential
@@ -31,7 +31,7 @@ HarbourCredential (harbour base)
 
 ### Subject Types (in `simpulseid.yaml`)
 
-```
+```text
 SimpulseidParticipant    → simpulseid:Participant
 SimpulseidAdministrator  → simpulseid:Administrator
 SimpulseidUser           → simpulseid:User

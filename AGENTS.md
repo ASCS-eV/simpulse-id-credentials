@@ -69,6 +69,7 @@ When instructed to prepare a commit or PR, **do not commit directly**. Instead:
    - `.playground/pr-description.md` — PR description following the repository's PR template
 
 The human operator will review these files and either:
+
 - Use them to manually commit/push and create a PR, or
 - Use automated tooling with signed commits (`git commit -s -S`)
 

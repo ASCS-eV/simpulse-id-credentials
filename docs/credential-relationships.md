@@ -105,6 +105,7 @@ Used **on the membership object**, pointing **to the member**.
 > "This membership **has** this member."
 
 Appears in:
+
 - **Membership credentialSubject** -- `"member": "did:ethr:0x14a34:0x9d27...1048"` identifies
   who holds the membership.
 - **Issuer object** -- `"member": "did:ethr:0x14a34:0x9d27...1048"` identifies which
@@ -117,6 +118,7 @@ Used **on the person/organization**, pointing **to what they belong to**.
 > "This person **belongs to** this organization."
 
 Appears in:
+
 - **Administrator credentialSubject** -- `"memberOf": ["did:ethr:0x14a34:0x9d27...1048"]`
   means "Andreas belongs to BMW".
 - **User credentialSubject** -- `"memberOf": ["did:ethr:0x14a34:0x9d27...1048"]`

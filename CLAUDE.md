@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Credentials Repository** — Central repository for verifiable credential schemas and artifacts for the ENVITED-X Ecosystem. Contains LinkML schema definitions, generated OWL/SHACL/JSON-LD artifacts, and example credentials.
 
 **Key submodules:**
+
 - `submodules/harbour-credentials` — Cryptographic signing/verification library (Python + TypeScript)
 - `submodules/harbour-credentials/submodules/ontology-management-base` — Ontology validation pipeline (nested via harbour-credentials)
 - `submodules/service-characteristics` — Gaia-X service characteristics schemas
@@ -40,7 +41,7 @@ pytest tests/ --cov=src --cov-report=html
 
 ### Directory Structure
 
-```
+```text
 simpulse-id-credentials/
 ├── linkml/           # LinkML schema definitions (.yaml)
 ├── artifacts/        # Generated OWL, SHACL, JSON-LD context files
@@ -112,6 +113,7 @@ When making changes to the codebase, create/update these files in `.playground/`
 | `.playground/pr-description.md` | PR description following any existing PR template |
 
 **When instructed to prepare a commit or PR, do not commit directly.** Create these files for human review. The operator will either:
+
 - Use them to manually commit/push and create a PR, or
 - Use automated tooling with signed commits (`git commit -s -S`)
 

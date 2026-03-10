@@ -39,3 +39,9 @@ repos:
         language: system
         types: [text]
         files: \.(ttl)$
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.17.2
+    hooks:
+      - id: markdownlint-cli2
+        args: ["--config", ".markdownlint-cli2.yaml"]

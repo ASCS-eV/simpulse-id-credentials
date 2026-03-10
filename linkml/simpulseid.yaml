@@ -53,7 +53,11 @@ slots:
     range: uri
 
   member:
-    description: The participant (organization or person) that holds this membership.
+    description: >
+      The participant (organization or person) that holds this membership.
+      NOTE: schema.org defines member on Organization and ProgramMembership
+      with range Organization|Person. Here the range is uri (a DID) which
+      identifies the participant — semantically equivalent.
     slot_uri: schema:member
     range: uri
 
@@ -73,6 +77,11 @@ slots:
     range: uri
 
   programName:
+    description: >
+      Name of the membership program. NOTE: schema.org marks programName as
+      superseded by the "program" property (linking to MemberProgram type).
+      Retained here for simplicity — membership programs are identified by
+      program DIDs, not full MemberProgram objects.
     slot_uri: schema:programName
     range: string
 
@@ -82,6 +91,10 @@ slots:
     range: uri
 
   memberSince:
+    description: >
+      Date when the member joined the program. NOTE: schema.org lists
+      memberSince in the "pending" section (not yet in the core vocabulary).
+      Used here as a stable IRI for membership start dates.
     slot_uri: schema:memberSince
     range: date
 
@@ -131,29 +144,52 @@ slots:
 
 enums:
   SimpulseIdLegalForm:
+    description: Legal form of a participating organization.
     permissible_values:
-      LLC: {}
-      Corporation: {}
-      LimitedPartnership: {}
-      NonprofitCorporation: {}
-      GmbH: {}
-      AG: {}
-      Einzelunternehmen: {}
-      GbR: {}
-      OHG: {}
-      KG: {}
-      UG: {}
-      SoleTrader: {}
-      UnincorporatedAssociation: {}
-      Partnership: {}
-      Trust: {}
-      LimitedCompany: {}
-      LLP: {}
-      CIC: {}
-      CIO: {}
-      CooperativeSociety: {}
-      BenCom: {}
-      other: {}
+      LLC:
+        description: Limited Liability Company (US)
+      Corporation:
+        description: Corporation (US)
+      LimitedPartnership:
+        description: Limited Partnership (US/UK)
+      NonprofitCorporation:
+        description: Nonprofit Corporation (US)
+      GmbH:
+        description: Gesellschaft mit beschränkter Haftung (DE)
+      AG:
+        description: Aktiengesellschaft (DE)
+      Einzelunternehmen:
+        description: Sole proprietorship (DE)
+      GbR:
+        description: Gesellschaft bürgerlichen Rechts (DE)
+      OHG:
+        description: Offene Handelsgesellschaft (DE)
+      KG:
+        description: Kommanditgesellschaft (DE)
+      UG:
+        description: Unternehmergesellschaft (haftungsbeschränkt) (DE)
+      SoleTrader:
+        description: Sole Trader (UK)
+      UnincorporatedAssociation:
+        description: Unincorporated Association (UK)
+      Partnership:
+        description: General Partnership (UK)
+      Trust:
+        description: Trust (UK)
+      LimitedCompany:
+        description: Limited Company (UK)
+      LLP:
+        description: Limited Liability Partnership (UK)
+      CIC:
+        description: Community Interest Company (UK)
+      CIO:
+        description: Charitable Incorporated Organisation (UK)
+      CooperativeSociety:
+        description: Co-operative Society (UK)
+      BenCom:
+        description: Community Benefit Society (UK)
+      other:
+        description: Other legal form not listed above
 
 # ==========================================
 # Classes

@@ -1,0 +1,70 @@
+# markdownlint-cli2 configuration
+# https://github.com/DavidAnson/markdownlint-cli2#configuration
+
+config:
+  # MD003 - Heading style
+  MD003:
+    style: consistent
+
+  # MD004 - Unordered list style
+  MD004:
+    style: consistent
+
+  # MD007 - Unordered list indentation
+  MD007:
+    indent: 2
+
+  # MD013 - Line length (disabled — handled by editors/soft-wrap)
+  MD013: false
+
+  # MD024 - Multiple headings with the same content (allow in different nesting)
+  MD024:
+    siblings_only: true
+
+  # MD033 - Inline HTML (allow common elements used in docs)
+  MD033:
+    allowed_elements:
+      - a
+      - br
+      - details
+      - summary
+      - img
+      - sup
+      - sub
+
+  # MD034 - Bare URLs (disabled — common in spec reference docs)
+  MD034: false
+
+  # MD041 - First line should be a top-level heading (disabled for includes)
+  MD041: false
+
+  # MD046 - Code block style
+  MD046:
+    style: fenced
+
+  # MD048 - Code fence style
+  MD048:
+    style: backtick
+
+  # MD049 - Emphasis style
+  MD049:
+    style: consistent
+
+  # MD050 - Strong style
+  MD050:
+    style: consistent
+
+  # MD051 - Link fragments should be valid (disabled — many anchors are dynamic)
+  MD051: false
+
+  # MD060 - Table column style (disabled — overly strict on existing tables)
+  MD060: false
+
+globs:
+  - "**/*.md"
+  - "!.venv/**"
+  - "!node_modules/**"
+  - "!submodules/**"
+  - "!.pytest_cache/**"
+  - "!.playground/**"
+  - "!docs/references/**"

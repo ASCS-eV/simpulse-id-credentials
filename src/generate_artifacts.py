@@ -11,9 +11,10 @@ artifacts validate the credential envelope via RDFS inference.
 import json
 from pathlib import Path
 
-from linkml.generators.jsonldcontextgen import ContextGenerator
+from linkml.generators.jsonldcontextgen import ContextGenerator as _BaseContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
+from linkml_runtime.linkml_model.meta import SlotDefinition
 from rdflib import Namespace
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -23,6 +24,26 @@ OUT_DIR = REPO_ROOT / "artifacts" / "simpulseid"
 
 SH = Namespace("http://www.w3.org/ns/shacl#")
 LINKML = Namespace("https://w3id.org/linkml/")
+
+
+class DomainContextGenerator(_BaseContextGenerator):
+    """Context generator that excludes imported vocabulary terms.
+
+    W3C VC v2 envelope terms (issuer, validFrom, validUntil, evidence,
+    credentialStatus) are imported transitively via harbour schemas.
+    This generator skips them so the simpulseid JSON-LD context does not
+    redefine ``@protected`` terms already provided by the W3C VC v2 context
+    (``https://www.w3.org/ns/credentials/v2``).
+
+    Mirrors ``HarbourContextGenerator`` in harbour-credentials.
+    """
+
+    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
+        if getattr(slot, "imported_from", None) and not str(
+            slot.imported_from
+        ).startswith("linkml"):
+            return
+        super().visit_slot(aliased_slot_name, slot)
 
 
 class DomainShaclGenerator(_BaseShaclGenerator):
@@ -86,7 +107,9 @@ def main() -> None:
     )
 
     print("Generating JSON-LD context...")
-    ctx_gen = ContextGenerator(str(SCHEMA), importmap=import_map, base_dir=base_dir)
+    ctx_gen = DomainContextGenerator(
+        str(SCHEMA), importmap=import_map, base_dir=base_dir, mergeimports=False
+    )
     ctx_text = ctx_gen.serialize()
 
     # Ensure "type": "@type" is present in the generated context.

@@ -11,6 +11,7 @@ make generate
 ```
 
 This creates files in `artifacts/simpulseid/`:
+
 - `*.owl.ttl` — OWL ontology definitions
 - `*.shacl.ttl` — SHACL validation shapes
 - `*.context.jsonld` — JSON-LD context files

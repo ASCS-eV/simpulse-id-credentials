@@ -21,7 +21,7 @@ All of this is intended to be **publicly hostable** and consumable by wallets, v
 
 All external dependencies live flat under `submodules/` (no recursive nesting):
 
-```
+```text
 submodules/
 ├── ontology-management-base   # Gaia-X ontologies, SHACL shapes, validation suite
 ├── harbour-credentials        # Harbour credential definitions
@@ -261,6 +261,6 @@ Some relevant specifications and resources:
 - schema.org
   <https://schema.org/>
 
-```
+```text
 
 ```

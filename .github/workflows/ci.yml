@@ -35,6 +35,20 @@ jobs:
       - name: Lint
         run: make lint
 
+  # --- JOB 1b: Lint Markdown ---
+  lint-markdown:
+    name: Lint (Markdown)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Lint Markdown
+        run: npx --yes markdownlint-cli2
+
   # --- JOB 2: Generate & Validate ---
   generate-validate:
     name: Generate & Validate

@@ -1,4 +1,6 @@
 {
   "./harbour": "../submodules/harbour-credentials/linkml/harbour-core-credential",
-  "harbour": "../submodules/harbour-credentials/linkml/harbour-core-credential"
+  "harbour": "../submodules/harbour-credentials/linkml/harbour-core-credential",
+  "./w3c-vc": "../submodules/harbour-credentials/linkml/w3c-vc",
+  "w3c-vc": "../submodules/harbour-credentials/linkml/w3c-vc"
 }

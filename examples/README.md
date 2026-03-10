@@ -17,6 +17,13 @@ These examples demonstrate:
 The examples serve as a canonical blueprint for services integrating with  
 **<https://identity.ascs.digital/>**.
 
+> **Note on `harbourCredential` IRIs:** The `harbourCredential` values in
+> these examples (e.g., `urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890`)
+> are synthetic placeholders. In production, each SimpulseID credential
+> references an actual Harbour Gaia-X baseline credential issued and
+> retrievable via the Trust Anchor's `LinkedCredentialService` endpoint
+> (see the DID document examples).
+
 ---
 
 ## Structure of the Examples

@@ -1,7 +1,7 @@
 # SimpulseID Credentials Makefile
 # ================================
 
-.PHONY: setup install install-dev install-docs submodule-setup generate validate lint format test test-harbour test-cov check all clean help
+.PHONY: setup install install-dev install-docs submodule-setup generate validate lint lint-md format format-md test test-harbour test-cov check all clean help
 
 OMB_SUBMODULE_DIR := submodules/harbour-credentials/submodules/ontology-management-base
 HARBOUR_SUBMODULE_DIR := submodules/harbour-credentials
@@ -77,7 +77,9 @@ help: ## Show this help
 	@echo ""
 	@echo "Linting:"
 	@echo "  make lint         - Run pre-commit checks"
+	@echo "  make lint-md      - Lint Markdown files with markdownlint-cli2"
 	@echo "  make format       - Format code with black/isort"
+	@echo "  make format-md    - Auto-fix Markdown lint violations"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test         - Run all tests"
@@ -188,14 +190,24 @@ endif
 
 # ---------- Lint ----------
 
-lint: ## Run pre-commit (black, isort, flake8, JSON-LD parse, Turtle parse)
+lint: ## Run pre-commit (black, isort, flake8, JSON-LD parse, Turtle parse, markdownlint)
 	$(call check_dev_setup)
 	@$(PRECOMMIT) run --all-files
+
+lint-md: ## Lint Markdown files with markdownlint-cli2
+	@echo "Linting Markdown files..."
+	@npx --yes markdownlint-cli2
+	@echo "OK: Markdown lint complete"
 
 format: ## Format code with black and isort
 	$(call check_dev_setup)
 	@$(PYTHON) -m black src/ tests/
 	@$(PYTHON) -m isort src/ tests/
+
+format-md: ## Auto-fix Markdown lint violations
+	@echo "Fixing Markdown files..."
+	@npx --yes markdownlint-cli2 --fix
+	@echo "OK: Markdown formatting complete"
 
 # ---------- Generate ----------
 

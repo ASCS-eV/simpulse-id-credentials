@@ -44,7 +44,7 @@ Read these BEFORE making changes:
 
 ## Project Structure
 
-```
+```text
 simpulse-id-credentials/
 ├── linkml/           # LinkML schema definitions (.yaml)
 ├── artifacts/        # Generated OWL, SHACL, JSON-LD context files
@@ -90,6 +90,7 @@ When instructed to prepare a commit or PR, **do not commit directly**. Instead:
    - `.playground/pr-description.md` — PR description
 
 The human operator will review these files and either:
+
 - Use them to manually commit/push and create a PR, or
 - Use automated tooling with signed commits (`git commit -s -S`)
 

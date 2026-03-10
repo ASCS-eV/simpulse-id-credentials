@@ -22,13 +22,13 @@ smart contract deployed on **Base** (L2 rollup).
 
 DID format:
 
-```
+```text
 did:ethr:0x14a34:<ethereum-address>
 ```
 
 Entity types:
 
-```
+```text
 did:ethr:0x14a34:0x5091...bb03  ← ASCS (trust anchor operator)
 did:ethr:0x14a34:0x9d27...1048  ← Participant (e.g., BMW)
 did:ethr:0x14a34:0xb2F7...b39a  ← Natural person (user/admin)
