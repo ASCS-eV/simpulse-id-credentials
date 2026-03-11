@@ -185,10 +185,10 @@ def test_participant_has_gx_composition(path):
 
 @pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
 def test_natural_person_has_gx_composition(path):
-    """User/Admin credentials must have gxParticipant with gx:NaturalPerson.
+    """User/Admin credentials must have gxParticipant with harbour_gx:NaturalPerson.
 
     Personal attributes (givenName, familyName, email) live inside the
-    gxParticipant node as a gx:NaturalPerson blank node.
+    gxParticipant node as a harbour_gx:NaturalPerson blank node.
     """
     vc = json.loads(path.read_text())
     vc_types = vc.get("type", [])
@@ -200,10 +200,10 @@ def test_natural_person_has_gx_composition(path):
     gx = subject.get("gxParticipant")
     assert gx is not None, (
         f"{path.name} missing gxParticipant composition. "
-        f"Personal attributes must live in gx:NaturalPerson inner node."
+        f"Personal attributes must live in harbour_gx:NaturalPerson inner node."
     )
-    assert gx.get("type") == "gx:NaturalPerson", (
-        f"gxParticipant type must be gx:NaturalPerson, got {gx.get('type')}"
+    assert gx.get("type") == "harbour_gx:NaturalPerson", (
+        f"gxParticipant type must be harbour_gx:NaturalPerson, got {gx.get('type')}"
     )
     assert "givenName" in gx, f"{path.name}: gxParticipant missing givenName"
     assert "familyName" in gx, f"{path.name}: gxParticipant missing familyName"

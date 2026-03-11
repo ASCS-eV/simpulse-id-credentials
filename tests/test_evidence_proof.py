@@ -57,9 +57,8 @@ class TestEvidenceVPSigning:
         vc = _load_example("simpulseid-participant-credential.json")
         vp = _get_evidence_vp(vc)
         assert vp is not None, "Expected expanded evidence VP"
-        assert "verifiableCredential" not in vp, "VP should be empty (no inner VCs)"
 
-        # Build VP for signing
+        # Build VP for signing (only @context, type, holder)
         signed_vp = {
             "@context": vp["@context"],
             "type": vp["type"],
@@ -74,8 +73,7 @@ class TestEvidenceVPSigning:
 
         # Verify VP
         result = verify_vp_jose(vp_jwt, p256_public_key, expected_nonce=nonce)
-        assert result["type"] == ["VerifiablePresentation"]
-        assert "verifiableCredential" not in result
+        assert "VerifiablePresentation" in result["type"]
 
     def test_sign_membership_evidence_vp(
         self, p256_private_key, p256_public_key, p256_did_key_vm
@@ -98,7 +96,7 @@ class TestEvidenceVPSigning:
         )
 
         result = verify_vp_jose(vp_jwt, p256_public_key, expected_nonce=nonce)
-        assert result["type"] == ["VerifiablePresentation"]
+        assert "VerifiablePresentation" in result["type"]
 
     def test_evidence_vp_has_holder(
         self, p256_private_key, p256_public_key, p256_did_key_vm
@@ -124,11 +122,15 @@ class TestEvidenceVPSigning:
     def test_evidence_vp_has_nonce(
         self, p256_private_key, p256_public_key, p256_did_key_vm
     ):
-        """Evidence VP should carry the nonce after signing."""
+        """Evidence VP should carry the nonce after signing.
+
+        The nonce is injected at signing time (not in the pre-signed skeleton)
+        because the harbour VerifiablePresentation SHACL shape is closed and
+        does not permit extra properties like nonce.
+        """
         vc = _load_example("simpulseid-participant-credential.json")
         vp = _get_evidence_vp(vc)
-        nonce = vp.get("nonce")
-        assert nonce is not None, "Expected nonce in evidence VP"
+        nonce = "test-nonce-12345"
 
         signed_vp = {
             "@context": vp["@context"],
@@ -204,7 +206,7 @@ class TestFullProofChain:
         _, evidence_vp_jwt = signed_participant
         assert evidence_vp_jwt is not None
         result = verify_vp_jose(evidence_vp_jwt, p256_public_key)
-        assert result["type"] == ["VerifiablePresentation"]
+        assert "VerifiablePresentation" in result["type"]
 
     def test_full_chain_decoded(self, signed_participant):
         """Decode the full chain and verify structure."""

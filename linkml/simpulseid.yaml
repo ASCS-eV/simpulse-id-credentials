@@ -177,6 +177,14 @@ classes:
     class_uri: simpulseid:Participant
     slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, gxParticipant]
     slot_usage:
+      # Override slot_uri so SHACL sh:path matches the JSON-LD context
+      # mapping (harbour-core defines email/url as schema:email/schema:url).
+      # Without this, LinkML uses the gx-imported slot_uri (gx:email/gx:url)
+      # which conflicts with the JSON-LD context.
+      email:
+        slot_uri: https://schema.org/email
+      url:
+        slot_uri: https://schema.org/url
       termsAndConditions:
         range: TermsAndConditions
         multivalued: true

@@ -38,27 +38,13 @@ INVALID_FILES = _discover_files(INVALID_DIR)
 def shacl_validator():
     """Create a ShaclValidator with harbour + simpulseid artifacts registered.
 
-    Includes a workaround for the OMB context_resolver alphabetical-overwrite
-    bug: multiple harbour artifact domains share the same @vocab URL, and the
-    last one (harbour-gx-credential, fewest mappings) wins. We force the URL
-    map to point at harbour.context.jsonld which has all property mappings.
+    harbour-core-credential and harbour-gx-credential each have their own
+    @vocab URL now (harbour: vs harbour_gx:), so no context overrides needed.
     """
     resolver = RegistryResolver(root_dir=OMB_ROOT)
     resolver.register_artifact_directory(HARBOUR_ARTIFACTS)
     resolver.register_artifact_directory(SIMPULSEID_ARTIFACTS)
-    validator = ShaclValidator(root_dir=OMB_ROOT, verbose=False, resolver=resolver)
-
-    # Fix: override harbour context URL to use the full harbour.context.jsonld
-    harbour_vocab = "https://w3id.org/reachhaven/harbour/credentials/v1/"
-    correct_context = (
-        HARBOUR_ARTIFACTS / "harbour" / "harbour.context.jsonld"
-    ).resolve()
-    if validator._context_url_map is None:
-        validator._context_url_map = {}
-    validator._context_url_map[harbour_vocab] = correct_context
-    validator._context_url_map[harbour_vocab.rstrip("/")] = correct_context
-
-    return validator
+    return ShaclValidator(root_dir=OMB_ROOT, verbose=False, resolver=resolver)
 
 
 @pytest.mark.parametrize(
