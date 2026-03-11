@@ -194,8 +194,7 @@ def main():
         kid = ISSUER_KID_MAP.get(issuer)
         if kid is None:
             print(
-                f"  WARNING: No kid mapping for issuer {issuer}, "
-                f"skipping {path.name}",
+                f"  WARNING: No kid mapping for issuer {issuer}, skipping {path.name}",
                 file=sys.stderr,
             )
             continue

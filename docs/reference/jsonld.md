@@ -64,7 +64,6 @@ Any bare term not explicitly mapped (e.g., `duns`, `hash`) resolves to the Simpu
 | `email` | `schema:email` |
 | `programName` | `schema:programName` |
 | `duns` | `simpulseid:duns` (via `@vocab`) |
-| `hash` | `simpulseid:hash` (via `@vocab`) |
 
 #### URI Properties
 

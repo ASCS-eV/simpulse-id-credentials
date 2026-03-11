@@ -88,9 +88,9 @@ def test_issuer_did_has_assertion_method(path):
         f"DID document for {issuer} has no assertionMethod. "
         f"Per W3C VC-JOSE-COSE §3.3.2, kid must resolve to assertionMethod."
     )
-    assert (
-        len(did_doc["assertionMethod"]) > 0
-    ), f"assertionMethod for {issuer} is empty."
+    assert len(did_doc["assertionMethod"]) > 0, (
+        f"assertionMethod for {issuer} is empty."
+    )
 
 
 @pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
@@ -123,9 +123,9 @@ def test_issuer_did_has_signing_key(path):
 
     # At least one P-256 key must be in assertionMethod
     p256_in_assertion = [k for k in p256_keys if k.get("id") in assertion_ids]
-    assert (
-        len(p256_in_assertion) > 0
-    ), f"No P-256 key referenced in assertionMethod for {issuer}."
+    assert len(p256_in_assertion) > 0, (
+        f"No P-256 key referenced in assertionMethod for {issuer}."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -178,9 +178,9 @@ def test_participant_has_gx_composition(path):
         f"ParticipantCredential {path.name} missing gxParticipant composition. "
         f"Required for Gaia-X 25.11 gx:LegalPerson compliance."
     )
-    assert (
-        gx.get("type") == "gx:LegalPerson"
-    ), f"gxParticipant type must be gx:LegalPerson, got {gx.get('type')}"
+    assert gx.get("type") == "gx:LegalPerson", (
+        f"gxParticipant type must be gx:LegalPerson, got {gx.get('type')}"
+    )
 
 
 @pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
@@ -202,9 +202,9 @@ def test_natural_person_has_gx_composition(path):
         f"{path.name} missing gxParticipant composition. "
         f"Personal attributes must live in gx:NaturalPerson inner node."
     )
-    assert (
-        gx.get("type") == "gx:NaturalPerson"
-    ), f"gxParticipant type must be gx:NaturalPerson, got {gx.get('type')}"
+    assert gx.get("type") == "gx:NaturalPerson", (
+        f"gxParticipant type must be gx:NaturalPerson, got {gx.get('type')}"
+    )
     assert "givenName" in gx, f"{path.name}: gxParticipant missing givenName"
     assert "familyName" in gx, f"{path.name}: gxParticipant missing familyName"
 

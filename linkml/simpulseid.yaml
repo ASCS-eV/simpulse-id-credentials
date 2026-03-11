@@ -11,14 +11,9 @@ prefixes:
   linkml: https://w3id.org/linkml/
   simpulseid: https://w3id.org/ascs-ev/simpulse-id/credentials/v1/
   harbour: https://w3id.org/reachhaven/harbour/credentials/v1/
-  # NOTE: Two schema.org prefixes are required for SHACL compatibility.
-  # W3C VC v2 context maps "name" → https://schema.org/name (@protected).
-  # Harbour core and most schema.org slots use http://schema.org/ (schema:).
-  # Subject type "name" attributes use sdo: (HTTPS) so the generated SHACL
-  # sh:path matches the actual RDF predicate produced by the W3C context.
-  # See: https://www.w3.org/TR/vc-data-model-2.0/ §5.2 (context processing).
-  schema: http://schema.org/
-  sdo: https://schema.org/
+  harbour_gx: https://w3id.org/reachhaven/harbour/gaiax-domain/v1/
+  didcore: https://www.w3.org/ns/did#
+  gx: https://w3id.org/gaia-x/development#
   cred: https://www.w3.org/2018/credentials#
   xsd: http://www.w3.org/2001/XMLSchema#
 
@@ -58,13 +53,13 @@ slots:
       NOTE: schema.org defines member on Organization and ProgramMembership
       with range Organization|Person. Here the range is uri (a DID) which
       identifies the participant — semantically equivalent.
-    slot_uri: schema:member
+    slot_uri: https://schema.org/member
     range: uri
 
   # --- Schema.org Mappings (Memberships) ---
 
   memberOf:
-    slot_uri: schema:memberOf
+    slot_uri: https://schema.org/memberOf
     multivalued: true
     range: uri
 
@@ -74,12 +69,12 @@ slots:
       superseded by the "program" property (linking to MemberProgram type).
       Retained here for simplicity — membership programs are identified by
       program DIDs, not full MemberProgram objects.
-    slot_uri: schema:programName
+    slot_uri: https://schema.org/programName
     range: string
 
   hostingOrganization:
     description: Reference to the organization hosting the membership program.
-    slot_uri: schema:hostingOrganization
+    slot_uri: https://schema.org/hostingOrganization
     range: uri
 
   memberSince:
@@ -87,7 +82,7 @@ slots:
       Date when the member joined the program. NOTE: schema.org lists
       memberSince in the "pending" section (not yet in the core vocabulary).
       Used here as a stable IRI for membership start dates.
-    slot_uri: schema:memberSince
+    slot_uri: https://schema.org/memberSince
     range: date
 
   # --- SimpulseID Extensions ---
@@ -107,28 +102,9 @@ slots:
     range: uri
     required: true
 
-  termsAndConditions:
-    description: Terms and conditions accepted by the credential subject.
-    slot_uri: simpulseid:termsAndConditions
-    range: TermsAndConditions
-    multivalued: true
-    inlined: true
-    inlined_as_list: true
-    required: false
-
-  hash:
-    description: Cryptographic hash of the referenced document.
-    slot_uri: simpulseid:hash
-    range: string
-
-  gxParticipant:
-    description: >
-      Nested Gaia-X participant compliance data
-      (gx:LegalPerson, gx:NaturalPerson, or gx:Participant blank node).
-      Mirrors harbour:gxParticipant for the composition pattern.
-    slot_uri: harbour:gxParticipant
-    range: Any
-    required: false
+  # termsAndConditions — imported from gx (slot_uri: gx:termsAndConditions).
+  # Range overridden to TermsAndConditions via slot_usage on SimpulseidParticipant.
+  # gxParticipant — inherited from harbour-gx-credential (range: Participant).
 
 # ==========================================
 # Enums
@@ -189,17 +165,7 @@ enums:
 
 classes:
   # ------------------------------------------
-  # 1. NESTED TYPES (blank node / inlined)
-  # ------------------------------------------
-
-  TermsAndConditions:
-    description: >
-      Terms and conditions document reference with integrity hash.
-    class_uri: simpulseid:TermsAndConditions
-    slots: [url, hash]
-
-  # ------------------------------------------
-  # 2. SUBJECT TYPES
+  # SUBJECT TYPES
   # ------------------------------------------
 
   SimpulseidParticipant:
@@ -210,6 +176,11 @@ classes:
       gxParticipant node as a gx:LegalPerson blank node.
     class_uri: simpulseid:Participant
     slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, gxParticipant]
+    slot_usage:
+      termsAndConditions:
+        range: TermsAndConditions
+        multivalued: true
+        required: false
 
   SimpulseidAdministrator:
     description: >

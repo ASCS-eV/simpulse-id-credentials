@@ -37,7 +37,6 @@ SimpulseidAdministrator  → simpulseid:Administrator
 SimpulseidUser           → simpulseid:User
 AscsBaseMembership       → simpulseid:AscsBaseMembership
 AscsEnvitedMembership    → simpulseid:AscsEnvitedMembership
-TermsAndConditions       → simpulseid:TermsAndConditions (nested/inlined)
 ```
 
 ## Slots
@@ -50,8 +49,7 @@ TermsAndConditions       → simpulseid:TermsAndConditions (nested/inlined)
 | `duns` | `simpulseid:duns` | string | DUNS number |
 | `legalForm` | `simpulseid:legalForm` | `SimpulseIdLegalForm` | Legal form enum |
 | `baseMembershipCredential` | `simpulseid:baseMembershipCredential` | URI | Reference to base membership VC |
-| `termsAndConditions` | `simpulseid:termsAndConditions` | `TermsAndConditions` | T&C with hash |
-| `hash` | `simpulseid:hash` | string | Document integrity hash |
+| `termsAndConditions` | `simpulseid:termsAndConditions` | Any (`gx:TermsAndConditions`) | T&C with integrity hash (Gaia-X type) |
 | `gxParticipant` | `harbour:gxParticipant` | Any | Gaia-X participant data |
 
 ### Schema.org Mappings

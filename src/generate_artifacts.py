@@ -80,7 +80,14 @@ class DomainShaclGenerator(_BaseShaclGenerator):
 
 def load_importmap() -> dict:
     if IMPORTMAP_FILE.exists():
-        return json.loads(IMPORTMAP_FILE.read_text())
+        raw = json.loads(IMPORTMAP_FILE.read_text())
+        resolved = {}
+        for key, val in raw.items():
+            p = Path(val)
+            if not p.is_absolute():
+                p = (IMPORTMAP_FILE.parent / p).resolve()
+            resolved[key] = str(p)
+        return resolved
     return {}
 
 
@@ -126,6 +133,8 @@ def main() -> None:
         ctx_text = json.dumps(ctx_data, indent=3, ensure_ascii=False)
 
     (OUT_DIR / "simpulseid.context.jsonld").write_text(ctx_text, encoding="utf-8")
+
+    print(f"Done: {OUT_DIR}/")
 
     print(f"Done: {OUT_DIR}/")
 

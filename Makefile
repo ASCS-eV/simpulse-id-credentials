@@ -78,7 +78,7 @@ help: ## Show this help
 	@echo "Linting:"
 	@echo "  make lint         - Run pre-commit checks"
 	@echo "  make lint-md      - Lint Markdown files with markdownlint-cli2"
-	@echo "  make format       - Format code with black/isort"
+	@echo "  make format       - Format code with ruff"
 	@echo "  make format-md    - Auto-fix Markdown lint violations"
 	@echo ""
 	@echo "Testing:"
@@ -190,7 +190,7 @@ endif
 
 # ---------- Lint ----------
 
-lint: ## Run pre-commit (black, isort, flake8, JSON-LD parse, Turtle parse, markdownlint)
+lint: ## Run pre-commit (ruff, JSON-LD parse, Turtle parse, markdownlint)
 	$(call check_dev_setup)
 	@$(PRECOMMIT) run --all-files
 
@@ -199,10 +199,10 @@ lint-md: ## Lint Markdown files with markdownlint-cli2
 	@npx --yes markdownlint-cli2
 	@echo "OK: Markdown lint complete"
 
-format: ## Format code with black and isort
+format: ## Format code with ruff
 	$(call check_dev_setup)
-	@$(PYTHON) -m black src/ tests/
-	@$(PYTHON) -m isort src/ tests/
+	@$(PYTHON) -m ruff format src/ tests/
+	@$(PYTHON) -m ruff check --fix src/ tests/
 
 format-md: ## Auto-fix Markdown lint violations
 	@echo "Fixing Markdown files..."

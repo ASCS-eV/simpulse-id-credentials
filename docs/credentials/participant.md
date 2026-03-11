@@ -22,7 +22,7 @@ The subject references a Harbour Gaia-X credential via the `harbourCredential` I
 | `email` | string | — | Contact email |
 | `url` | URI | — | Organization website |
 | `gxParticipant` | object | — | Nested Gaia-X `LegalPerson` compliance data |
-| `termsAndConditions` | object[] | — | Accepted terms with integrity hash |
+| `termsAndConditions` | object[] | — | Accepted terms (`gx:TermsAndConditions`) |
 
 ### Legal Form Values
 

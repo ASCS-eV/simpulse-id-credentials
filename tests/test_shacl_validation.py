@@ -7,7 +7,6 @@ artifacts registered, matching the Makefile validate target pattern.
 from pathlib import Path
 
 import pytest
-
 from src.tools.utils.registry_resolver import RegistryResolver
 from src.tools.validators.shacl.validator import ShaclValidator
 
@@ -71,8 +70,7 @@ def test_valid_example_passes(shacl_validator, jsonld_file):
     """Valid example credentials should pass SHACL validation."""
     result = shacl_validator.validate([jsonld_file])
     assert result.conforms, (
-        f"{jsonld_file.name} should conform but got violations:\n"
-        f"{result.report_text}"
+        f"{jsonld_file.name} should conform but got violations:\n{result.report_text}"
     )
 
 
@@ -84,6 +82,6 @@ def test_valid_example_passes(shacl_validator, jsonld_file):
 def test_invalid_example_fails(shacl_validator, jsonld_file):
     """Invalid credentials (missing required fields) should fail SHACL validation."""
     result = shacl_validator.validate([jsonld_file])
-    assert (
-        not result.conforms
-    ), f"{jsonld_file.name} should have SHACL violations but passed"
+    assert not result.conforms, (
+        f"{jsonld_file.name} should have SHACL violations but passed"
+    )
