@@ -151,12 +151,17 @@ All identities are managed on-chain via a custom ERC-1056 EthereumDIDRegistry on
 
 These demonstrate:
 
-- How organizational DIDs (ASCS, ENVITED programs, participants) are modelled
-- How user/admin DIDs are defined _without leaking personal data_
-- How P-256 keys are registered as on-chain attributes
-- How the smart contract controller governs identity ownership
+- How participant and user DIDs expose their primary P-256 signing key as a
+  local `#controller` `JsonWebKey`
+- How optional secondary P-256 keys are exposed as `#delegate-N`
+  verification methods
+- How service and program DIDs are modelled as externally controlled resources
+  via the root DID Core `controller` property
+- How metadata endpoints are exposed as `#service-N` service entries
 
-DID documents are resolved by reading on-chain events from the ERC-1056 registry.
+The examples assume a project-specific Base resolver profile: the contract state
+anchors the DID, while the resolved DID document surfaces P-256 controller keys
+instead of a synthetic secp256k1 recovery method.
 
 ---
 

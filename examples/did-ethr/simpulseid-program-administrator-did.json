@@ -3,13 +3,41 @@
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
     "https://www.w3.org/ns/did/v1",
     "https://schema.org",
-    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+    {
+      "schema": "https://schema.org/",
+      "sdo": "https://schema.org/",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "name": "sdo:name",
+      "description": "sdo:description",
+      "url": {
+        "@id": "sdo:url",
+        "@type": "xsd:anyURI"
+      },
+      "publisher": {
+        "@id": "sdo:publisher",
+        "@type": "@id"
+      },
+      "about": "sdo:about",
+      "inLanguage": "sdo:inLanguage",
+      "datePublished": {
+        "@id": "sdo:datePublished",
+        "@type": "xsd:date"
+      },
+      "termsOfService": {
+        "@id": "sdo:termsOfService",
+        "@type": "xsd:anyURI"
+      },
+      "privacyPolicy": {
+        "@id": "sdo:privacyPolicy",
+        "@type": "xsd:anyURI"
+      }
+    }
   ],
   "id": "did:ethr:0x14a34:0x34d8ED7DA77f3f522465E1A18Dd4fFe482021112",
-  "controller": "did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001",
+  "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
   "service": [
     {
-      "id": "did:ethr:0x14a34:0x34d8ED7DA77f3f522465E1A18Dd4fFe482021112#program-metadata",
+      "id": "did:ethr:0x14a34:0x34d8ED7DA77f3f522465E1A18Dd4fFe482021112#service-1",
       "type": "ProgramMetadataService",
       "serviceEndpoint": {
         "@type": [

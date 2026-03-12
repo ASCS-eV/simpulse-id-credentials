@@ -61,7 +61,10 @@ git commit -s -S -m "feat: add new credential type"
 
 ### Preparing Commits and Pull Requests
 
-When instructed to prepare a commit or PR, **do not commit directly**. Instead:
+When instructed to prepare a commit or PR, default to preparing the `.playground`
+files first. After **explicit human confirmation in the current session**, the
+agent may directly create the signed commit, push the branch, and open the PR
+using the prepared `.playground` content. Otherwise:
 
 1. Create the `.playground/` directory (already in `.gitignore`)
 2. Generate two markdown files:
@@ -70,7 +73,8 @@ When instructed to prepare a commit or PR, **do not commit directly**. Instead:
 
 The human operator will review these files and either:
 
-- Use them to manually commit/push and create a PR, or
+- Use them to manually commit/push and create a PR,
+- Ask the agent to perform the signed commit/push/PR flow directly after explicit confirmation, or
 - Use automated tooling with signed commits (`git commit -s -S`)
 
 ### Commit Message Format

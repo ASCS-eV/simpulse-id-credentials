@@ -1,8 +1,15 @@
 # SimpulseID did:ethr DID Documents
 
 This directory contains example `did:ethr` DID documents for the ENVITED
-ecosystem. These documents represent what the ERC-1056 EthereumDIDRegistry
-on **Base** (L2 rollup) would resolve for each identity.
+ecosystem. The examples assume a project-specific Base resolver profile:
+signer DIDs expose their P-256 key material directly in the resolved document,
+while resource DIDs (programs and services) point to an external controller DID.
+
+At the on-chain layer, these identities are managed as deterministic keyless
+addresses controlled through an `IdentityController` contract. That contract
+verifies relayed P-256-signed instructions and updates ERC-1056 state; the JSON
+files in this directory show the **resolved verifier-facing DID documents**
+produced from that state.
 
 ## Network
 
@@ -11,23 +18,25 @@ on **Base** (L2 rollup) would resolve for each identity.
 
 All example DIDs use the testnet chain ID: `did:ethr:0x14a34:<address>`
 
-## Smart Contract Controller
+## Controller Model
 
-All identities are managed by a custom ERC-1056 contract that creates
-`did:ethr` identities from P-256 keys.
+The examples use two DID document patterns:
 
-Controller contract: `did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001`
+1. **Signer DIDs** (participants and users) expose a local P-256
+   `JsonWebKey` as `#controller`. This is the primary ES256 signing key and
+   the `kid` used by the example JWTs.
+2. **Resource DIDs** (programs and infrastructure services) do not invent a
+   local signing key. Instead they use the root DID Core `controller`
+   property to point at the ASCS participant DID that governs them.
 
-## DID Document Structure
+Additional P-256 keys may still appear as `#delegate-N` verification methods
+when the examples need secondary keys. Chain anchoring and recovery semantics
+belong to the Base contract and resolver metadata, not to a synthetic
+secp256k1 verification method in these example documents.
 
-Each resolved DID document contains:
-
-1. **`#controller`** — `EcdsaSecp256k1RecoveryMethod2020` with `blockchainAccountId`
-   pointing to the identity's on-chain address (`eip155:84532:<address>`)
-2. **P-256 verification keys** — Registered as on-chain attributes via
-   `setAttribute("did/pub/EC/veriKey/jwk", ...)`, appearing as `JsonWebKey`
-   entries in `verificationMethod`
-3. **Service endpoints** — Registered via `setAttribute("did/svc/...", ...)`
+Natural participants therefore use standard SSI wallets for P-256 signatures,
+while a relay can submit the resulting authorized instruction on-chain without
+requiring the user to hold an Ethereum private key.
 
 ## Entity Types
 
@@ -63,22 +72,21 @@ Each resolved DID document contains:
 
 ## Key Management
 
-- **P-256 keys** are the primary signing keys (ES256), registered on-chain
-  as DID attributes
-- **`#controller`** entry is the ERC-1056 identity owner (secp256k1 recovery)
-- Key rotation is managed on-chain via `setAttribute` / `revokeAttribute`
-- The smart contract controller governs all identity ownership
+- **`#controller`** on signer DIDs is the primary P-256 `JsonWebKey`
+- **`#delegate-N`** entries are optional additional P-256 keys
+- **Program and service DIDs** are externally controlled by the ASCS participant DID
+- Key rotation remains an on-chain concern handled through contract state and resolver logic
 
 ## Scope Boundary
 
 This repository **does not**:
 
-- Deploy or interact with the ERC-1056 smart contract
+- Deploy or interact with the Base contract
 - Resolve `did:ethr` identifiers at runtime
 - Manage on-chain key registration
 
-Integrators must deploy the EthereumDIDRegistry contract and implement
-DID resolution by reading on-chain events.
+Integrators must deploy the contract and implement DID resolution against the
+registered Base state for this custom profile.
 
 ## References
 

@@ -164,15 +164,14 @@ def main():
     private_key, public_key = load_test_p256_keypair()
 
     # Map issuer DIDs to their verification method kid in the DID document.
-    # Per W3C VC-JOSE-COSE §3.3.2, kid MUST identify a key in the issuer's
-    # assertionMethod. Per DID-CORE-1.1 §5.3.1, assertionMethod keys are
-    # used to issue Verifiable Credentials.
+    # In the project-specific did:ethr examples, the primary P-256 controller
+    # key is exposed as #controller and is listed in assertionMethod.
     ISSUER_KID_MAP = {
         "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03": (
-            "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#signing-key-1"
+            "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#controller"
         ),
         "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048": (
-            "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#signing-key-1"
+            "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#controller"
         ),
     }
 

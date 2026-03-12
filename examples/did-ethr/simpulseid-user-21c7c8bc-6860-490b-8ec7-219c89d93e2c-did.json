@@ -1,19 +1,18 @@
 {
   "@context": [
     "https://www.w3.org/ns/did/v1",
-    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+    {
+      "JsonWebKey": "https://w3id.org/security#JsonWebKey",
+      "publicKeyJwk": {
+        "@id": "https://w3id.org/security#publicKeyJwk",
+        "@type": "@json"
+      }
+    }
   ],
   "id": "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a",
-  "controller": "did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001",
   "verificationMethod": [
     {
       "id": "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a#controller",
-      "type": "EcdsaSecp256k1RecoveryMethod2020",
-      "controller": "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a",
-      "blockchainAccountId": "eip155:84532:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a"
-    },
-    {
-      "id": "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a#wallet-key-1",
       "type": "JsonWebKey",
       "controller": "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a",
       "publicKeyJwk": {
@@ -25,11 +24,9 @@
     }
   ],
   "authentication": [
-    "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a#controller",
-    "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a#wallet-key-1"
+    "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a#controller"
   ],
   "assertionMethod": [
-    "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a#controller",
-    "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a#wallet-key-1"
+    "did:ethr:0x14a34:0xb2F78332cF29Bd4dBB04Dea2EF59439F43F0b39a#controller"
   ]
 }

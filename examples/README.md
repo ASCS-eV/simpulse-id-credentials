@@ -90,16 +90,20 @@ Examples under `examples/did-ethr/` illustrate:
 - Participant DIDs controlled by organizations
   (e.g., `did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03`)
 
-- Program DIDs controlled by the smart contract controller
+- Program and service DIDs controlled by the ASCS participant DID via the root
+  DID Core `controller` property
 
 - User and Administrator DIDs:
-  Opaque, privacy-preserving identifiers that _only_ expose verification keys.
+  Opaque, privacy-preserving identifiers that expose only P-256 verification keys.
 
-Each DID document supports:
+Signer DID documents support:
 
-- Base chain account (`blockchainAccountId: eip155:84532:...`)
-- P-256 verification keys (registered as on-chain attributes)
+- A local `#controller` `JsonWebKey` (the primary ES256 signing key)
+- Optional additional P-256 delegates (`#delegate-N`)
 - Key rotation (through ERC-1056 `setAttribute` / `revokeAttribute`)
+
+Resource DID documents (programs and services) omit local signing keys and
+instead point their root `controller` property at the owning participant DID.
 
 No DID document contains personal data.
 

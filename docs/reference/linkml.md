@@ -56,16 +56,16 @@ AscsEnvitedMembership    → simpulseid:AscsEnvitedMembership
 
 | Slot | URI | Range |
 |------|-----|-------|
-| `givenName` | `schema:givenName` | string |
-| `familyName` | `schema:familyName` | string |
-| `member` | `schema:member` | URI |
-| `memberOf` | `schema:memberOf` | URI (multivalued) |
-| `programName` | `schema:programName` | string |
-| `hostingOrganization` | `schema:hostingOrganization` | URI |
-| `memberSince` | `schema:memberSince` | date |
+| `givenName` | `sdo:givenName` | string |
+| `familyName` | `sdo:familyName` | string |
+| `member` | `sdo:member` | URI |
+| `memberOf` | `sdo:memberOf` | URI (multivalued) |
+| `programName` | `sdo:programName` | string |
+| `hostingOrganization` | `sdo:hostingOrganization` | URI |
+| `memberSince` | `sdo:memberSince` | date |
 
 !!! note "Schema.org Prefix Handling"
-    Two schema.org prefixes are used: `schema:` (HTTP) for most slots, and `sdo:` (HTTPS) for the `name` attribute. This is required because the W3C VC v2 context maps `name` to `https://schema.org/name` (`@protected`), and the SHACL `sh:path` must match the actual RDF predicate.
+    The LinkML schemas in this repository bind `https://schema.org/` under the `sdo:` prefix. This avoids a prefix-name collision with LinkML's built-in `schema:` prefix, which still resolves to `http://schema.org/` in the upstream meta-model.
 
 ## Enums
 

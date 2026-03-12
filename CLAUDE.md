@@ -112,9 +112,13 @@ When making changes to the codebase, create/update these files in `.playground/`
 | `.playground/commit-message.md` | Conventional commit message, ready for `git commit -s -S` |
 | `.playground/pr-description.md` | PR description following any existing PR template |
 
-**When instructed to prepare a commit or PR, do not commit directly.** Create these files for human review. The operator will either:
+**When instructed to prepare a commit or PR, default to updating these files first.**
+After explicit human confirmation in the current session, the agent may use
+them to create the signed commit, push the branch, and open the PR directly.
+Otherwise, create these files for human review. The operator will either:
 
-- Use them to manually commit/push and create a PR, or
+- Use them to manually commit/push and create a PR,
+- Ask the agent to perform the signed commit/push/PR flow directly after explicit confirmation, or
 - Use automated tooling with signed commits (`git commit -s -S`)
 
 ## Instruction Files

@@ -12,6 +12,7 @@ prefixes:
   simpulseid: https://w3id.org/ascs-ev/simpulse-id/credentials/v1/
   harbour: https://w3id.org/reachhaven/harbour/credentials/v1/
   harbour_gx: https://w3id.org/reachhaven/harbour/gaiax-domain/v1/
+  sdo: https://schema.org/
   didcore: https://www.w3.org/ns/did#
   gx: https://w3id.org/gaia-x/development#
   cred: https://www.w3.org/2018/credentials#
@@ -53,13 +54,13 @@ slots:
       NOTE: schema.org defines member on Organization and ProgramMembership
       with range Organization|Person. Here the range is uri (a DID) which
       identifies the participant — semantically equivalent.
-    slot_uri: https://schema.org/member
+    slot_uri: sdo:member
     range: uri
 
   # --- Schema.org Mappings (Memberships) ---
 
   memberOf:
-    slot_uri: https://schema.org/memberOf
+    slot_uri: sdo:memberOf
     multivalued: true
     range: uri
 
@@ -69,12 +70,12 @@ slots:
       superseded by the "program" property (linking to MemberProgram type).
       Retained here for simplicity — membership programs are identified by
       program DIDs, not full MemberProgram objects.
-    slot_uri: https://schema.org/programName
+    slot_uri: sdo:programName
     range: string
 
   hostingOrganization:
     description: Reference to the organization hosting the membership program.
-    slot_uri: https://schema.org/hostingOrganization
+    slot_uri: sdo:hostingOrganization
     range: uri
 
   memberSince:
@@ -82,7 +83,7 @@ slots:
       Date when the member joined the program. NOTE: schema.org lists
       memberSince in the "pending" section (not yet in the core vocabulary).
       Used here as a stable IRI for membership start dates.
-    slot_uri: https://schema.org/memberSince
+    slot_uri: sdo:memberSince
     range: date
 
   # --- SimpulseID Extensions ---
@@ -182,9 +183,9 @@ classes:
       # Without this, LinkML uses the gx-imported slot_uri (gx:email/gx:url)
       # which conflicts with the JSON-LD context.
       email:
-        slot_uri: https://schema.org/email
+        slot_uri: sdo:email
       url:
-        slot_uri: https://schema.org/url
+        slot_uri: sdo:url
       termsAndConditions:
         range: TermsAndConditions
         multivalued: true

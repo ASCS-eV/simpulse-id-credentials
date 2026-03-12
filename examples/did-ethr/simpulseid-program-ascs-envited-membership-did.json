@@ -3,13 +3,23 @@
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
     "https://www.w3.org/ns/did/v1",
     "https://schema.org",
-    "https://w3id.org/security/suites/secp256k1recovery-2020/v2"
+    {
+      "schema": "https://schema.org/",
+      "sdo": "https://schema.org/",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "name": "sdo:name",
+      "description": "sdo:description",
+      "url": {
+        "@id": "sdo:url",
+        "@type": "xsd:anyURI"
+      }
+    }
   ],
   "id": "did:ethr:0x14a34:0xF84945fB99BD70Cfe527a2cb2c368DbA4fB55bC9",
-  "controller": "did:ethr:0x14a34:0xC0FFEEbabe000000000000000000000000000001",
+  "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
   "service": [
     {
-      "id": "did:ethr:0x14a34:0xF84945fB99BD70Cfe527a2cb2c368DbA4fB55bC9#program-metadata",
+      "id": "did:ethr:0x14a34:0xF84945fB99BD70Cfe527a2cb2c368DbA4fB55bC9#service-1",
       "type": "ProgramMetadataService",
       "serviceEndpoint": "https://did.ascs.digital/programs/ascs-envited-membership"
     }
@@ -24,7 +34,7 @@
     "description": "ENVITED membership program of the Automotive Solution Center for Simulation e.V. (ASCS e.V.), providing access to the ENVITED ecosystem and related services.",
     "hostingOrganization": {
       "@id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
-      "@type": "Organization",
+      "@type": "schema:Organization",
       "name": "Automotive Solution Center for Simulation e.V."
     },
     "articlesOfAssociation": "https://media.ascs.digital/terms/ascs_articles_of_association_2021-09-17.pdf#cidv1",

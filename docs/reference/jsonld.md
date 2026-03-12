@@ -44,13 +44,12 @@ Any bare term not explicitly mapped (e.g., `duns`, `hash`) resolves to the Simpu
 |--------|-----|-------|
 | `simpulseid` | `https://w3id.org/ascs-ev/simpulse-id/credentials/v1/` | Domain types and slots |
 | `harbour` | `https://w3id.org/reachhaven/harbour/credentials/v1/` | Harbour base types |
-| `schema` | `http://schema.org/` | Schema.org (HTTP) for most slots |
-| `sdo` | `https://schema.org/` | Schema.org (HTTPS) for `name` only |
+| `sdo` | `https://schema.org/` | Schema.org terms used by the generated contexts |
 | `cred` | `https://www.w3.org/2018/credentials#` | W3C credentials vocabulary |
 | `xsd` | `http://www.w3.org/2001/XMLSchema#` | XML Schema datatypes |
 
-!!! note "Dual Schema.org Prefixes"
-    The W3C VC v2 context maps `name` to `https://schema.org/name` (HTTPS, `@protected`). Most other schema.org terms use `http://schema.org/`. The `sdo:` prefix (HTTPS) is used exclusively for `name` so SHACL validation `sh:path` matches the actual RDF predicate.
+!!! note "Schema.org Namespace"
+    The generated SimpulseID and harbour contexts consistently use the `https://schema.org/` namespace and expose it under the `sdo:` prefix. This avoids collisions with LinkML's built-in `schema:` prefix, which still points to `http://schema.org/` in some imported material.
 
 ### Term Mappings
 
@@ -58,11 +57,11 @@ Any bare term not explicitly mapped (e.g., `duns`, `hash`) resolves to the Simpu
 
 | JSON Term | Maps To |
 |-----------|---------|
-| `name` | `sdo:name` (HTTPS schema.org) |
-| `givenName` | `schema:givenName` |
-| `familyName` | `schema:familyName` |
-| `email` | `schema:email` |
-| `programName` | `schema:programName` |
+| `name` | `sdo:name` |
+| `givenName` | `sdo:givenName` |
+| `familyName` | `sdo:familyName` |
+| `email` | `sdo:email` |
+| `programName` | `sdo:programName` |
 | `duns` | `simpulseid:duns` (via `@vocab`) |
 
 #### URI Properties
@@ -73,10 +72,10 @@ These are typed as `xsd:anyURI`:
 |-----------|---------|
 | `harbourCredential` | `simpulseid:harbourCredential` |
 | `baseMembershipCredential` | `simpulseid:baseMembershipCredential` |
-| `member` | `schema:member` |
-| `memberOf` | `schema:memberOf` |
-| `hostingOrganization` | `schema:hostingOrganization` |
-| `url` | `schema:url` |
+| `member` | `sdo:member` |
+| `memberOf` | `sdo:memberOf` |
+| `hostingOrganization` | `sdo:hostingOrganization` |
+| `url` | `sdo:url` |
 
 #### Date Properties
 
