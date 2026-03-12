@@ -1,7 +1,13 @@
 # SimpulseID Credentials Makefile
 # ================================
 
-.PHONY: setup install install-dev install-docs submodule-setup generate validate lint lint-md format format-md test test-harbour test-cov check all clean help
+.PHONY: setup install submodule-setup generate validate lint format test story check all clean help \
+	_help_general _help_install _help_validate _help_lint _help_format _help_test _help_story \
+	_install_default _install_dev _install_docs \
+	_validate_all _validate_simpulseid _validate_harbour \
+	_lint_default _lint_md _format_default _format_md \
+	_test_all _test_harbour _test_simpulseid _test_cov \
+	_story_all _story_simpulseid _story_harbour _story_sign _story_verify
 
 OMB_SUBMODULE_DIR := submodules/harbour-credentials/submodules/ontology-management-base
 HARBOUR_SUBMODULE_DIR := submodules/harbour-credentials
@@ -59,38 +65,90 @@ define check_dev_setup
 endef
 
 EXAMPLES := $(wildcard examples/simpulseid-*.json)
+GROUPED_COMMANDS := install validate lint format test story
+PRIMARY_GOAL := $(firstword $(MAKECMDGOALS))
+
+# Grouped command mode: treat trailing goals as subcommands
+ifneq ($(filter $(PRIMARY_GOAL),$(GROUPED_COMMANDS)),)
+help:
+	@:
+
+%:
+	@:
+else
+help: ## Show this help
+	@$(MAKE) --no-print-directory _help_general
+endif
 
 # Default target
-help: ## Show this help
+_help_general:
 	@echo "SimpulseID Credentials - Available Commands"
 	@echo ""
 	@echo "Installation:"
 	@echo "  make setup        - Create venv, install all dependencies, setup submodules"
 	@echo "  make install      - Install package (user mode)"
-	@echo "  make install-dev  - Install with dev dependencies + pre-commit"
-	@echo "  make install-docs - Install with docs dependencies (MkDocs)"
+	@echo "  make install help - Show install subcommands"
 	@echo ""
 	@echo "Artifacts:"
 	@echo "  make generate     - Generate OWL/SHACL/context from LinkML"
-	@echo "  make validate     - SHACL-validate example credentials"
+	@echo "  make validate     - Run Harbour + SimpulseID validation"
+	@echo "  make validate help - Show validate subcommands"
 	@echo "  make check        - Generate + validate"
 	@echo ""
 	@echo "Linting:"
 	@echo "  make lint         - Run pre-commit checks"
-	@echo "  make lint-md      - Lint Markdown files with markdownlint-cli2"
+	@echo "  make lint help    - Show lint subcommands"
 	@echo "  make format       - Format code with ruff"
-	@echo "  make format-md    - Auto-fix Markdown lint violations"
+	@echo "  make format help  - Show format subcommands"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test         - Run all tests"
-	@echo "  make test-harbour - Run harbour-credentials tests only"
-	@echo "  make test-cov     - Run tests with coverage report"
+	@echo "  make test help    - Show test subcommands"
+	@echo "  make story        - Run the full Harbour + SimpulseID signing/verification storyline"
+	@echo "  make story help   - Show story subcommands"
 	@echo ""
 	@echo "Compound:"
 	@echo "  make all          - Full end-to-end: setup, lint, check, test"
 	@echo ""
 	@echo "Cleaning:"
 	@echo "  make clean        - Remove generated artifacts and caches"
+
+_help_install:
+	@echo "Install subcommands:"
+	@echo "  make install      - Install package (user mode)"
+	@echo "  make install dev  - Install with dev dependencies + pre-commit"
+	@echo "  make install docs - Install with docs dependencies (MkDocs)"
+
+_help_validate:
+	@echo "Validate subcommands:"
+	@echo "  make validate             - Run Harbour + SimpulseID validation"
+	@echo "  make validate harbour     - Run Harbour SHACL validation in the submodule"
+	@echo "  make validate simpulseid  - Run top-level SimpulseID SHACL validation"
+
+_help_lint:
+	@echo "Lint subcommands:"
+	@echo "  make lint      - Run pre-commit checks"
+	@echo "  make lint md   - Lint Markdown files with markdownlint-cli2"
+
+_help_format:
+	@echo "Format subcommands:"
+	@echo "  make format      - Format code with ruff"
+	@echo "  make format md   - Auto-fix Markdown lint violations"
+
+_help_test:
+	@echo "Test subcommands:"
+	@echo "  make test             - Run all tests"
+	@echo "  make test harbour     - Run harbour-credentials tests only"
+	@echo "  make test simpulseid  - Run top-level SimpulseID tests only"
+	@echo "  make test cov         - Run tests with coverage report"
+
+_help_story:
+	@echo "Story subcommands:"
+	@echo "  make story             - Run the full Harbour + SimpulseID storyline"
+	@echo "  make story harbour     - Run the Harbour storyline in the submodule"
+	@echo "  make story simpulseid  - Generate, validate, sign, and verify SimpulseID examples"
+	@echo "  make story sign        - Write ignored signed SimpulseID artifacts to examples/signed/"
+	@echo "  make story verify      - Verify the signed SimpulseID artifacts with the real verifier"
 
 # ---------- Setup ----------
 
@@ -161,7 +219,23 @@ submodule-setup:
 
 # ---------- Install ----------
 
-install: ## Install package (user mode)
+install:
+	@set -- $(filter-out $@,$(MAKECMDGOALS)); \
+	subcommand="$${1:-default}"; \
+	if [ "$$#" -gt 1 ]; then \
+		echo "ERROR: Too many subcommands for 'make install': $(filter-out $@,$(MAKECMDGOALS))"; \
+		echo "Run 'make install help' for available options."; \
+		exit 1; \
+	fi; \
+	case "$$subcommand" in \
+		default) $(MAKE) --no-print-directory _install_default ;; \
+		dev) $(MAKE) --no-print-directory _install_dev ;; \
+		docs) $(MAKE) --no-print-directory _install_docs ;; \
+		help) $(MAKE) --no-print-directory _help_install ;; \
+		*) echo "ERROR: Unknown install subcommand '$$subcommand'"; echo "Run 'make install help' for available options."; exit 1 ;; \
+	esac
+
+_install_default: ## Install package (user mode)
 	@echo "Installing package in editable mode..."
 ifndef CI
 	@$(MAKE) --no-print-directory $(VENV)/bin/python3
@@ -169,7 +243,7 @@ endif
 	@$(PIP) install -e $(HARBOUR_SUBMODULE_DIR) -e $(OMB_SUBMODULE_DIR) -e .
 	@echo "OK: Package installation complete"
 
-install-dev: ## Install with dev dependencies + pre-commit
+_install_dev: ## Install with dev dependencies + pre-commit
 	@echo "Installing development dependencies..."
 ifndef CI
 	@$(MAKE) --no-print-directory $(VENV)/bin/python3
@@ -180,7 +254,7 @@ ifndef CI
 endif
 	@echo "OK: Development dependencies installed"
 
-install-docs: ## Install with docs dependencies (for MkDocs builds)
+_install_docs: ## Install with docs dependencies (for MkDocs builds)
 	@echo "Installing documentation dependencies..."
 ifndef CI
 	@$(MAKE) --no-print-directory $(VENV)/bin/python3
@@ -190,21 +264,51 @@ endif
 
 # ---------- Lint ----------
 
-lint: ## Run pre-commit (ruff, JSON-LD parse, Turtle parse, markdownlint)
+lint:
+	@set -- $(filter-out $@,$(MAKECMDGOALS)); \
+	subcommand="$${1:-default}"; \
+	if [ "$$#" -gt 1 ]; then \
+		echo "ERROR: Too many subcommands for 'make lint': $(filter-out $@,$(MAKECMDGOALS))"; \
+		echo "Run 'make lint help' for available options."; \
+		exit 1; \
+	fi; \
+	case "$$subcommand" in \
+		default) $(MAKE) --no-print-directory _lint_default ;; \
+		md) $(MAKE) --no-print-directory _lint_md ;; \
+		help) $(MAKE) --no-print-directory _help_lint ;; \
+		*) echo "ERROR: Unknown lint subcommand '$$subcommand'"; echo "Run 'make lint help' for available options."; exit 1 ;; \
+	esac
+
+_lint_default: ## Run pre-commit (ruff, JSON-LD parse, Turtle parse, markdownlint)
 	$(call check_dev_setup)
 	@$(PRECOMMIT) run --all-files
 
-lint-md: ## Lint Markdown files with markdownlint-cli2
+_lint_md: ## Lint Markdown files with markdownlint-cli2
 	@echo "Linting Markdown files..."
 	@npx --yes markdownlint-cli2
 	@echo "OK: Markdown lint complete"
 
-format: ## Format code with ruff
+format:
+	@set -- $(filter-out $@,$(MAKECMDGOALS)); \
+	subcommand="$${1:-default}"; \
+	if [ "$$#" -gt 1 ]; then \
+		echo "ERROR: Too many subcommands for 'make format': $(filter-out $@,$(MAKECMDGOALS))"; \
+		echo "Run 'make format help' for available options."; \
+		exit 1; \
+	fi; \
+	case "$$subcommand" in \
+		default) $(MAKE) --no-print-directory _format_default ;; \
+		md) $(MAKE) --no-print-directory _format_md ;; \
+		help) $(MAKE) --no-print-directory _help_format ;; \
+		*) echo "ERROR: Unknown format subcommand '$$subcommand'"; echo "Run 'make format help' for available options."; exit 1 ;; \
+	esac
+
+_format_default: ## Format code with ruff
 	$(call check_dev_setup)
 	@$(PYTHON) -m ruff format src/ tests/
 	@$(PYTHON) -m ruff check --fix src/ tests/
 
-format-md: ## Auto-fix Markdown lint violations
+_format_md: ## Auto-fix Markdown lint violations
 	@echo "Fixing Markdown files..."
 	@npx --yes markdownlint-cli2 --fix
 	@echo "OK: Markdown formatting complete"
@@ -220,30 +324,145 @@ generate: ## Generate JSON-LD contexts, SHACL shapes, OWL ontologies from LinkML
 
 # ---------- Validate ----------
 
-validate: ## SHACL-validate all example credentials
+validate:
+	@set -- $(filter-out $@,$(MAKECMDGOALS)); \
+	subcommand="$${1:-default}"; \
+	if [ "$$#" -gt 1 ]; then \
+		echo "ERROR: Too many subcommands for 'make validate': $(filter-out $@,$(MAKECMDGOALS))"; \
+		echo "Run 'make validate help' for available options."; \
+		exit 1; \
+	fi; \
+	case "$$subcommand" in \
+		default) $(MAKE) --no-print-directory _validate_all ;; \
+		harbour) $(MAKE) --no-print-directory _validate_harbour ;; \
+		simpulseid) $(MAKE) --no-print-directory _validate_simpulseid ;; \
+		help) $(MAKE) --no-print-directory _help_validate ;; \
+		*) echo "ERROR: Unknown validate subcommand '$$subcommand'"; echo "Run 'make validate help' for available options."; exit 1 ;; \
+	esac
+
+_validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
 	$(call check_dev_setup)
 	@if [ -z "$(EXAMPLES)" ]; then \
 		echo "No example files found."; \
 		exit 0; \
 	fi
-	@echo "Running SHACL data conformance check on examples..."
+	@echo "Running SHACL data conformance check on SimpulseID examples..."
 	@cd $(OMB_SUBMODULE_DIR) && \
 		$(PYTHON_ABS) -m src.tools.validators.validation_suite \
 			--run check-data-conformance \
 			--data-paths $(addprefix ../../../../,$(EXAMPLES)) \
 			--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts
 
+_validate_harbour: ## Run Harbour SHACL validation inside the submodule
+	@echo "Running Harbour validation from root..."
+	@$(MAKE) --no-print-directory -C $(HARBOUR_SUBMODULE_DIR) \
+		validate shacl \
+		VENV="$(abspath $(VENV))" \
+		PYTHON="$(PYTHON_ABS)" \
+		PIP="$(PYTHON_ABS) -m pip" \
+		PRECOMMIT="$(PYTHON_ABS) -m pre_commit" \
+		PYTEST="$(PYTHON_ABS) -m pytest"
+	@echo "OK: Harbour validation complete"
+
+_validate_all: ## Run Harbour + SimpulseID validation
+	@echo "Running full repository validation..."
+	@$(MAKE) --no-print-directory _validate_harbour
+	@$(MAKE) --no-print-directory _validate_simpulseid
+	@echo "OK: Full repository validation complete"
+
 # ---------- Test ----------
 
-test-harbour: ## Run harbour-credentials JOSE tests (excludes interop — covered by harbour CI)
+test:
+	@set -- $(filter-out $@,$(MAKECMDGOALS)); \
+	subcommand="$${1:-default}"; \
+	if [ "$$#" -gt 1 ]; then \
+		echo "ERROR: Too many subcommands for 'make test': $(filter-out $@,$(MAKECMDGOALS))"; \
+		echo "Run 'make test help' for available options."; \
+		exit 1; \
+	fi; \
+	case "$$subcommand" in \
+		default) $(MAKE) --no-print-directory _test_all ;; \
+		harbour) $(MAKE) --no-print-directory _test_harbour ;; \
+		simpulseid) $(MAKE) --no-print-directory _test_simpulseid ;; \
+		cov) $(MAKE) --no-print-directory _test_cov ;; \
+		help) $(MAKE) --no-print-directory _help_test ;; \
+		*) echo "ERROR: Unknown test subcommand '$$subcommand'"; echo "Run 'make test help' for available options."; exit 1 ;; \
+	esac
+
+_test_harbour: ## Run harbour-credentials JOSE tests (excludes interop — covered by harbour CI)
 	@cd $(HARBOUR_SUBMODULE_DIR) && PYTHONPATH=src/python:$$PYTHONPATH $(PYTHON_ABS) -m pytest tests/ -v --ignore=tests/interop
 
-test: generate test-harbour ## Run all tests (harbour + main repo)
+_test_simpulseid:
+	$(call check_dev_setup)
 	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTEST) tests/ -v
 
-test-cov: ## Run tests with coverage report
+_test_all: ## Run all tests (harbour + main repo)
+	@$(MAKE) --no-print-directory generate
+	@$(MAKE) --no-print-directory _test_harbour
+	@$(MAKE) --no-print-directory _test_simpulseid
+
+_test_cov: ## Run tests with coverage report
 	$(call check_dev_setup)
 	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTEST) tests/ --cov=src --cov-report=html --cov-report=term
+
+story:
+	@set -- $(filter-out $@,$(MAKECMDGOALS)); \
+	subcommand="$${1:-default}"; \
+	if [ "$$#" -gt 1 ]; then \
+		echo "ERROR: Too many subcommands for 'make story': $(filter-out $@,$(MAKECMDGOALS))"; \
+		echo "Run 'make story help' for available options."; \
+		exit 1; \
+	fi; \
+	case "$$subcommand" in \
+		default) $(MAKE) --no-print-directory _story_all ;; \
+		simpulseid) $(MAKE) --no-print-directory _story_simpulseid ;; \
+		harbour) $(MAKE) --no-print-directory _story_harbour ;; \
+		sign) $(MAKE) --no-print-directory _story_sign ;; \
+		verify) $(MAKE) --no-print-directory _story_verify ;; \
+		help) $(MAKE) --no-print-directory _help_story ;; \
+		*) echo "ERROR: Unknown story subcommand '$$subcommand'"; echo "Run 'make story help' for available options."; exit 1 ;; \
+	esac
+
+_story_sign: ## Sign SimpulseID examples into ignored examples/signed/
+	$(call check_dev_setup)
+	@echo "Signing SimpulseID example storylines..."
+	@rm -rf examples/signed
+	@$(PYTHON) src/sign_examples.py
+	@echo "OK: Signed example artifacts written to examples/signed/"
+
+_story_verify: ## Verify signed SimpulseID example artifacts
+	$(call check_dev_setup)
+	@echo "Verifying SimpulseID signed example storylines..."
+	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTHON) src/verify_signed_examples.py
+	@echo "OK: Signed SimpulseID example artifacts verified"
+
+_story_simpulseid: ## Generate, validate, sign, and verify SimpulseID storyline artifacts
+	@echo "Running SimpulseID storyline..."
+	@$(MAKE) --no-print-directory generate
+	@$(MAKE) --no-print-directory validate simpulseid
+	@$(MAKE) --no-print-directory _story_sign
+	@$(MAKE) --no-print-directory _story_verify
+	@echo "OK: SimpulseID storyline complete"
+
+_story_harbour: ## Run the Harbour storyline inside the submodule
+	@echo "Running Harbour storyline from root..."
+	@$(MAKE) --no-print-directory -C $(HARBOUR_SUBMODULE_DIR) \
+		story \
+		VENV="$(abspath $(VENV))" \
+		PYTHON="$(PYTHON_ABS)" \
+		PIP="$(PYTHON_ABS) -m pip" \
+		PRECOMMIT="$(PYTHON_ABS) -m pre_commit" \
+		PYTEST="$(PYTHON_ABS) -m pytest"
+	@echo "OK: Harbour storyline complete"
+
+_story_all: ## Run the full Harbour + SimpulseID storyline
+	@echo "Running full repository storyline..."
+	@$(MAKE) --no-print-directory generate
+	@$(MAKE) --no-print-directory _story_harbour
+	@$(MAKE) --no-print-directory _validate_simpulseid
+	@$(MAKE) --no-print-directory _story_sign
+	@$(MAKE) --no-print-directory _story_verify
+	@echo "OK: Full repository storyline complete"
 
 # ---------- Compound targets ----------
 

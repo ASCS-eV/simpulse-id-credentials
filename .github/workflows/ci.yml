@@ -30,7 +30,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: make install-dev
+        run: make install dev
 
       - name: Lint
         run: make lint
@@ -67,7 +67,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: make install-dev
+        run: make install dev
 
       - name: Generate artifacts
         run: make generate
@@ -92,7 +92,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: make install-dev
+        run: make install dev
 
       - name: Generate artifacts
         run: make generate

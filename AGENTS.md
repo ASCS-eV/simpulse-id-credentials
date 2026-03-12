@@ -28,7 +28,7 @@ Read these before making changes; they are authoritative for repo workflows.
 ```bash
 # Install dev dependencies
 make setup
-make install-dev
+make install dev
 
 # Generate artifacts from LinkML schemas
 make generate

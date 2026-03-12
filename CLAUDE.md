@@ -18,7 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 # Install dev dependencies
 make setup
-make install-dev
+make install dev
 
 # Generate artifacts from LinkML schemas
 make generate

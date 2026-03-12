@@ -65,38 +65,53 @@ pre-commit run --all-files
 
 ---
 
-## Generate and validate
+## Generate, validate, and run the storyline
 
 ```bash
-# 1. Generate ontologies, SHACL shapes and JSON-LD contexts from LinkML models
-#    SimpulseID artifacts -> artifacts/simpulseid/
-#    Harbour/core artifacts -> submodules/harbour-credentials/artifacts/{harbour,core}/
-python3 src/generate_from_linkml.py  # Auto-discovers *.yaml in linkml/ and submodules
+# Generate all LinkML-derived artifacts (Harbour + SimpulseID)
+make generate
 
-# 2. Validate a single credential example against SHACL shapes
-#    --artifacts registers local artifact directories for schema discovery and context inlining
-cd submodules/harbour-credentials/submodules/ontology-management-base
-python3 -m src.tools.validators.validation_suite \
-  --run check-data-conformance \
-  --data-paths ../../examples/simpulseid-administrator-credential.json \
-  --artifacts ../../artifacts ../../submodules/harbour-credentials/artifacts
+# Validate both Harbour and SimpulseID from the repository root
+make validate
 
+# Validate only the top-level SimpulseID examples through OMB
+make validate simpulseid
 
-# 3. Validate all credential examples
-python3 -m src.tools.validators.validation_suite \
-  --run check-data-conformance \
-  --data-paths ../../examples/simpulseid-*.json \
-  --artifacts ../../artifacts ../../submodules/harbour-credentials/artifacts
+# Validate only the Harbour examples through the submodule
+make validate harbour
 
-# 4. Validate with specific inference mode (rdfs, owlrl, none, both)
-python3 -m src.tools.validators.validation_suite \
-  --run check-data-conformance \
-  --data-paths ../../examples/simpulseid-*.json \
-  --artifacts ../../artifacts \
-  --inference-mode rdfs
+# See the available validate subcommands
+make validate help
+
+# Run the Harbour example storyline in the submodule:
+# - signs the Harbour examples into ignored examples/**/signed/ folders
+# - verifies the generated JWTs and evidence VPs
+# - runs SHACL validation on the Harbour examples
+make story harbour
+
+# Run only the SimpulseID storyline:
+# - generates artifacts
+# - validates the SimpulseID examples
+# - signs the SimpulseID examples into ignored examples/signed/
+# - verifies the generated JWTs and evidence VPs
+make story simpulseid
+
+# Run both storylines in sequence from the root repository
+make story
+
+# See the available storyline subcommands
+make story help
 ```
 
-The `--artifacts` flag tells the validator where to find locally generated ontologies, SHACL shapes, and JSON-LD contexts. Without it, the validator only knows about the ontology-management-base's own artifacts (Gaia-X, ENVITED-X domains) and cannot resolve SimpulseID or Harbour schemas.
+The storyline commands intentionally write signed artifacts into git-ignored
+folders:
+
+- root repo: `examples/signed/`
+- Harbour submodule: `submodules/harbour-credentials/examples/signed/`
+- Harbour Gaia-X examples: `submodules/harbour-credentials/examples/gaiax/signed/`
+
+That keeps the checked-in example JSON human-readable while still giving you a
+real end-to-end signing and verification run with concrete JWT outputs.
 
 ---
 

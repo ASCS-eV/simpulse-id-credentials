@@ -7,7 +7,7 @@ This repository contains LinkML schemas for verifiable credentials and generated
 ```bash
 # Install dev dependencies
 make setup
-make install-dev
+make install dev
 
 # Generate artifacts from LinkML schemas
 make generate

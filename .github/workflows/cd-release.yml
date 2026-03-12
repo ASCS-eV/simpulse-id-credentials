@@ -32,7 +32,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: make install-dev
+        run: make install dev
 
       - name: Determine release tag
         id: tag
