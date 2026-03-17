@@ -11,10 +11,9 @@ artifacts validate the credential envelope via RDFS inference.
 import json
 from pathlib import Path
 
-from linkml.generators.jsonldcontextgen import ContextGenerator as _BaseContextGenerator
+from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
-from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
-from linkml_runtime.linkml_model.meta import SlotDefinition
+from linkml.generators.shaclgen import ShaclGenerator
 from rdflib import Namespace
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -24,58 +23,6 @@ OUT_DIR = REPO_ROOT / "artifacts" / "simpulseid"
 
 SH = Namespace("http://www.w3.org/ns/shacl#")
 LINKML = Namespace("https://w3id.org/linkml/")
-
-
-class DomainContextGenerator(_BaseContextGenerator):
-    """Context generator that excludes imported vocabulary terms.
-
-    W3C VC v2 envelope terms (issuer, validFrom, validUntil, evidence,
-    credentialStatus) are imported transitively via harbour schemas.
-    This generator skips them so the simpulseid JSON-LD context does not
-    redefine ``@protected`` terms already provided by the W3C VC v2 context
-    (``https://www.w3.org/ns/credentials/v2``).
-
-    Mirrors ``HarbourContextGenerator`` in harbour-credentials.
-    """
-
-    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        if getattr(slot, "imported_from", None) and not str(
-            slot.imported_from
-        ).startswith("linkml"):
-            return
-        super().visit_slot(aliased_slot_name, slot)
-
-
-class DomainShaclGenerator(_BaseShaclGenerator):
-    """SHACL generator that bypasses ShaclGenerator.__post_init__'s broken
-    SchemaView construction (which ignores importmap).
-
-    Workaround for https://github.com/linkml/linkml/issues/2913 —
-    ``ShaclGenerator.__post_init__`` creates ``SchemaView(self.schema)``
-    without forwarding ``importmap`` / ``base_dir``, so cross-directory
-    imports fail.  Still unfixed as of LinkML 1.10.0.
-
-    Also removes ``sh:class linkml:Any`` constraints from the generated graph.
-    LinkML emits these for ``range: Any`` slots, but ``linkml:Any`` is a
-    meta-schema type that is never asserted as ``rdf:type`` on instance data,
-    so the constraint always fails SHACL validation.  Removing it preserves
-    ``sh:nodeKind sh:BlankNodeOrIRI`` which is the correct structural check.
-    See https://github.com/linkml/linkml/issues/2914
-    """
-
-    uses_schemaloader = False
-
-    def __post_init__(self) -> None:
-        from linkml.utils.generator import Generator
-
-        Generator.__post_init__(self)
-        self.generate_header()
-
-    def as_graph(self):
-        g = super().as_graph()
-        for s, p, o in list(g.triples((None, SH["class"], LINKML.Any))):
-            g.remove((s, p, o))
-        return g
 
 
 def load_importmap() -> dict:
@@ -102,7 +49,7 @@ def main() -> None:
     (OUT_DIR / "simpulseid.owl.ttl").write_text(owl_gen.serialize(), encoding="utf-8")
 
     print("Generating SHACL shapes...")
-    shacl_gen = DomainShaclGenerator(
+    shacl_gen = ShaclGenerator(
         str(SCHEMA),
         importmap=import_map,
         base_dir=base_dir,
@@ -114,7 +61,7 @@ def main() -> None:
     )
 
     print("Generating JSON-LD context...")
-    ctx_gen = DomainContextGenerator(
+    ctx_gen = ContextGenerator(
         str(SCHEMA), importmap=import_map, base_dir=base_dir, mergeimports=False
     )
     ctx_text = ctx_gen.serialize()

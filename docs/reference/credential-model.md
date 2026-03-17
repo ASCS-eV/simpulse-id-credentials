@@ -142,7 +142,7 @@ flowchart LR
 | `email` | Contact email | no |
 | `url` | Website | no |
 | `termsAndConditions` | T&C docs with integrity hash | no |
-| `gxParticipant` | Nested Gaia-X compliance data | no |
+| `participant` | Nested Gaia-X compliance data | no |
 | `name` | Organisation name | no |
 
 #### Person Subjects
@@ -154,7 +154,7 @@ flowchart LR
 | `familyName` | **required** | optional |
 | `email` | **required** | optional |
 | `memberOf` | optional | optional |
-| `gxParticipant` | optional | optional |
+| `participant` | optional | optional |
 
 #### Membership Subjects
 

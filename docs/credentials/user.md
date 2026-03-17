@@ -19,7 +19,7 @@ The **UserCredential** attests to a natural person's identity within the Simpuls
 | `email` | string | — | Email address |
 | `name` | string | — | Display name |
 | `memberOf` | URI[] | — | Organizations the user belongs to (list of DIDs) |
-| `gxParticipant` | object | — | Nested Gaia-X `Participant` compliance data |
+| `participant` | object | — | Nested Gaia-X `Participant` compliance data |
 
 ## SD-JWT-VC Claim Mapping
 
@@ -38,7 +38,8 @@ This protects personal information while allowing verifiers to confirm organizat
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://w3id.org/gaia-x/development#",
-    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/core/v1/",
+    "https://w3id.org/reachhaven/harbour/gx/v1/",
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
   ],
   "type": ["VerifiableCredential", "simpulseid:UserCredential"],

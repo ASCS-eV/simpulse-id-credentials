@@ -50,7 +50,7 @@ AscsEnvitedMembership    → simpulseid:AscsEnvitedMembership
 | `legalForm` | `simpulseid:legalForm` | `SimpulseIdLegalForm` | Legal form enum |
 | `baseMembershipCredential` | `simpulseid:baseMembershipCredential` | URI | Reference to base membership VC |
 | `termsAndConditions` | `simpulseid:termsAndConditions` | Any (`gx:TermsAndConditions`) | T&C with integrity hash (Gaia-X type) |
-| `gxParticipant` | `harbour:gxParticipant` | Any | Gaia-X participant data |
+| `participant` | `harbour.gx:participant` | Any | Gaia-X participant data |
 
 ### Schema.org Mappings
 

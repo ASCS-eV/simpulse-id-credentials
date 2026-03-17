@@ -19,49 +19,44 @@ All of this is intended to be **publicly hostable** and consumable by wallets, v
 
 ## Cloning with submodules
 
-All external dependencies live flat under `submodules/` (no recursive nesting):
-
-```text
-submodules/
-├── ontology-management-base   # Gaia-X ontologies, SHACL shapes, validation suite
-├── harbour-credentials        # Harbour credential definitions
-├── service-characteristics    # Gaia-X service characteristics (LinkML)
-└── w3id.org                   # W3ID redirect rules
-```
+This repository depends on git submodules, including nested submodules pulled in
+via `submodules/harbour-credentials`, so clone and update it recursively:
 
 ```bash
-# First time (shallow, no recursion)
-git clone git@github.com:ASCS-eV/simpulse-id-credentials.git
-cd simpulse-id-credentials
-git submodule update --init
+# First time
+git clone --recurse-submodules https://github.com/ASCS-eV/credentials.git
+cd credentials
 
-# Pull all changes including submodules
-git pull && git submodule update --init
+# If you already cloned without submodules
+git submodule update --init --recursive
+
+# Pull all changes including nested submodules
+git pull
+git submodule update --init --recursive
 ```
 
 ---
 
-## Installation & Configure `pre-commit`
+## Development setup
 
-If you want to use the validation scripts from `submodules/harbour-credentials/submodules/ontology-management-base/src` then you need to install the following dependencies:
+Use the supported Makefile bootstrap instead of creating the virtual environment
+and installing editable dependencies by hand:
 
 ```bash
-# On Windows use python instead of python3
-sudo apt-get install python3-full
+# Create/update .venv, install the root package and submodule deps,
+# and install the pre-commit hooks
+make setup
 
-# 1. Create and activate a virtual environment
-python3 -m venv .venv/
-source .venv/bin/activate  # On Windows use: source .venv/Scripts/activate
+# Optional: reinstall dev dependencies in the managed environment
+make install dev
 
-# 2. Install dependencies (Submodules + Main Project + Dev Tools)
-# This reads all pyproject.toml files and handles all versions automatically.
-python3 -m pip install -e "./submodules/harbour-credentials[dev]" \
-  -e ./submodules/harbour-credentials/submodules/ontology-management-base -e ".[dev]"
-
-# 3. Verify
-pre-commit install
-pre-commit run --all-files
+# Optional: run the hooks once across the repository
+make lint
 ```
+
+`make setup` already creates `.venv/`, installs `credentials`,
+`harbour-credentials`, and `ontology-management-base` in editable mode, and
+runs `pre-commit install`.
 
 ---
 

@@ -11,7 +11,8 @@ Every SimpulseID credential uses a stack of four contexts:
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://w3id.org/gaia-x/development#",
-    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/core/v1/",
+    "https://w3id.org/reachhaven/harbour/gx/v1/",
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
   ]
 }
@@ -43,8 +44,10 @@ Any bare term not explicitly mapped (e.g., `duns`, `hash`) resolves to the Simpu
 | Prefix | IRI | Usage |
 |--------|-----|-------|
 | `simpulseid` | `https://w3id.org/ascs-ev/simpulse-id/credentials/v1/` | Domain types and slots |
-| `harbour` | `https://w3id.org/reachhaven/harbour/credentials/v1/` | Harbour base types |
-| `sdo` | `https://schema.org/` | Schema.org terms used by the generated contexts |
+| `harbour` | `https://w3id.org/reachhaven/harbour/core/v1/` | Harbour base types |
+| `harbour.gx` | `https://w3id.org/reachhaven/harbour/gx/v1/` | Harbour Gaia-X credential types |
+| `gx` | `https://w3id.org/gaia-x/development#` | Gaia-X Trust Framework types |
+| `sdo` | `http://schema.org/` | Schema.org terms (note: `http` not `https`) |
 | `cred` | `https://www.w3.org/2018/credentials#` | W3C credentials vocabulary |
 | `xsd` | `http://www.w3.org/2001/XMLSchema#` | XML Schema datatypes |
 

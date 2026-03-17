@@ -7,7 +7,7 @@ name = "credentials"
 version = "2.0.0"
 requires-python = ">=3.12"
 dependencies = [
-    "linkml>=1.10.0",
+    "linkml @ git+https://github.com/ASCS-eV/linkml.git@main#subdirectory=packages/linkml",
     "linkml-runtime>=1.9.5",
     "pyld>=2.0.4",
     "PyYAML>=6.0.3",

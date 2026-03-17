@@ -65,6 +65,7 @@ define check_dev_setup
 endef
 
 EXAMPLES := $(wildcard examples/simpulseid-*.json)
+SIMPULSEID_VALIDATE_PATH ?=
 GROUPED_COMMANDS := install validate lint format test story
 PRIMARY_GOAL := $(firstword $(MAKECMDGOALS))
 
@@ -124,6 +125,7 @@ _help_validate:
 	@echo "  make validate             - Run Harbour + SimpulseID validation"
 	@echo "  make validate harbour     - Run Harbour SHACL validation in the submodule"
 	@echo "  make validate simpulseid  - Run top-level SimpulseID SHACL validation"
+	@echo "  make validate simpulseid SIMPULSEID_VALIDATE_PATH=examples/... - Validate one SimpulseID .json/.jsonld file or folder"
 
 _help_lint:
 	@echo "Lint subcommands:"
@@ -342,16 +344,39 @@ validate:
 
 _validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
 	$(call check_dev_setup)
-	@if [ -z "$(EXAMPLES)" ]; then \
+	@if [ -z "$(SIMPULSEID_VALIDATE_PATH)" ] && [ -z "$(EXAMPLES)" ]; then \
 		echo "No example files found."; \
 		exit 0; \
 	fi
 	@echo "Running SHACL data conformance check on SimpulseID examples..."
 	@cd $(OMB_SUBMODULE_DIR) && \
-		$(PYTHON_ABS) -m src.tools.validators.validation_suite \
-			--run check-data-conformance \
-			--data-paths $(addprefix ../../../../,$(EXAMPLES)) \
-			--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts
+		if [ -n "$(SIMPULSEID_VALIDATE_PATH)" ]; then \
+			target_path="../../../../$(SIMPULSEID_VALIDATE_PATH)" ; \
+			if [ -d "$$target_path" ]; then \
+				json_count=$$(find "$$target_path" -maxdepth 1 -type f \( -name '*.json' -o -name '*.jsonld' \) | wc -l) ; \
+				if [ "$$json_count" -eq 0 ]; then \
+					echo "ERROR: No .json or .jsonld files found under $$target_path" ; \
+					exit 1 ; \
+				fi ; \
+			elif [ -f "$$target_path" ]; then \
+				case "$$target_path" in \
+					*.json|*.jsonld) ;; \
+					*) echo "ERROR: SimpulseID SHACL validation only supports .json/.jsonld files or directories: $$target_path" ; exit 1 ;; \
+				esac ; \
+			else \
+				echo "ERROR: Validation path not found: $$target_path" ; \
+				exit 1 ; \
+			fi ; \
+			$(PYTHON_ABS) -m src.tools.validators.validation_suite \
+				--run check-data-conformance \
+				--data-paths "$$target_path" \
+				--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
+		else \
+			$(PYTHON_ABS) -m src.tools.validators.validation_suite \
+				--run check-data-conformance \
+				--data-paths $(addprefix ../../../../,$(EXAMPLES)) \
+				--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
+		fi
 
 _validate_harbour: ## Run Harbour SHACL validation inside the submodule
 	@echo "Running Harbour validation from root..."

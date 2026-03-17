@@ -160,7 +160,7 @@ NATURAL_PERSON_TYPES = {
 
 @pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
 def test_participant_has_gx_composition(path):
-    """ParticipantCredential must have gxParticipant composition.
+    """ParticipantCredential must have participant composition.
 
     Per Gaia-X Trust Framework 25.11, legal person credentials must include
     gx:LegalPerson composition with registrationNumber, headquartersAddress,
@@ -173,22 +173,24 @@ def test_participant_has_gx_composition(path):
         pytest.skip("Not a ParticipantCredential")
 
     subject = vc.get("credentialSubject", {})
-    gx = subject.get("gxParticipant")
+    gx = subject.get("participant")
     assert gx is not None, (
-        f"ParticipantCredential {path.name} missing gxParticipant composition. "
+        f"ParticipantCredential {path.name} missing participant composition. "
         f"Required for Gaia-X 25.11 gx:LegalPerson compliance."
     )
-    assert gx.get("type") == "gx:LegalPerson", (
-        f"gxParticipant type must be gx:LegalPerson, got {gx.get('type')}"
+    gx_type = gx.get("type")
+    gx_types = gx_type if isinstance(gx_type, list) else [gx_type]
+    assert "gx:LegalPerson" in gx_types, (
+        f"participant type must include gx:LegalPerson, got {gx_type}"
     )
 
 
 @pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
 def test_natural_person_has_gx_composition(path):
-    """User/Admin credentials must have gxParticipant with harbour_gx:NaturalPerson.
+    """User/Admin credentials must have participant with harbour.gx:NaturalPerson.
 
     Personal attributes (givenName, familyName, email) live inside the
-    gxParticipant node as a harbour_gx:NaturalPerson blank node.
+    participant node as a harbour.gx:NaturalPerson blank node.
     """
     vc = json.loads(path.read_text())
     vc_types = vc.get("type", [])
@@ -197,16 +199,18 @@ def test_natural_person_has_gx_composition(path):
         pytest.skip("Not a User or Administrator credential")
 
     subject = vc.get("credentialSubject", {})
-    gx = subject.get("gxParticipant")
+    gx = subject.get("participant")
     assert gx is not None, (
-        f"{path.name} missing gxParticipant composition. "
-        f"Personal attributes must live in harbour_gx:NaturalPerson inner node."
+        f"{path.name} missing participant composition. "
+        f"Personal attributes must live in harbour.gx:NaturalPerson inner node."
     )
-    assert gx.get("type") == "harbour_gx:NaturalPerson", (
-        f"gxParticipant type must be harbour_gx:NaturalPerson, got {gx.get('type')}"
+    gx_type = gx.get("type")
+    gx_types = gx_type if isinstance(gx_type, list) else [gx_type]
+    assert "harbour.gx:NaturalPerson" in gx_types, (
+        f"participant type must include harbour.gx:NaturalPerson, got {gx_type}"
     )
-    assert "givenName" in gx, f"{path.name}: gxParticipant missing givenName"
-    assert "familyName" in gx, f"{path.name}: gxParticipant missing familyName"
+    assert "givenName" in gx, f"{path.name}: participant missing givenName"
+    assert "familyName" in gx, f"{path.name}: participant missing familyName"
 
 
 # ---------------------------------------------------------------------------

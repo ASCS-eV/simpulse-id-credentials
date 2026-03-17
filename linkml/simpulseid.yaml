@@ -10,9 +10,9 @@ description: >
 prefixes:
   linkml: https://w3id.org/linkml/
   simpulseid: https://w3id.org/ascs-ev/simpulse-id/credentials/v1/
-  harbour: https://w3id.org/reachhaven/harbour/credentials/v1/
-  harbour_gx: https://w3id.org/reachhaven/harbour/gaiax-domain/v1/
-  sdo: https://schema.org/
+  harbour: https://w3id.org/reachhaven/harbour/core/v1/
+  harbour.gx: https://w3id.org/reachhaven/harbour/gx/v1/
+  sdo: http://schema.org/
   didcore: https://www.w3.org/ns/did#
   gx: https://w3id.org/gaia-x/development#
   cred: https://www.w3.org/2018/credentials#
@@ -105,7 +105,7 @@ slots:
 
   # termsAndConditions — imported from gx (slot_uri: gx:termsAndConditions).
   # Range overridden to TermsAndConditions via slot_usage on SimpulseidParticipant.
-  # gxParticipant — inherited from harbour-gx-credential (range: Participant).
+  # participant — inherited from harbour-gx-credential (range: Participant).
 
 # ==========================================
 # Enums
@@ -174,9 +174,9 @@ classes:
       An organization participating in the SimpulseID ecosystem.
       References a Harbour Gaia-X credential via harbourCredential IRI
       for the baseline of trust. The organization name lives inside the
-      gxParticipant node as a gx:LegalPerson blank node.
+      participant node as a gx:LegalPerson blank node.
     class_uri: simpulseid:Participant
-    slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, gxParticipant]
+    slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, participant]
     slot_usage:
       # Override slot_uri so SHACL sh:path matches the JSON-LD context
       # mapping (harbour-core defines email/url as schema:email/schema:url).
@@ -195,17 +195,17 @@ classes:
     description: >
       An administrator (natural person with elevated permissions) in the
       SimpulseID ecosystem. Personal attributes (givenName, familyName, email)
-      live inside the gxParticipant node as a gx:NaturalPerson blank node.
+      live inside the participant node as a gx:NaturalPerson blank node.
     class_uri: simpulseid:Administrator
-    slots: [harbourCredential, memberOf, gxParticipant]
+    slots: [harbourCredential, memberOf, participant]
 
   SimpulseidUser:
     description: >
       A standard user (natural person) in the SimpulseID ecosystem.
       Personal attributes (givenName, familyName, email) live inside the
-      gxParticipant node as a gx:NaturalPerson blank node.
+      participant node as a gx:NaturalPerson blank node.
     class_uri: simpulseid:User
-    slots: [harbourCredential, memberOf, gxParticipant]
+    slots: [harbourCredential, memberOf, participant]
 
   AscsBaseMembership:
     description: >

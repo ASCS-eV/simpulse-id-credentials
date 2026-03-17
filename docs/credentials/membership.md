@@ -31,7 +31,8 @@ The `AscsBaseMembershipCredential` attests that an organization is a member of A
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://w3id.org/gaia-x/development#",
-    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/core/v1/",
+    "https://w3id.org/reachhaven/harbour/gx/v1/",
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
   ],
   "type": ["VerifiableCredential", "simpulseid:AscsBaseMembershipCredential"],
@@ -67,7 +68,8 @@ In addition to all base membership fields:
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://w3id.org/gaia-x/development#",
-    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/core/v1/",
+    "https://w3id.org/reachhaven/harbour/gx/v1/",
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
   ],
   "type": ["VerifiableCredential", "simpulseid:AscsEnvitedMembershipCredential"],

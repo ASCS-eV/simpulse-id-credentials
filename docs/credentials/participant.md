@@ -21,7 +21,7 @@ The subject references a Harbour Gaia-X credential via the `harbourCredential` I
 | `duns` | string | — | DUNS number |
 | `email` | string | — | Contact email |
 | `url` | URI | — | Organization website |
-| `gxParticipant` | object | — | Nested Gaia-X `LegalPerson` compliance data |
+| `participant` | object | — | Nested Gaia-X `LegalPerson` compliance data |
 | `termsAndConditions` | object[] | — | Accepted terms (`gx:TermsAndConditions`) |
 
 ### Legal Form Values
@@ -45,7 +45,8 @@ When issued as an SD-JWT-VC, claims are mapped as follows:
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
     "https://w3id.org/gaia-x/development#",
-    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/core/v1/",
+    "https://w3id.org/reachhaven/harbour/gx/v1/",
     "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
   ],
   "type": ["VerifiableCredential", "simpulseid:ParticipantCredential"],

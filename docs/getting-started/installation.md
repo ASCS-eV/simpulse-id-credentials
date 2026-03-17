@@ -12,36 +12,32 @@
 git clone --recurse-submodules https://github.com/ASCS-eV/credentials.git
 cd credentials
 
-# Create virtual environment and install
+# Create/update .venv, install the root package and submodule deps,
+# and install the pre-commit hooks
 make setup
 ```
 
-## Manual Installation
+## Update an Existing Checkout
 
 ```bash
-# Clone repository
-git clone https://github.com/ASCS-eV/credentials.git
-cd credentials
-
-# Initialize submodules
+# Refresh nested submodules after pulling
+git pull
 git submodule update --init --recursive
-
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies
-pip install -e "./submodules/harbour-credentials[dev]" \
-            -e ./submodules/harbour-credentials/submodules/ontology-management-base \
-            -e ".[dev]"
-
-# Install pre-commit hooks
-pre-commit install
 ```
+
+## What `make setup` Does
+
+- Creates `.venv/` if needed
+- Installs `credentials`, `harbour-credentials`, and `ontology-management-base`
+  in editable mode with development dependencies
+- Installs the local `pre-commit` hooks
 
 ## Verify Installation
 
 ```bash
+# Reinstall development dependencies if needed
+make install dev
+
 # Generate artifacts
 make generate
 

@@ -1,6 +1,6 @@
 {
   "@context": [
-    "https://w3id.org/reachhaven/harbour/credentials/v1/",
+    "https://w3id.org/reachhaven/harbour/core/v1/",
     "https://www.w3.org/ns/did/v1"
   ],
   "id": "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A475502346d1",
