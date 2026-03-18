@@ -58,6 +58,10 @@ make lint
 `harbour-credentials`, and `ontology-management-base` in editable mode, and
 runs `pre-commit install`.
 
+If you want to activate the managed environment in your shell after `make setup`,
+use `.\.venv\Scripts\Activate.ps1` in Windows PowerShell, or
+`source .venv/bin/activate` on macOS, Linux, and Git Bash.
+
 ---
 
 ## Generate, validate, and run the storyline

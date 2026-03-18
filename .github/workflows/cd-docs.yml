@@ -47,7 +47,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: make install-docs
+        run: make install docs
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

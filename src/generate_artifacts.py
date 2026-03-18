@@ -13,16 +13,30 @@ from pathlib import Path
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
-from linkml.generators.shaclgen import ShaclGenerator
-from rdflib import Namespace
+from linkml.generators.shaclgen import ShaclGenerator as _BaseShaclGenerator
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCHEMA = REPO_ROOT / "linkml" / "simpulseid.yaml"
 IMPORTMAP_FILE = REPO_ROOT / "linkml" / "importmap.json"
 OUT_DIR = REPO_ROOT / "artifacts" / "simpulseid"
 
-SH = Namespace("http://www.w3.org/ns/shacl#")
-LINKML = Namespace("https://w3id.org/linkml/")
+
+class SimpulseidShaclGenerator(_BaseShaclGenerator):
+    """SHACL generator with importmap-aware initialisation.
+
+    Bypasses ``ShaclGenerator.__post_init__``'s ``SchemaView`` construction
+    which calls ``_initialize_using_schemaloader`` and doubles the schema
+    path when ``base_dir`` is set, causing cross-directory imports to fail.
+    See https://github.com/linkml/linkml/issues/2913
+    """
+
+    uses_schemaloader = False
+
+    def __post_init__(self) -> None:
+        from linkml.utils.generator import Generator
+
+        Generator.__post_init__(self)
+        self.generate_header()
 
 
 def load_importmap() -> dict:
@@ -49,7 +63,7 @@ def main() -> None:
     (OUT_DIR / "simpulseid.owl.ttl").write_text(owl_gen.serialize(), encoding="utf-8")
 
     print("Generating SHACL shapes...")
-    shacl_gen = ShaclGenerator(
+    shacl_gen = SimpulseidShaclGenerator(
         str(SCHEMA),
         importmap=import_map,
         base_dir=base_dir,
@@ -62,7 +76,11 @@ def main() -> None:
 
     print("Generating JSON-LD context...")
     ctx_gen = ContextGenerator(
-        str(SCHEMA), importmap=import_map, base_dir=base_dir, mergeimports=False
+        str(SCHEMA),
+        importmap=import_map,
+        base_dir=base_dir,
+        mergeimports=False,
+        xsd_anyuri_as_iri=True,
     )
     ctx_text = ctx_gen.serialize()
 
@@ -70,18 +88,15 @@ def main() -> None:
     # LinkML cannot emit this alias without declaring a ``type`` slot, which
     # would override the W3C VCDM v2 ``"type": "@type"`` with a typed
     # property definition (see harbour-core-credential.yaml §slots comment).
-    # The alias is required so that JSON-LD ``"type"`` maps to ``rdf:type``
-    # instead of falling through to ``@vocab``.
     ctx_data = json.loads(ctx_text)
     ctx_obj = ctx_data.get("@context", {})
     if isinstance(ctx_obj, dict) and "type" not in ctx_obj:
         ctx_obj["type"] = "@type"
-        ctx_data["@context"] = ctx_obj
-        ctx_text = json.dumps(ctx_data, indent=3, ensure_ascii=False)
+
+    ctx_data["@context"] = ctx_obj
+    ctx_text = json.dumps(ctx_data, indent=3, ensure_ascii=False)
 
     (OUT_DIR / "simpulseid.context.jsonld").write_text(ctx_text, encoding="utf-8")
-
-    print(f"Done: {OUT_DIR}/")
 
     print(f"Done: {OUT_DIR}/")
 

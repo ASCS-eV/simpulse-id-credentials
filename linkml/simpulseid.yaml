@@ -51,9 +51,8 @@ slots:
   member:
     description: >
       The participant (organization or person) that holds this membership.
-      NOTE: schema.org defines member on Organization and ProgramMembership
-      with range Organization|Person. Here the range is uri (a DID) which
-      identifies the participant — semantically equivalent.
+      Cross-document IRI reference — range: uri gives sh:nodeKind sh:IRI
+      (SHACL) and @type: @id (JSON-LD via xsd_anyuri_as_iri flag).
     slot_uri: sdo:member
     range: uri
 
@@ -178,14 +177,8 @@ classes:
     class_uri: simpulseid:Participant
     slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, participant]
     slot_usage:
-      # Override slot_uri so SHACL sh:path matches the JSON-LD context
-      # mapping (harbour-core defines email/url as schema:email/schema:url).
-      # Without this, LinkML uses the gx-imported slot_uri (gx:email/gx:url)
-      # which conflicts with the JSON-LD context.
-      email:
-        slot_uri: sdo:email
-      url:
-        slot_uri: sdo:url
+      # email and url inherit gx:email / gx:url from the Gaia-X vocabulary,
+      # consistent with the JSON-LD context resolution (last context wins).
       termsAndConditions:
         range: TermsAndConditions
         multivalued: true

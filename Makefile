@@ -1,9 +1,9 @@
 # SimpulseID Credentials Makefile
 # ================================
 
-.PHONY: setup install submodule-setup generate validate lint format test story check all clean help \
-	_help_general _help_install _help_validate _help_lint _help_format _help_test _help_story \
-	_install_default _install_dev _install_docs \
+.PHONY: setup install generate validate lint format test story check all clean help \
+	_help_general _help_setup _help_install _help_validate _help_lint _help_format _help_test _help_story \
+	_setup_default _setup_submodules _install_default _install_dev _install_docs \
 	_validate_all _validate_simpulseid _validate_harbour \
 	_lint_default _lint_md _format_default _format_md \
 	_test_all _test_harbour _test_simpulseid _test_cov \
@@ -12,39 +12,61 @@
 OMB_SUBMODULE_DIR := submodules/harbour-credentials/submodules/ontology-management-base
 HARBOUR_SUBMODULE_DIR := submodules/harbour-credentials
 
-# In CI, use system Python; locally, prefer parent venv then local .venv
-ifdef CI
-    VENV := $(dir $(shell which python3))..
-    PYTHON := python3
+# Allow callers to override the venv path/tooling.
+VENV ?= .venv
+
+# OS detection for cross-platform support (Windows vs Unix)
+ifeq ($(OS),Windows_NT)
+    ifndef CI
+        ifneq ($(wildcard ../../.venv/Scripts/python.exe),)
+            VENV := ../../.venv
+        endif
+    endif
+    VENV_BIN := $(VENV)/Scripts
+    VENV_PYTHON := $(VENV_BIN)/python.exe
+    ifdef CI
+        PYTHON ?= python
+    else
+        PYTHON ?= $(VENV_PYTHON)
+    endif
+    BOOTSTRAP_PYTHON ?= python
+    ACTIVATE_SCRIPT := $(VENV_BIN)/activate
+    ACTIVATE_HINT := PowerShell: $(subst /,\,$(VENV_BIN))\Activate.ps1; Git Bash: source $(ACTIVATE_SCRIPT)
+    PYTHONPATH_SEP := ;
 else
     ifneq ($(wildcard ../../.venv/bin/python3),)
         VENV := ../../.venv
-    else
-        VENV := .venv
     endif
-    PYTHON := $(VENV)/bin/python3
+    VENV_BIN := $(VENV)/bin
+    VENV_PYTHON := $(VENV_BIN)/python3
+    ifdef CI
+        PYTHON ?= python3
+    else
+        PYTHON ?= $(VENV_PYTHON)
+    endif
+    BOOTSTRAP_PYTHON ?= python3
+    ACTIVATE_SCRIPT := $(VENV_BIN)/activate
+    ACTIVATE_HINT := source $(ACTIVATE_SCRIPT)
+    PYTHONPATH_SEP := :
 endif
-
-# Bootstrap interpreter used only to create the venv
-BOOTSTRAP_PYTHON := python3
 
 # Absolute path to Python (for use after cd into subdirectories).
 # In CI, PYTHON is a bare command ('python3') so resolve via PATH;
 # locally it is a relative venv path so abspath works.
 ifdef CI
-    PYTHON_ABS := $(shell which $(PYTHON))
+    PYTHON_ABS := $(shell command -v $(PYTHON))
 else
     PYTHON_ABS := $(abspath $(PYTHON))
 endif
 
 # Tooling inside the selected virtual environment
-PIP := $(PYTHON) -m pip
-PRECOMMIT := $(PYTHON) -m pre_commit
-PYTEST := $(PYTHON) -m pytest
+PIP := "$(PYTHON)" -m pip
+PRECOMMIT := "$(PYTHON)" -m pre_commit
+PYTEST := "$(PYTHON)" -m pytest
 
 # Check if dev environment is set up (skipped in CI)
 define check_dev_setup
-	@if [ -z "$$CI" ] && [ ! -x "$(PYTHON)" ]; then \
+	@if [ -z "$$CI" ] && [ ! -f "$(PYTHON)" ]; then \
 		echo ""; \
 		echo "ERROR: Development environment not set up."; \
 		echo ""; \
@@ -53,7 +75,7 @@ define check_dev_setup
 		echo ""; \
 		exit 1; \
 	fi
-	@if ! $(PYTHON) -c "import linkml, harbour; from importlib.metadata import version; version('credentials'); version('ontology-management-base')" 2>/dev/null; then \
+	@if ! "$(PYTHON)" -c "import linkml, harbour; from importlib.metadata import version; version('credentials'); version('ontology-management-base')" 2>/dev/null; then \
 		echo ""; \
 		echo "ERROR: Dev dependencies not installed."; \
 		echo ""; \
@@ -66,19 +88,19 @@ endef
 
 EXAMPLES := $(wildcard examples/simpulseid-*.json)
 SIMPULSEID_VALIDATE_PATH ?=
-GROUPED_COMMANDS := install validate lint format test story
+GROUPED_COMMANDS := setup install validate lint format test story
 PRIMARY_GOAL := $(firstword $(MAKECMDGOALS))
+SUBCOMMAND_GOALS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 # Grouped command mode: treat trailing goals as subcommands
 ifneq ($(filter $(PRIMARY_GOAL),$(GROUPED_COMMANDS)),)
-help:
-	@:
+.PHONY: $(SUBCOMMAND_GOALS)
 
-%:
+$(SUBCOMMAND_GOALS):
 	@:
 else
 help: ## Show this help
-	@$(MAKE) --no-print-directory _help_general
+	@"$(MAKE)" --no-print-directory _help_general
 endif
 
 # Default target
@@ -87,6 +109,7 @@ _help_general:
 	@echo ""
 	@echo "Installation:"
 	@echo "  make setup        - Create venv, install all dependencies, setup submodules"
+	@echo "  make setup help   - Show setup subcommands"
 	@echo "  make install      - Install package (user mode)"
 	@echo "  make install help - Show install subcommands"
 	@echo ""
@@ -113,6 +136,11 @@ _help_general:
 	@echo ""
 	@echo "Cleaning:"
 	@echo "  make clean        - Remove generated artifacts and caches"
+
+_help_setup:
+	@echo "Setup subcommands:"
+	@echo "  make setup             - Create venv, install dependencies, and setup submodules"
+	@echo "  make setup submodules  - Setup the Harbour + ontology submodules in the active environment"
 
 _help_install:
 	@echo "Install subcommands:"
@@ -155,49 +183,73 @@ _help_story:
 # ---------- Setup ----------
 
 setup: ## Create venv, install deps, setup submodules
+	@set -- $(filter-out $@,$(MAKECMDGOALS)); \
+	subcommand="$${1:-default}"; \
+	if [ "$$#" -gt 1 ]; then \
+		echo "ERROR: Too many subcommands for 'make setup': $(filter-out $@,$(MAKECMDGOALS))"; \
+		echo "Run 'make setup help' for available options."; \
+		exit 1; \
+	fi; \
+	case "$$subcommand" in \
+		default) "$(MAKE)" --no-print-directory _setup_default ;; \
+		submodules) "$(MAKE)" --no-print-directory _setup_submodules ;; \
+		help) "$(MAKE)" --no-print-directory _help_setup ;; \
+		*) echo "ERROR: Unknown setup subcommand '$$subcommand'"; echo "Run 'make setup help' for available options."; exit 1 ;; \
+	esac
+
+_setup_default:
 	@echo "Setting up development environment..."
 	@echo "Checking Python virtual environment and dependencies..."
+ifdef CI
 	@set -e; \
-	if [ ! -x "$(PYTHON)" ]; then \
+	if "$(PYTHON)" -c "import pre_commit, linkml, harbour; from importlib.metadata import version; version('credentials'); version('ontology-management-base')" >/dev/null 2>&1; then \
+		echo "OK: Python environment and dependencies are ready via $(PYTHON)"; \
+	else \
+		echo "CI environment missing dependencies; bootstrapping..."; \
+		"$(MAKE)" --no-print-directory setup submodules; \
+		$(PIP) install -e ".[dev]"; \
+		$(PRECOMMIT) install; \
+	fi
+else
+	@set -e; \
+	if [ ! -f "$(PYTHON)" ]; then \
 		echo "Python virtual environment not found; bootstrapping..."; \
-		$(MAKE) --no-print-directory $(VENV)/bin/activate; \
-	elif $(PYTHON) -c "import pre_commit, linkml, harbour; from importlib.metadata import version; version('credentials'); version('ontology-management-base')" >/dev/null 2>&1; then \
+		"$(MAKE)" --no-print-directory "$(ACTIVATE_SCRIPT)"; \
+	elif "$(PYTHON)" -c "import pre_commit, linkml, harbour; from importlib.metadata import version; version('credentials'); version('ontology-management-base')" >/dev/null 2>&1; then \
 		echo "OK: Python virtual environment and dependencies are ready at $(VENV)"; \
 	else \
 		echo "Python virtual environment found but dependencies are missing; bootstrapping..."; \
-		$(MAKE) --no-print-directory -B $(VENV)/bin/activate; \
+		"$(MAKE)" --no-print-directory -B "$(ACTIVATE_SCRIPT)"; \
 	fi
+endif
 	@echo ""
-	@echo "Setup complete. Activate with: source $(VENV)/bin/activate"
+	@echo "Setup complete. Activate with: $(ACTIVATE_HINT)"
 
-$(VENV)/bin/python3:
+$(VENV_PYTHON):
 	@echo "Creating Python virtual environment at $(VENV)..."
-	@$(BOOTSTRAP_PYTHON) -m venv $(VENV)
+	@"$(BOOTSTRAP_PYTHON)" -m venv "$(VENV)"
 	@$(PIP) install --upgrade pip
 	@echo "OK: Python virtual environment ready"
 
-$(VENV)/bin/activate: $(VENV)/bin/python3
+$(ACTIVATE_SCRIPT): $(VENV_PYTHON)
 	@echo "Installing submodule dependencies..."
-	@$(MAKE) --no-print-directory submodule-setup
+	@"$(MAKE)" --no-print-directory setup submodules
 	@echo "Installing Python dependencies..."
 	@$(PIP) install -e ".[dev]"
 	@$(PRECOMMIT) install
 	@echo "OK: Python development environment ready"
 
 # Setup submodules using the same active venv (pip install preferred, make -C fallback)
-submodule-setup:
+_setup_submodules:
 	@echo "Setting up harbour-credentials submodule..."
 	@set -e; \
 	if [ -f "$(HARBOUR_SUBMODULE_DIR)/pyproject.toml" ]; then \
 		$(PIP) install -e "$(HARBOUR_SUBMODULE_DIR)[dev]"; \
 		echo "OK: harbour-credentials submodule setup complete"; \
 	elif [ -f "$(HARBOUR_SUBMODULE_DIR)/Makefile" ]; then \
-		$(MAKE) --no-print-directory -C $(HARBOUR_SUBMODULE_DIR) setup \
+		"$(MAKE)" --no-print-directory -C "$(HARBOUR_SUBMODULE_DIR)" setup \
 			VENV="$(abspath $(VENV))" \
-			PYTHON="$(abspath $(PYTHON))" \
-			PIP="$(abspath $(PYTHON)) -m pip" \
-			PRECOMMIT="$(abspath $(PYTHON)) -m pre_commit" \
-			PYTEST="$(abspath $(PYTHON)) -m pytest"; \
+			PYTHON="$(PYTHON_ABS)"; \
 		echo "OK: harbour-credentials submodule setup complete"; \
 	else \
 		echo "WARNING: Skipping harbour-credentials submodule setup (not found)"; \
@@ -208,12 +260,9 @@ submodule-setup:
 		$(PIP) install -e "$(OMB_SUBMODULE_DIR)"; \
 		echo "OK: ontology-management-base submodule setup complete"; \
 	elif [ -f "$(OMB_SUBMODULE_DIR)/Makefile" ]; then \
-		$(MAKE) --no-print-directory -C $(OMB_SUBMODULE_DIR) setup \
+		"$(MAKE)" --no-print-directory -C "$(OMB_SUBMODULE_DIR)" setup \
 			VENV="$(abspath $(VENV))" \
-			PYTHON="$(abspath $(PYTHON))" \
-			PIP="$(abspath $(PYTHON)) -m pip" \
-			PRECOMMIT="$(abspath $(PYTHON)) -m pre_commit" \
-			PYTEST="$(abspath $(PYTHON)) -m pytest"; \
+			PYTHON="$(PYTHON_ABS)"; \
 		echo "OK: ontology-management-base submodule setup complete"; \
 	else \
 		echo "WARNING: Skipping ontology-management-base submodule setup (not found)"; \
@@ -230,17 +279,17 @@ install:
 		exit 1; \
 	fi; \
 	case "$$subcommand" in \
-		default) $(MAKE) --no-print-directory _install_default ;; \
-		dev) $(MAKE) --no-print-directory _install_dev ;; \
-		docs) $(MAKE) --no-print-directory _install_docs ;; \
-		help) $(MAKE) --no-print-directory _help_install ;; \
+		default) "$(MAKE)" --no-print-directory _install_default ;; \
+		dev) "$(MAKE)" --no-print-directory _install_dev ;; \
+		docs) "$(MAKE)" --no-print-directory _install_docs ;; \
+		help) "$(MAKE)" --no-print-directory _help_install ;; \
 		*) echo "ERROR: Unknown install subcommand '$$subcommand'"; echo "Run 'make install help' for available options."; exit 1 ;; \
 	esac
 
 _install_default: ## Install package (user mode)
 	@echo "Installing package in editable mode..."
 ifndef CI
-	@$(MAKE) --no-print-directory $(VENV)/bin/python3
+	@"$(MAKE)" --no-print-directory "$(VENV_PYTHON)"
 endif
 	@$(PIP) install -e $(HARBOUR_SUBMODULE_DIR) -e $(OMB_SUBMODULE_DIR) -e .
 	@echo "OK: Package installation complete"
@@ -248,7 +297,7 @@ endif
 _install_dev: ## Install with dev dependencies + pre-commit
 	@echo "Installing development dependencies..."
 ifndef CI
-	@$(MAKE) --no-print-directory $(VENV)/bin/python3
+	@"$(MAKE)" --no-print-directory "$(VENV_PYTHON)"
 endif
 	@$(PIP) install -e "$(HARBOUR_SUBMODULE_DIR)[dev]" -e $(OMB_SUBMODULE_DIR) -e ".[dev]"
 ifndef CI
@@ -259,7 +308,7 @@ endif
 _install_docs: ## Install with docs dependencies (for MkDocs builds)
 	@echo "Installing documentation dependencies..."
 ifndef CI
-	@$(MAKE) --no-print-directory $(VENV)/bin/python3
+	@"$(MAKE)" --no-print-directory "$(VENV_PYTHON)"
 endif
 	@$(PIP) install -e "$(HARBOUR_SUBMODULE_DIR)[dev]" -e $(OMB_SUBMODULE_DIR) -e ".[docs]"
 	@echo "OK: Documentation dependencies installed"
@@ -275,9 +324,9 @@ lint:
 		exit 1; \
 	fi; \
 	case "$$subcommand" in \
-		default) $(MAKE) --no-print-directory _lint_default ;; \
-		md) $(MAKE) --no-print-directory _lint_md ;; \
-		help) $(MAKE) --no-print-directory _help_lint ;; \
+		default) "$(MAKE)" --no-print-directory _lint_default ;; \
+		md) "$(MAKE)" --no-print-directory _lint_md ;; \
+		help) "$(MAKE)" --no-print-directory _help_lint ;; \
 		*) echo "ERROR: Unknown lint subcommand '$$subcommand'"; echo "Run 'make lint help' for available options."; exit 1 ;; \
 	esac
 
@@ -299,16 +348,16 @@ format:
 		exit 1; \
 	fi; \
 	case "$$subcommand" in \
-		default) $(MAKE) --no-print-directory _format_default ;; \
-		md) $(MAKE) --no-print-directory _format_md ;; \
-		help) $(MAKE) --no-print-directory _help_format ;; \
+		default) "$(MAKE)" --no-print-directory _format_default ;; \
+		md) "$(MAKE)" --no-print-directory _format_md ;; \
+		help) "$(MAKE)" --no-print-directory _help_format ;; \
 		*) echo "ERROR: Unknown format subcommand '$$subcommand'"; echo "Run 'make format help' for available options."; exit 1 ;; \
 	esac
 
 _format_default: ## Format code with ruff
 	$(call check_dev_setup)
-	@$(PYTHON) -m ruff format src/ tests/
-	@$(PYTHON) -m ruff check --fix src/ tests/
+	@"$(PYTHON)" -m ruff format src/ tests/
+	@"$(PYTHON)" -m ruff check --fix src/ tests/
 
 _format_md: ## Auto-fix Markdown lint violations
 	@echo "Fixing Markdown files..."
@@ -320,9 +369,9 @@ _format_md: ## Auto-fix Markdown lint violations
 generate: ## Generate JSON-LD contexts, SHACL shapes, OWL ontologies from LinkML
 	$(call check_dev_setup)
 	@echo "Generating harbour artifacts..."
-	@cd $(HARBOUR_SUBMODULE_DIR) && PYTHONPATH=src/python:$$PYTHONPATH $(PYTHON_ABS) src/python/harbour/generate_artifacts.py
+	@cd "$(HARBOUR_SUBMODULE_DIR)" && PYTHONPATH="src/python$(PYTHONPATH_SEP)$$PYTHONPATH" "$(PYTHON_ABS)" src/python/harbour/generate_artifacts.py
 	@echo "Generating simpulseid artifacts..."
-	@$(PYTHON) src/generate_artifacts.py
+	@"$(PYTHON)" src/generate_artifacts.py
 
 # ---------- Validate ----------
 
@@ -335,10 +384,10 @@ validate:
 		exit 1; \
 	fi; \
 	case "$$subcommand" in \
-		default) $(MAKE) --no-print-directory _validate_all ;; \
-		harbour) $(MAKE) --no-print-directory _validate_harbour ;; \
-		simpulseid) $(MAKE) --no-print-directory _validate_simpulseid ;; \
-		help) $(MAKE) --no-print-directory _help_validate ;; \
+		default) "$(MAKE)" --no-print-directory _validate_all ;; \
+		harbour) "$(MAKE)" --no-print-directory _validate_harbour ;; \
+		simpulseid) "$(MAKE)" --no-print-directory _validate_simpulseid ;; \
+		help) "$(MAKE)" --no-print-directory _help_validate ;; \
 		*) echo "ERROR: Unknown validate subcommand '$$subcommand'"; echo "Run 'make validate help' for available options."; exit 1 ;; \
 	esac
 
@@ -349,7 +398,7 @@ _validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
 		exit 0; \
 	fi
 	@echo "Running SHACL data conformance check on SimpulseID examples..."
-	@cd $(OMB_SUBMODULE_DIR) && \
+	@cd "$(OMB_SUBMODULE_DIR)" && \
 		if [ -n "$(SIMPULSEID_VALIDATE_PATH)" ]; then \
 			target_path="../../../../$(SIMPULSEID_VALIDATE_PATH)" ; \
 			if [ -d "$$target_path" ]; then \
@@ -367,12 +416,12 @@ _validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
 				echo "ERROR: Validation path not found: $$target_path" ; \
 				exit 1 ; \
 			fi ; \
-			$(PYTHON_ABS) -m src.tools.validators.validation_suite \
+			"$(PYTHON_ABS)" -m src.tools.validators.validation_suite \
 				--run check-data-conformance \
 				--data-paths "$$target_path" \
 				--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
 		else \
-			$(PYTHON_ABS) -m src.tools.validators.validation_suite \
+			"$(PYTHON_ABS)" -m src.tools.validators.validation_suite \
 				--run check-data-conformance \
 				--data-paths $(addprefix ../../../../,$(EXAMPLES)) \
 				--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
@@ -380,19 +429,16 @@ _validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
 
 _validate_harbour: ## Run Harbour SHACL validation inside the submodule
 	@echo "Running Harbour validation from root..."
-	@$(MAKE) --no-print-directory -C $(HARBOUR_SUBMODULE_DIR) \
+	@"$(MAKE)" --no-print-directory -C "$(HARBOUR_SUBMODULE_DIR)" \
 		validate shacl \
 		VENV="$(abspath $(VENV))" \
-		PYTHON="$(PYTHON_ABS)" \
-		PIP="$(PYTHON_ABS) -m pip" \
-		PRECOMMIT="$(PYTHON_ABS) -m pre_commit" \
-		PYTEST="$(PYTHON_ABS) -m pytest"
+		PYTHON="$(PYTHON_ABS)"
 	@echo "OK: Harbour validation complete"
 
 _validate_all: ## Run Harbour + SimpulseID validation
 	@echo "Running full repository validation..."
-	@$(MAKE) --no-print-directory _validate_harbour
-	@$(MAKE) --no-print-directory _validate_simpulseid
+	@"$(MAKE)" --no-print-directory _validate_harbour
+	@"$(MAKE)" --no-print-directory _validate_simpulseid
 	@echo "OK: Full repository validation complete"
 
 # ---------- Test ----------
@@ -406,29 +452,29 @@ test:
 		exit 1; \
 	fi; \
 	case "$$subcommand" in \
-		default) $(MAKE) --no-print-directory _test_all ;; \
-		harbour) $(MAKE) --no-print-directory _test_harbour ;; \
-		simpulseid) $(MAKE) --no-print-directory _test_simpulseid ;; \
-		cov) $(MAKE) --no-print-directory _test_cov ;; \
-		help) $(MAKE) --no-print-directory _help_test ;; \
+		default) "$(MAKE)" --no-print-directory _test_all ;; \
+		harbour) "$(MAKE)" --no-print-directory _test_harbour ;; \
+		simpulseid) "$(MAKE)" --no-print-directory _test_simpulseid ;; \
+		cov) "$(MAKE)" --no-print-directory _test_cov ;; \
+		help) "$(MAKE)" --no-print-directory _help_test ;; \
 		*) echo "ERROR: Unknown test subcommand '$$subcommand'"; echo "Run 'make test help' for available options."; exit 1 ;; \
 	esac
 
 _test_harbour: ## Run harbour-credentials JOSE tests (excludes interop — covered by harbour CI)
-	@cd $(HARBOUR_SUBMODULE_DIR) && PYTHONPATH=src/python:$$PYTHONPATH $(PYTHON_ABS) -m pytest tests/ -v --ignore=tests/interop
+	@cd "$(HARBOUR_SUBMODULE_DIR)" && PYTHONPATH="src/python$(PYTHONPATH_SEP)$$PYTHONPATH" "$(PYTHON_ABS)" -m pytest tests/ -v --ignore=tests/interop
 
 _test_simpulseid:
 	$(call check_dev_setup)
-	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTEST) tests/ -v
+	@PYTHONPATH="$(HARBOUR_SUBMODULE_DIR)/src/python$(PYTHONPATH_SEP)$$PYTHONPATH" $(PYTEST) tests/ -v
 
 _test_all: ## Run all tests (harbour + main repo)
-	@$(MAKE) --no-print-directory generate
-	@$(MAKE) --no-print-directory _test_harbour
-	@$(MAKE) --no-print-directory _test_simpulseid
+	@"$(MAKE)" --no-print-directory generate
+	@"$(MAKE)" --no-print-directory _test_harbour
+	@"$(MAKE)" --no-print-directory _test_simpulseid
 
 _test_cov: ## Run tests with coverage report
 	$(call check_dev_setup)
-	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTEST) tests/ --cov=src --cov-report=html --cov-report=term
+	@PYTHONPATH="$(HARBOUR_SUBMODULE_DIR)/src/python$(PYTHONPATH_SEP)$$PYTHONPATH" $(PYTEST) tests/ --cov=src --cov-report=html --cov-report=term
 
 story:
 	@set -- $(filter-out $@,$(MAKECMDGOALS)); \
@@ -439,12 +485,12 @@ story:
 		exit 1; \
 	fi; \
 	case "$$subcommand" in \
-		default) $(MAKE) --no-print-directory _story_all ;; \
-		simpulseid) $(MAKE) --no-print-directory _story_simpulseid ;; \
-		harbour) $(MAKE) --no-print-directory _story_harbour ;; \
-		sign) $(MAKE) --no-print-directory _story_sign ;; \
-		verify) $(MAKE) --no-print-directory _story_verify ;; \
-		help) $(MAKE) --no-print-directory _help_story ;; \
+		default) "$(MAKE)" --no-print-directory _story_all ;; \
+		simpulseid) "$(MAKE)" --no-print-directory _story_simpulseid ;; \
+		harbour) "$(MAKE)" --no-print-directory _story_harbour ;; \
+		sign) "$(MAKE)" --no-print-directory _story_sign ;; \
+		verify) "$(MAKE)" --no-print-directory _story_verify ;; \
+		help) "$(MAKE)" --no-print-directory _help_story ;; \
 		*) echo "ERROR: Unknown story subcommand '$$subcommand'"; echo "Run 'make story help' for available options."; exit 1 ;; \
 	esac
 
@@ -452,41 +498,38 @@ _story_sign: ## Sign SimpulseID examples into ignored examples/signed/
 	$(call check_dev_setup)
 	@echo "Signing SimpulseID example storylines..."
 	@rm -rf examples/signed
-	@$(PYTHON) src/sign_examples.py
+	@"$(PYTHON)" src/sign_examples.py
 	@echo "OK: Signed example artifacts written to examples/signed/"
 
 _story_verify: ## Verify signed SimpulseID example artifacts
 	$(call check_dev_setup)
 	@echo "Verifying SimpulseID signed example storylines..."
-	@PYTHONPATH=$(HARBOUR_SUBMODULE_DIR)/src/python:$$PYTHONPATH $(PYTHON) src/verify_signed_examples.py
+	@PYTHONPATH="$(HARBOUR_SUBMODULE_DIR)/src/python$(PYTHONPATH_SEP)$$PYTHONPATH" "$(PYTHON)" src/verify_signed_examples.py
 	@echo "OK: Signed SimpulseID example artifacts verified"
 
 _story_simpulseid: ## Generate, validate, sign, and verify SimpulseID storyline artifacts
 	@echo "Running SimpulseID storyline..."
-	@$(MAKE) --no-print-directory generate
-	@$(MAKE) --no-print-directory validate simpulseid
-	@$(MAKE) --no-print-directory _story_sign
-	@$(MAKE) --no-print-directory _story_verify
+	@"$(MAKE)" --no-print-directory generate
+	@"$(MAKE)" --no-print-directory validate simpulseid
+	@"$(MAKE)" --no-print-directory _story_sign
+	@"$(MAKE)" --no-print-directory _story_verify
 	@echo "OK: SimpulseID storyline complete"
 
 _story_harbour: ## Run the Harbour storyline inside the submodule
 	@echo "Running Harbour storyline from root..."
-	@$(MAKE) --no-print-directory -C $(HARBOUR_SUBMODULE_DIR) \
+	@"$(MAKE)" --no-print-directory -C "$(HARBOUR_SUBMODULE_DIR)" \
 		story \
 		VENV="$(abspath $(VENV))" \
-		PYTHON="$(PYTHON_ABS)" \
-		PIP="$(PYTHON_ABS) -m pip" \
-		PRECOMMIT="$(PYTHON_ABS) -m pre_commit" \
-		PYTEST="$(PYTHON_ABS) -m pytest"
+		PYTHON="$(PYTHON_ABS)"
 	@echo "OK: Harbour storyline complete"
 
 _story_all: ## Run the full Harbour + SimpulseID storyline
 	@echo "Running full repository storyline..."
-	@$(MAKE) --no-print-directory generate
-	@$(MAKE) --no-print-directory _story_harbour
-	@$(MAKE) --no-print-directory _validate_simpulseid
-	@$(MAKE) --no-print-directory _story_sign
-	@$(MAKE) --no-print-directory _story_verify
+	@"$(MAKE)" --no-print-directory generate
+	@"$(MAKE)" --no-print-directory _story_harbour
+	@"$(MAKE)" --no-print-directory _validate_simpulseid
+	@"$(MAKE)" --no-print-directory _story_sign
+	@"$(MAKE)" --no-print-directory _story_verify
 	@echo "OK: Full repository storyline complete"
 
 # ---------- Compound targets ----------

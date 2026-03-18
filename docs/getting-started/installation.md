@@ -17,6 +17,10 @@ cd credentials
 make setup
 ```
 
+If you want to activate the managed environment manually after `make setup`,
+use `.\.venv\Scripts\Activate.ps1` in Windows PowerShell, or
+`source .venv/bin/activate` on macOS, Linux, and Git Bash.
+
 ## Update an Existing Checkout
 
 ```bash
