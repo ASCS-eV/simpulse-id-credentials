@@ -4,11 +4,12 @@ on:
   push:
     tags:
       - 'v*.*.*'
+      - 'v*.*.*-rc.*'
 
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag (e.g., v0.1.0)'
+        description: 'Release tag (e.g., v1.0.0 or v1.0.0-rc.1)'
         required: true
         type: string
 
@@ -66,17 +67,60 @@ jobs:
           name: Release ${{ steps.tag.outputs.tag }}
           body: ${{ steps.changelog.outputs.content }}
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(steps.tag.outputs.tag, '-rc.') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  docs:
-    name: 📚 Publish Documentation
+  publish:
+    name: 📦 Publish Artifacts & Docs
     needs: release
-    uses: ./.github/workflows/cd-docs.yml
-    with:
-      ref: main
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pages: write
       id-token: write
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make install dev
+
+      - name: Generate artifacts
+        run: make generate
+
+      - name: Validate artifacts
+        run: make validate
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Build MkDocs site
+        run: mkdocs build --strict --site-dir site
+
+      - name: Prepare w3id artifacts
+        run: make release-artifacts
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

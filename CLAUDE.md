@@ -9,9 +9,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Key submodules:**
 
 - `submodules/harbour-credentials` — Cryptographic signing/verification library (Python + TypeScript)
-- `submodules/harbour-credentials/submodules/ontology-management-base` — Ontology validation pipeline (nested via harbour-credentials)
-- `submodules/service-characteristics` — Gaia-X service characteristics schemas
-- `submodules/harbour-credentials/submodules/w3id.org` — W3ID redirect rules (nested via harbour-credentials)
+  - `submodules/harbour-credentials/submodules/ontology-management-base` — Ontology validation pipeline (nested)
+  - `submodules/harbour-credentials/submodules/w3id.org` — W3ID redirect rules (nested)
+  - `submodules/harbour-credentials/submodules/ontology-management-base/submodules/service-characteristics` — Gaia-X service characteristics schemas (deeply nested)
 
 ## Essential Commands
 
@@ -42,19 +42,19 @@ pytest tests/ --cov=src --cov-report=html
 ### Directory Structure
 
 ```text
-simpulse-id-credentials/
+credentials/
 ├── linkml/           # LinkML schema definitions (.yaml)
 ├── artifacts/        # Generated OWL, SHACL, JSON-LD context files
 ├── examples/         # Example credential instances
 ├── src/              # Python source code
 ├── tests/            # Pytest tests
-├── docs/             # Documentation
+├── docs/             # MkDocs documentation
 ├── manifests/        # Wallet rendering manifests
 └── submodules/
-    ├── harbour-credentials/        # Signing library
-    ├── ontology-management-base/   # Validation pipeline
-    ├── service-characteristics/    # Gaia-X service characteristics
-    └── w3id.org/                   # W3ID redirect rules
+    └── harbour-credentials/                                # Signing library
+        ├── submodules/ontology-management-base/           # Validation pipeline (nested)
+        │   └── submodules/service-characteristics/        # Gaia-X schemas (nested)
+        └── submodules/w3id.org/                           # W3ID redirect rules (nested)
 ```
 
 ### LinkML Schema Pipeline
@@ -77,9 +77,7 @@ from harbour.verifier import verify_vc_jose
 from harbour.sd_jwt import issue_sd_jwt_vc, verify_sd_jwt_vc
 
 # From credentials modules
-from credentials.linkml_generator import generate_artifacts
-from credentials.claim_mapping import vc_to_sd_jwt_claims, sd_jwt_claims_to_vc
-from credentials.example_signer import sign_example
+from src.generate_artifacts import main as generate_artifacts
 ```
 
 ## Coding Conventions

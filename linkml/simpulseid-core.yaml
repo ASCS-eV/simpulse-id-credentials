@@ -1,15 +1,16 @@
-id: https://w3id.org/ascs-ev/simpulse-id/credentials/v1
-name: simpulseid
+id: https://w3id.org/ascs-ev/simpulse-id/core/v1
+name: simpulseid-core
 description: >
-  LinkML schema for SimpulseID credentials.
+  LinkML schema for SimpulseID subject types.
   Domain layer on top of Harbour credentials base. Defines ASCS-specific
-  credential types and subject types extending HarbourCredential.
+  subject types (Participant, Administrator, User, Memberships) and their
+  business slots. Credential type definitions are in simpulseid-credentials.yaml.
   Gaia-X compliance is delegated to the Harbour baseline credential,
   referenced via harbourCredential IRI.
 
 prefixes:
   linkml: https://w3id.org/linkml/
-  simpulseid: https://w3id.org/ascs-ev/simpulse-id/credentials/v1/
+  simpulseid: https://w3id.org/ascs-ev/simpulse-id/v1/
   harbour: https://w3id.org/reachhaven/harbour/core/v1/
   harbour.gx: https://w3id.org/reachhaven/harbour/gx/v1/
   sdo: http://schema.org/

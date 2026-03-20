@@ -2,6 +2,7 @@
 # ================================
 
 .PHONY: setup install generate validate lint format test story check all clean help \
+	release-artifacts \
 	_help_general _help_setup _help_install _help_validate _help_lint _help_format _help_test _help_story \
 	_setup_default _setup_submodules _install_default _install_dev _install_docs \
 	_validate_all _validate_simpulseid _validate_harbour \
@@ -53,8 +54,12 @@ endif
 # Absolute path to Python (for use after cd into subdirectories).
 # In CI, PYTHON is a bare command ('python3') so resolve via PATH;
 # locally it is a relative venv path so abspath works.
+# When a parent Makefile passes an already-absolute Windows path
+# (containing ':'), $(abspath) would mangle it — skip in that case.
 ifdef CI
     PYTHON_ABS := $(shell command -v $(PYTHON))
+else ifneq ($(findstring :,$(PYTHON)),)
+    PYTHON_ABS := $(PYTHON)
 else
     PYTHON_ABS := $(abspath $(PYTHON))
 endif
@@ -532,6 +537,18 @@ _story_all: ## Run the full Harbour + SimpulseID storyline
 	@"$(MAKE)" --no-print-directory _story_verify
 	@echo "OK: Full repository storyline complete"
 
+# ---------- Release Artifacts ----------
+
+RELEASE_DIR ?= site/w3id/ascs-ev/simpulse-id
+
+release-artifacts: ## Copy SimpulseID artifacts to w3id directory structure for GitHub Pages publishing
+	@echo "Preparing w3id artifact structure..."
+	@mkdir -p "$(RELEASE_DIR)/v1"
+	@cp artifacts/simpulseid-core/simpulseid-core.owl.ttl "$(RELEASE_DIR)/v1/ontology.ttl"
+	@cp artifacts/simpulseid-core/simpulseid-core.shacl.ttl "$(RELEASE_DIR)/v1/shapes.ttl"
+	@cp artifacts/simpulseid-core/simpulseid-core.context.jsonld "$(RELEASE_DIR)/v1/context.jsonld"
+	@echo "OK: Artifacts prepared in $(RELEASE_DIR)/"
+
 # ---------- Compound targets ----------
 
 check: generate validate ## Generate artifacts then validate examples
@@ -542,7 +559,7 @@ all: setup lint check test ## Full end-to-end: setup, lint, generate, validate, 
 
 clean: ## Remove generated artifacts (keeps venv)
 	@echo "Cleaning generated files and caches..."
-	@rm -rf artifacts/simpulseid
+	@rm -rf artifacts/simpulseid-core
 	@rm -rf build/ dist/ *.egg-info/
 	@rm -rf .pytest_cache/ htmlcov .coverage
 	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true

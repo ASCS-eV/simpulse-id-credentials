@@ -45,7 +45,7 @@ Read these BEFORE making changes:
 ## Project Structure
 
 ```text
-simpulse-id-credentials/
+credentials/
 ├── linkml/           # LinkML schema definitions (.yaml)
 ├── artifacts/        # Generated OWL, SHACL, JSON-LD context files
 ├── examples/         # Example credential instances
@@ -54,9 +54,10 @@ simpulse-id-credentials/
 ├── tests/            # Pytest tests
 ├── docs/             # MkDocs source pages
 └── submodules/
-    ├── harbour-credentials/      # Signing and verification library
-    ├── ontology-management-base/ # Ontology validation pipeline
-    └── w3id.org/                 # W3ID redirect rules
+    └── harbour-credentials/                          # Signing and verification library
+        ├── submodules/ontology-management-base/     # Ontology validation pipeline
+        │   └── submodules/service-characteristics/  # Gaia-X schemas
+        └── submodules/w3id.org/                     # W3ID redirect rules
 ```
 
 ## Key Conventions

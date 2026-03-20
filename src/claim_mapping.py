@@ -5,7 +5,7 @@ Defines how each SimpulseID credential type maps between nested JSON-LD
 selectively disclosable.
 """
 
-VCT_BASE = "https://w3id.org/ascs-ev/simpulse-id/credentials/v1"
+VCT_BASE = "https://w3id.org/ascs-ev/simpulse-id/v1"
 
 # ---------------------------------------------------------------------------
 # Claim mappings
@@ -179,7 +179,7 @@ def sd_jwt_claims_to_vc(claims: dict, mapping: dict, vc_type: str) -> dict:
         "@context": [
             "https://www.w3.org/ns/credentials/v2",
             "https://w3id.org/reachhaven/harbour/credentials/v1/",
-            "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
+            "https://w3id.org/ascs-ev/simpulse-id/v1/",
         ],
         "type": ["VerifiableCredential", vc_type],
     }

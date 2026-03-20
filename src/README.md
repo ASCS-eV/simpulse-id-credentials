@@ -8,7 +8,7 @@ This folder contains downstream artefacts generated from LinkML schemas:
 
 Each schema is generated into its own flat subfolder, matching the ontology-management-base pattern:
 
-- `artifacts/simpulseid/` (this repo)
+- `artifacts/simpulseid-core/` (this repo)
 - `submodules/harbour-credentials/artifacts/harbour-core-credential/` (harbour-credentials repo)
 - `submodules/harbour-credentials/artifacts/harbour-gx-credential/` (harbour-credentials repo)
 
@@ -22,7 +22,7 @@ python3 src/generate_from_linkml.py
 
 # Or specify models and a single output root explicitly
 python3 src/generate_from_linkml.py \
-  --model linkml/simpulseid.yaml \
+  --model linkml/simpulseid-core.yaml \
   --out-root artifacts
 ```
 

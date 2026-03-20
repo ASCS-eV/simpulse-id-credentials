@@ -8,10 +8,10 @@ Artefacts are generated into flat subfolders per model, matching the ontology-ma
 
 ```txt
 artifacts/
-└── simpulseid/
-    ├── simpulseid.context.jsonld
-    ├── simpulseid.shacl.ttl
-    └── simpulseid.owl.ttl
+└── simpulseid-core/
+    ├── simpulseid-core.context.jsonld
+    ├── simpulseid-core.shacl.ttl
+    └── simpulseid-core.owl.ttl
 
 submodules/harbour-credentials/artifacts/
 ├── core/
@@ -50,7 +50,7 @@ Hosting contexts in this way ensures:
 - SSI wallets can resolve schemas consistently.
 - JSON-LD processors interpret IRIs deterministically.
 
-### `simpulseid/simpulseid.context.jsonld`
+### `simpulseid-core/simpulseid-core.context.jsonld`
 
 The main JSON-LD context for SimpulseID credentials. It defines all SimpulseID-specific classes and properties:
 
@@ -112,7 +112,7 @@ The ontology defines:
 
 By using shared IRIs and clear semantics, SimpulseID ensures interoperability across the ENVITED Ecosystem and other data spaces.
 
-### `simpulseid/simpulseid.owl.ttl`
+### `simpulseid-core/simpulseid-core.owl.ttl`
 
 Defines:
 

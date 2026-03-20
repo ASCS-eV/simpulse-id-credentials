@@ -2,23 +2,8 @@
   "@context": [
     "https://www.w3.org/ns/did/v1",
     "https://w3id.org/reachhaven/harbour/core/v1/",
-    "https://schema.org",
     {
-      "schema": "http://schema.org/",
-      "sdo": "http://schema.org/",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "name": "sdo:name",
-      "description": "sdo:description",
-      "url": {
-        "@id": "sdo:url",
-        "@type": "xsd:anyURI"
-      },
-      "contactPoint": {
-        "@id": "sdo:contactPoint",
-        "@type": "@id"
-      },
-      "contactType": "sdo:contactType",
-      "email": "sdo:email"
+      "schema": "http://schema.org/"
     }
   ],
   "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B",

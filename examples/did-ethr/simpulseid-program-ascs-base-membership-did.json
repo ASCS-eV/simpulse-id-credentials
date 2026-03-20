@@ -1,15 +1,7 @@
 {
   "@context": [
-    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
-    "https://www.w3.org/ns/did/v1",
-    "https://schema.org",
-    {
-      "schema": "http://schema.org/",
-      "sdo": "http://schema.org/",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "name": "sdo:name",
-      "description": "sdo:description"
-    }
+    "https://w3id.org/ascs-ev/simpulse-id/v1/",
+    "https://www.w3.org/ns/did/v1"
   ],
   "id": "did:ethr:0x14a34:0x28b9692eD6f6Bcfeb81f544acB54FB6e780a422D",
   "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",

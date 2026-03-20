@@ -40,7 +40,7 @@ This protects personal information while allowing verifiers to confirm organizat
     "https://w3id.org/gaia-x/development#",
     "https://w3id.org/reachhaven/harbour/core/v1/",
     "https://w3id.org/reachhaven/harbour/gx/v1/",
-    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
+    "https://w3id.org/ascs-ev/simpulse-id/v1/"
   ],
   "type": ["VerifiableCredential", "simpulseid:UserCredential"],
   "issuer": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
@@ -65,7 +65,7 @@ The `UserCredential` and [`AdministratorCredential`](administrator.md) share the
 
 ## Schema Definition
 
-Defined in [`linkml/simpulseid.yaml`](https://github.com/ASCS-eV/credentials/blob/main/linkml/simpulseid.yaml) (class `SimpulseidUser`) and [`linkml/simpulseid-credentials.yaml`](https://github.com/ASCS-eV/credentials/blob/main/linkml/simpulseid-credentials.yaml) (class `UserCredential`).
+Defined in [`linkml/simpulseid-core.yaml`](https://github.com/ASCS-eV/credentials/blob/main/linkml/simpulseid-core.yaml) (class `SimpulseidUser`) and [`linkml/simpulseid-credentials.yaml`](https://github.com/ASCS-eV/credentials/blob/main/linkml/simpulseid-credentials.yaml) (class `UserCredential`).
 
 ## See Also
 

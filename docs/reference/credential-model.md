@@ -10,7 +10,7 @@ see the harbour-credentials documentation.
 ```text
 linkml/
 ├── importmap.json                # Maps import paths to submodule schemas
-├── simpulseid.yaml               # Subject types, enums, business slots
+├── simpulseid-core.yaml           # Subject types, enums, business slots
 └── simpulseid-credentials.yaml   # 5 credential types (is_a: HarbourCredential)
 ```
 
@@ -21,7 +21,7 @@ graph LR
     W["w3c-vc.yaml<br/><i>W3C VC envelope</i>"]
     H["harbour-core-credential.yaml<br/><i>Abstract base</i>"]
     SC["simpulseid-credentials.yaml<br/><i>5 credential types</i>"]
-    S["simpulseid.yaml<br/><i>Subject types + enums</i>"]
+    S["simpulseid-core.yaml<br/><i>Subject types + enums</i>"]
 
     W --> H
     H --> SC

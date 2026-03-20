@@ -6,13 +6,13 @@ This repository defines credential types and subject types using [LinkML](https:
 
 | File | Purpose |
 |------|---------|
-| `linkml/simpulseid.yaml` | Main schema — subject types, slots, enums, and imports |
+| `linkml/simpulseid-core.yaml` | Main schema — subject types, slots, enums, and imports |
 | `linkml/simpulseid-credentials.yaml` | Credential type definitions (separated for SHACL generation) |
 | `linkml/importmap.json` | Import resolution for harbour submodule schemas |
 
 ### Why Two Schema Files?
 
-Credential types (e.g., `ParticipantCredential`) and subject types (e.g., `SimpulseidParticipant`) are intentionally separated. The SHACL generator uses `exclude_imports=True` to emit shapes **only** for subject types and nested types defined in `simpulseid.yaml`. Harbour's own SHACL artifacts handle credential envelope validation via RDFS inference.
+Credential types (e.g., `ParticipantCredential`) and subject types (e.g., `SimpulseidParticipant`) are intentionally separated. The SHACL generator uses `exclude_imports=True` to emit shapes **only** for subject types and nested types defined in `simpulseid-core.yaml`. Harbour's own SHACL artifacts handle credential envelope validation via RDFS inference.
 
 ## Class Hierarchy
 
@@ -29,7 +29,7 @@ HarbourCredential (harbour base)
 └── AscsEnvitedMembershipCredential
 ```
 
-### Subject Types (in `simpulseid.yaml`)
+### Subject Types (in `simpulseid-core.yaml`)
 
 ```text
 SimpulseidParticipant    → simpulseid:Participant
@@ -99,9 +99,9 @@ This runs `src/generate_artifacts.py`, which produces:
 
 | Output | Generator | Location |
 |--------|-----------|----------|
-| OWL ontology | `OwlSchemaGenerator` | `artifacts/simpulseid/simpulseid.owl.ttl` |
-| SHACL shapes | `DomainShaclGenerator` | `artifacts/simpulseid/simpulseid.shacl.ttl` |
-| JSON-LD context | `ContextGenerator` | `artifacts/simpulseid/simpulseid.context.jsonld` |
+| OWL ontology | `OwlSchemaGenerator` | `artifacts/simpulseid-core/simpulseid-core.owl.ttl` |
+| SHACL shapes | `DomainShaclGenerator` | `artifacts/simpulseid-core/simpulseid-core.shacl.ttl` |
+| JSON-LD context | `ContextGenerator` | `artifacts/simpulseid-core/simpulseid-core.context.jsonld` |
 
 ### LinkML Workarounds
 

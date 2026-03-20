@@ -25,7 +25,7 @@ This repository provides:
 | [ParticipantCredential](credentials/participant.md) | Organization/company credentials |
 | [UserCredential](credentials/user.md) | Individual user credentials |
 | [AdministratorCredential](credentials/administrator.md) | Admin role credentials |
-| [MembershipCredential](credentials/membership.md) | Membership attestations |
+| [Membership Credentials](credentials/membership.md) | ASCS base and ENVITED membership attestations |
 
 ## Related Projects
 

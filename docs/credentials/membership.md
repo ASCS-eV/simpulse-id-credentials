@@ -33,7 +33,7 @@ The `AscsBaseMembershipCredential` attests that an organization is a member of A
     "https://w3id.org/gaia-x/development#",
     "https://w3id.org/reachhaven/harbour/core/v1/",
     "https://w3id.org/reachhaven/harbour/gx/v1/",
-    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
+    "https://w3id.org/ascs-ev/simpulse-id/v1/"
   ],
   "type": ["VerifiableCredential", "simpulseid:AscsBaseMembershipCredential"],
   "issuer": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
@@ -70,7 +70,7 @@ In addition to all base membership fields:
     "https://w3id.org/gaia-x/development#",
     "https://w3id.org/reachhaven/harbour/core/v1/",
     "https://w3id.org/reachhaven/harbour/gx/v1/",
-    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
+    "https://w3id.org/ascs-ev/simpulse-id/v1/"
   ],
   "type": ["VerifiableCredential", "simpulseid:AscsEnvitedMembershipCredential"],
   "issuer": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
@@ -115,7 +115,7 @@ flowchart LR
 
 ## Schema Definition
 
-Defined in [`linkml/simpulseid.yaml`](https://github.com/ASCS-eV/credentials/blob/main/linkml/simpulseid.yaml) (classes `AscsBaseMembership`, `AscsEnvitedMembership`) and [`linkml/simpulseid-credentials.yaml`](https://github.com/ASCS-eV/credentials/blob/main/linkml/simpulseid-credentials.yaml) (classes `AscsBaseMembershipCredential`, `AscsEnvitedMembershipCredential`).
+Defined in [`linkml/simpulseid-core.yaml`](https://github.com/ASCS-eV/credentials/blob/main/linkml/simpulseid-core.yaml) (classes `AscsBaseMembership`, `AscsEnvitedMembership`) and [`linkml/simpulseid-credentials.yaml`](https://github.com/ASCS-eV/credentials/blob/main/linkml/simpulseid-credentials.yaml) (classes `AscsBaseMembershipCredential`, `AscsEnvitedMembershipCredential`).
 
 ## See Also
 

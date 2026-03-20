@@ -1,36 +1,15 @@
 {
   "@context": [
-    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/",
+    "https://w3id.org/ascs-ev/simpulse-id/v1/",
     "https://www.w3.org/ns/did/v1",
-    "https://schema.org",
     {
-      "schema": "http://schema.org/",
-      "sdo": "http://schema.org/",
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "name": "sdo:name",
-      "description": "sdo:description",
-      "url": {
-        "@id": "sdo:url",
-        "@type": "xsd:anyURI"
-      },
-      "publisher": {
-        "@id": "sdo:publisher",
-        "@type": "@id"
-      },
+      "url": { "@id": "sdo:url", "@type": "@id" },
+      "publisher": { "@id": "sdo:publisher", "@type": "@id" },
       "about": "sdo:about",
       "inLanguage": "sdo:inLanguage",
-      "datePublished": {
-        "@id": "sdo:datePublished",
-        "@type": "xsd:date"
-      },
-      "termsOfService": {
-        "@id": "sdo:termsOfService",
-        "@type": "xsd:anyURI"
-      },
-      "privacyPolicy": {
-        "@id": "sdo:privacyPolicy",
-        "@type": "xsd:anyURI"
-      }
+      "datePublished": { "@id": "sdo:datePublished", "@type": "xsd:date" },
+      "termsOfService": { "@id": "sdo:termsOfService", "@type": "@id" },
+      "privacyPolicy": { "@id": "sdo:privacyPolicy", "@type": "@id" }
     }
   ],
   "id": "did:ethr:0x14a34:0x34d8ED7DA77f3f522465E1A18Dd4fFe482021112",

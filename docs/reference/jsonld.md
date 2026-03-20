@@ -13,7 +13,7 @@ Every SimpulseID credential uses a stack of four contexts:
     "https://w3id.org/gaia-x/development#",
     "https://w3id.org/reachhaven/harbour/core/v1/",
     "https://w3id.org/reachhaven/harbour/gx/v1/",
-    "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
+    "https://w3id.org/ascs-ev/simpulse-id/v1/"
   ]
 }
 ```
@@ -29,12 +29,12 @@ Contexts are processed in order — later contexts can override earlier ones. Th
 
 ## Generated Context
 
-The SimpulseID context is generated from `linkml/simpulseid.yaml` and written to `artifacts/simpulseid/simpulseid.context.jsonld`.
+The SimpulseID context is generated from `linkml/simpulseid-core.yaml` and written to `artifacts/simpulseid-core/simpulseid-core.context.jsonld`.
 
 ### Default Namespace
 
 ```json
-"@vocab": "https://w3id.org/ascs-ev/simpulse-id/credentials/v1/"
+"@vocab": "https://w3id.org/ascs-ev/simpulse-id/v1/"
 ```
 
 Any bare term not explicitly mapped (e.g., `duns`, `hash`) resolves to the SimpulseID namespace.
@@ -43,7 +43,7 @@ Any bare term not explicitly mapped (e.g., `duns`, `hash`) resolves to the Simpu
 
 | Prefix | IRI | Usage |
 |--------|-----|-------|
-| `simpulseid` | `https://w3id.org/ascs-ev/simpulse-id/credentials/v1/` | Domain types and slots |
+| `simpulseid` | `https://w3id.org/ascs-ev/simpulse-id/v1/` | Domain types and slots |
 | `harbour` | `https://w3id.org/reachhaven/harbour/core/v1/` | Harbour base types |
 | `harbour.gx` | `https://w3id.org/reachhaven/harbour/gx/v1/` | Harbour Gaia-X credential types |
 | `gx` | `https://w3id.org/gaia-x/development#` | Gaia-X Trust Framework types |

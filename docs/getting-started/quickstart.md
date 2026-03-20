@@ -10,7 +10,7 @@ Generate OWL, SHACL, and JSON-LD artifacts from LinkML schemas:
 make generate
 ```
 
-This creates files in `artifacts/simpulseid/`:
+This creates files in `artifacts/simpulseid-core/`:
 
 - `*.owl.ttl` — OWL ontology definitions
 - `*.shacl.ttl` — SHACL validation shapes
@@ -24,7 +24,7 @@ Example credential in `examples/simpulseid-user-credential.json`:
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "./artifacts/simpulseid/simpulseid.context.jsonld"
+    "./artifacts/simpulseid-core/simpulseid-core.context.jsonld"
   ],
   "type": ["VerifiableCredential", "simpulseid:UserCredential"],
   "issuer": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",

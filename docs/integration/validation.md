@@ -35,7 +35,7 @@ Two sets of SHACL artifacts are required:
 | Artifact Set | Location | Validates |
 |-------------|----------|-----------|
 | Harbour | `submodules/harbour-credentials/artifacts/` | Credential envelope (issuer, validFrom, evidence, etc.) |
-| SimpulseID | `artifacts/simpulseid/` | Domain-specific subject types (Participant, User, etc.) |
+| SimpulseID | `artifacts/simpulseid-core/` | Domain-specific subject types (Participant, User, etc.) |
 
 Harbour shapes validate the credential structure via RDFS inference (all SimpulseID credentials extend `HarbourCredential`), while SimpulseID shapes validate the `credentialSubject` fields.
 

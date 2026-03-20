@@ -116,20 +116,24 @@ real end-to-end signing and verification run with concrete JWT outputs.
 
 ## Repository structure
 
-### `contexts/`
+### `linkml/`
 
-JSON-LD context documents used by SimpulseID credentials, for example:
+LinkML schema definitions for SimpulseID credential types:
 
-- `SimpulseIdCredentials.json` – main context for:
-  - `simpulseid:Participant`
-  - `simpulseid:AscsBaseMembership`
-  - `simpulseid:AscsEnvitedMembership`
-  - `simpulseid:Administrator`
-  - `simpulseid:User`
-- `HarbourCredentials.json` – additional context for status / revocation information
-- SKOS / code list contexts (e.g. legal form vocabulary)
+- `simpulseid-core.yaml` — Subject types and business slots (Participant, Administrator, User, Memberships)
+- `simpulseid-credentials.yaml` — Credential type definitions (is_a: HarbourCredential)
+- `importmap.json` — Import resolution for harbour-credentials and Gaia-X schemas
 
-These files are meant to be hosted under:
+### `artifacts/`
+
+Generated JSON-LD contexts, OWL ontologies, and SHACL validation shapes:
+
+- `artifacts/simpulseid-core/simpulseid-core.context.jsonld` — JSON-LD context for SimpulseID terms
+- `artifacts/simpulseid-core/simpulseid-core.owl.ttl` — OWL ontology defining class hierarchy
+- `artifacts/simpulseid-core/simpulseid-core.shacl.ttl` — SHACL shapes for credential validation
+
+These files are **generated** by `make generate` from the LinkML schemas and should
+not be manually edited. They are intended to be hostable at:
 
 - `https://w3id.org/ascs-ev/simpulse-id/...`
 
@@ -201,39 +205,19 @@ Each manifest references:
 
 ---
 
-### `ontologies/`
+### `submodules/harbour-credentials/`
 
-RDF/OWL ontologies and vocabularies that define the **formal semantics** of SimpulseID types and properties, aligned with:
+Harbour credentials signing/verification library with its own LinkML schemas and
+generated artifacts. Contains the base credential envelope (HarbourCredential),
+Gaia-X compliance types, and delegation transaction types:
 
-- **Gaia-X Trust Framework 24.11**
-- **ENVITED Ecosystem Specifications (EVES)**
-- **schema.org** and **vCard** where appropriate
+- `artifacts/harbour-core-credential/` — VC envelope: issuer, validFrom, credentialStatus (CRSet), evidence
+- `artifacts/harbour-gx-credential/` — Gaia-X compliance: LegalPerson, NaturalPerson, ComplianceCredential
+- `artifacts/harbour-core-delegation/` — OID4VP delegation transaction types
 
-Key elements include:
-
-- `SimpulseIdOntology.ttl`
-  - Classes:
-    - `simpulseid:Participant` ⊑ `gx:LegalPerson`, `schema:Organization`
-    - `simpulseid:AscsBaseMembership`, `simpulseid:AscsEnvitedMembership` ⊑ `schema:ProgramMembership`
-    - `simpulseid:Administrator`, `simpulseid:User` ⊑ `gx:NaturalPerson`, `schema:Person`
-    - Program classes for base and ENVITED memberships
-  - Properties:
-    - `simpulseid:legalForm` → SKOS `simpulseid:LegalForm` concepts
-    - `simpulseid:termsAndConditions` → `gx:TermsAndConditions` resources
-    - `simpulseid:baseMembership` linking ENVITED membership to base membership
-  - Address modelling:
-    - `gx:Address` with **vCard** properties:
-      - `vcard:street-address`
-      - `vcard:postal-code`
-      - `vcard:locality`
-      - `vcard:region`
-    - `gx:countryCode` for ISO country codes
-
-- Legal form SKOS vocabulary (e.g. `legalForm-v1.jsonld`)
-  - Code list of legal forms (`AG`, `GmbH`, `LLC`, `BenCom`, etc.)
-  - Used via `simpulseid:LegalForm` and `simpulseid:legalForm` in credentials
-
-These ontologies are the **ground truth** for what the JSON-LD contexts and examples mean at RDF level.
+The two-layer signing architecture references harbour credentials via the
+`harbourCredential` IRI on SimpulseID credential subjects, linking to the
+Gaia-X compliance baseline.
 
 ---
 
@@ -256,7 +240,7 @@ Typical flow:
 2. The organization receives **ASCS base membership** and optionally **ENVITED membership** credentials.
 3. Individual administrators and users receive **Admin/User VCs**, bound to opaque `did:ethr` identifiers on Base.
 4. Wallets like Altme use the **contexts** and **manifests** from this repo to display these credentials.
-5. Services behind `identity.ascs.digital` use the **ontologies** and **Gaia-X compatible structures** to perform trust and membership checks.
+5. Services behind `identity.ascs.digital` use the **SHACL shapes** and **Gaia-X compatible structures** to perform trust and membership checks.
 
 ---
 

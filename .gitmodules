@@ -3,3 +3,6 @@
 	url = https://github.com/reachhaven/harbour-credentials.git
 	shallow = true
 	branch = fix/simpulse-id-credentials
+[submodule "submodules/w3id.org"]
+	path = submodules/w3id.org
+	url = https://github.com/ASCS-eV/w3id.org.git
