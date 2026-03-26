@@ -4,6 +4,10 @@ This repository contains LinkML schemas for verifiable credentials and generated
 
 ## Build, Test, and Lint Commands
 
+**Always use `make` targets** — never call generators, linters, or test runners
+directly (e.g. `gen-owl`, `gen-shacl`, `python -m`). Each repository in the
+submodule chain has its own `Makefile`. Run `make help` to discover targets.
+
 ```bash
 # Install dev dependencies
 make setup
@@ -102,6 +106,7 @@ The human operator will review these files and either:
 ## Common Mistakes to Avoid
 
 - ❌ **Don't edit generated files** — Regenerate with `make generate`
+- ❌ **Don't call generators directly** — Always use `make` targets, never `gen-owl`/`gen-shacl`/`python -m`
 - ❌ **Don't use `os.path`** — Use `pathlib.Path` instead
 - ❌ **Don't forget validation** — Run `make validate` before committing
 - ❌ **Don't commit without signing** — Always use `-s -S`

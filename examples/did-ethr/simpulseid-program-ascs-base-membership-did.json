@@ -15,7 +15,7 @@
   "program": {
     "@type": [
       "schema:Program",
-      "simpulseid:BaseMembershipProgram"
+      "BaseMembershipProgram"
     ],
     "@id": "https://did.ascs.digital/programs/ascs-base-membership",
     "name": "ASCS e.V. Base Membership",

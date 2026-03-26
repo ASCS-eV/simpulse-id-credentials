@@ -15,13 +15,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Essential Commands
 
+**Always use `make` targets** — never call generators, linters, or test runners
+directly (e.g. `gen-owl`, `gen-shacl`, `python -m`). Each repository in the
+submodule chain has its own `Makefile` with a consistent command surface. Run
+`make help` to discover available targets.
+
 ```bash
 # Install dev dependencies
 make setup
 make install dev
 
 # Generate artifacts from LinkML schemas
-make generate
+make generate                  # all domains
+make generate DOMAIN=<name>    # single domain (OMB)
+make generate gx               # Gaia-X from service-characteristics (OMB)
 
 # Run validation pipeline
 make validate
@@ -36,6 +43,10 @@ make test
 # Run tests with coverage
 pytest tests/ --cov=src --cov-report=html
 ```
+
+The `make` targets handle virtualenv activation, correct flags, line-ending
+normalisation, and cross-platform path issues. Bypassing them risks producing
+artifacts with wrong line endings, missing flags, or inconsistent output.
 
 ## Architecture
 
@@ -82,7 +93,7 @@ from src.generate_artifacts import main as generate_artifacts
 
 ## Coding Conventions
 
-- **Python 3.10+** with type hints on public APIs
+- **Python 3.12+** with type hints on public APIs
 - **pathlib.Path** (never `os.path`)
 - **4-space indentation**
 - **Conventional commits** — `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`
@@ -131,6 +142,7 @@ Read these before making changes:
 ## Common Mistakes to Avoid
 
 - ❌ Modifying generated files in `artifacts/` directly (regenerate with `make generate`)
+- ❌ Calling generators directly (`gen-owl`, `gen-shacl`, `python -m`) — always use `make` targets
 - ❌ Forgetting to update examples when changing schemas
 - ❌ Using `os.path` instead of `pathlib.Path`
 - ❌ Committing without signing (`-s -S`)

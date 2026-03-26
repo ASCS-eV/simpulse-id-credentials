@@ -47,7 +47,7 @@
   "service": [
     {
       "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#service-1",
-      "type": "harbour:TrustAnchorService",
+      "type": "TrustAnchorService",
       "serviceEndpoint": {
         "@type": "schema:Organization",
         "name": "Bayerische Motoren Werke Aktiengesellschaft",
@@ -56,7 +56,7 @@
     },
     {
       "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048#service-2",
-      "type": "harbour:LinkedCredentialService",
+      "type": "LinkedCredentialService",
       "serviceEndpoint": "https://did.ascs.digital/participants/bmw/.well-known/participant-credential.jwt"
     }
   ]

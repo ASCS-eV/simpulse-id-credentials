@@ -189,7 +189,7 @@ class TestFullProofChain:
         result = verify_vc_jose(vc_jwt, p256_public_key)
         assert result["type"] == [
             "VerifiableCredential",
-            "simpulseid:ParticipantCredential",
+            "ParticipantCredential",
         ]
 
     def test_evidence_vp_is_jwt_in_outer(self, signed_participant, p256_public_key):

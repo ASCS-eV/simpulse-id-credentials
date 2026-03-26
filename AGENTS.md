@@ -25,13 +25,19 @@ Read these before making changes; they are authoritative for repo workflows.
 
 ## Build, Test, and Development Commands
 
+**Always use `make` targets** — never call generators, linters, or test runners
+directly. Each repository in the submodule chain has its own `Makefile` with a
+consistent command surface. Run `make help` to discover available targets.
+
 ```bash
 # Install dev dependencies
 make setup
 make install dev
 
 # Generate artifacts from LinkML schemas
-make generate
+make generate                  # all domains
+make generate DOMAIN=<name>    # single domain (OMB)
+make generate gx               # Gaia-X from service-characteristics (OMB)
 
 # Lint and format
 make lint
@@ -43,6 +49,11 @@ make test
 # Run validation pipeline
 make validate
 ```
+
+The `make` targets handle virtualenv activation, correct flags, line-ending
+normalisation, and cross-platform path issues. Bypassing them (e.g. calling
+`gen-owl` or `python -m` directly) risks producing artifacts with wrong
+line endings, missing flags, or inconsistent output.
 
 ## Git Commit & Pull Request Policy
 
@@ -119,7 +130,7 @@ Closes #123
 
 ## Coding Style
 
-- Python 3.10+ with type hints
+- Python 3.12+ with type hints
 - Use `pathlib.Path` (not `os.path`)
 - 4-space indentation
 - Module docstrings required

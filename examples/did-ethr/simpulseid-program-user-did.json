@@ -21,7 +21,7 @@
       "serviceEndpoint": {
         "@type": [
           "schema:CreativeWork",
-          "simpulseid:UserProgram"
+          "UserProgram"
         ],
         "@id": "https://did.ascs.digital/programs/simpulseid-user",
         "name": "SimpulseID User Program",

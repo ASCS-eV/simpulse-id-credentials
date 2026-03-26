@@ -110,6 +110,7 @@ def _context_gen_without_harbour(gen_args: dict) -> str:
             mergeimports=False,
             exclude_external_imports=True,
             xsd_anyuri_as_iri=True,
+            normalize_prefixes=True,
             deterministic=True,
             **gen_args,
         )
@@ -126,14 +127,14 @@ def main() -> None:
 
     # --- OWL ---
     print("Generating OWL ontology...")
-    owl_gen = OwlSchemaGenerator(str(SCHEMA), deterministic=True, **gen_args)
+    owl_gen = OwlSchemaGenerator(str(SCHEMA), deterministic=True, normalize_prefixes=True, **gen_args)
     (OUT_DIR / "simpulseid-core.owl.ttl").write_text(
         owl_gen.serialize(), encoding="utf-8"
     )
 
     # --- SHACL ---
     print("Generating SHACL shapes...")
-    shacl_gen = ShaclGenerator(str(SCHEMA), closed=True, deterministic=True, **gen_args)
+    shacl_gen = ShaclGenerator(str(SCHEMA), closed=True, deterministic=True, normalize_prefixes=True, **gen_args)
     raw_shacl = shacl_gen.serialize()
     filtered_shacl = filter_shacl_to_namespace(raw_shacl, SIMPULSEID_NS)
     (OUT_DIR / "simpulseid-core.shacl.ttl").write_text(filtered_shacl, encoding="utf-8")

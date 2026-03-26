@@ -21,7 +21,7 @@
       "serviceEndpoint": {
         "@type": [
           "schema:CreativeWork",
-          "simpulseid:AdministratorProgram"
+          "AdministratorProgram"
         ],
         "@id": "https://did.ascs.digital/programs/simpulseid-administrator",
         "name": "SimpulseID Administrator Program",

@@ -47,7 +47,7 @@
   "service": [
     {
       "id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#service-1",
-      "type": "harbour:TrustAnchorService",
+      "type": "TrustAnchorService",
       "serviceEndpoint": {
         "@type": "schema:Organization",
         "name": "Automotive Solution Center for Simulation e.V. (ASCS)",
@@ -62,7 +62,7 @@
     },
     {
       "id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#service-2",
-      "type": "harbour:LinkedCredentialService",
+      "type": "LinkedCredentialService",
       "serviceEndpoint": "https://did.ascs.digital/participants/ascs/.well-known/participant-credential.jwt"
     }
   ]

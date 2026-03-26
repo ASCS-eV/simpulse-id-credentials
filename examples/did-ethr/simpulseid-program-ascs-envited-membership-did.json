@@ -18,7 +18,7 @@
   "program": {
     "@type": [
       "schema:Program",
-      "simpulseid:EnvitedMembershipProgram"
+      "EnvitedMembershipProgram"
     ],
     "@id": "https://did.ascs.digital/programs/ascs-envited-membership",
     "name": "ASCS e.V. ENVITED Membership",
