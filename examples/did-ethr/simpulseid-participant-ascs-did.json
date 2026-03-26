@@ -4,7 +4,6 @@
     "https://w3id.org/reachhaven/harbour/core/v1/",
     "https://www.w3.org/ns/did/v1",
     {
-      "schema": "https://schema.org/",
       "JsonWebKey": "https://w3id.org/security#JsonWebKey",
       "publicKeyJwk": {
         "@id": "https://w3id.org/security#publicKeyJwk",

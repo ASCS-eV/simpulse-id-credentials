@@ -1,10 +1,7 @@
 {
   "@context": [
     "https://www.w3.org/ns/did/v1",
-    "https://w3id.org/reachhaven/harbour/core/v1/",
-    {
-      "schema": "https://schema.org/"
-    }
+    "https://w3id.org/reachhaven/harbour/core/v1/"
   ],
   "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B",
   "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",

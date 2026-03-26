@@ -71,18 +71,27 @@ evidence_vp_jwt = sign_vp_jose(
 
 The nonce is computed as a SHA-256 hash of the issuer's payload, binding the evidence to the specific credential issuance per [OID4VP §8.4](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html).
 
-## SD-JWT-VC Claim Mapping
+## SD-JWT-VC Structured Selective Disclosure
 
-The `claim_mapping` module converts between W3C VCDM JSON-LD and flat SD-JWT-VC claims:
+Harbour's SD-JWT-VC implementation supports structured (nested) selective disclosure
+per [RFC 9901 §6.2](https://www.rfc-editor.org/rfc/rfc9901#section-6). Credentials
+keep their nested W3C VCDM structure — only individual attribute values are hidden:
 
 ```python
-from src.claim_mapping import vc_to_sd_jwt_claims, get_mapping_for_vc
+from harbour.sd_jwt import issue_sd_jwt_vc
 
-mapping = get_mapping_for_vc(credential)
-flat_claims, disclosable = vc_to_sd_jwt_claims(credential, mapping)
+sd_jwt = issue_sd_jwt_vc(
+    credential["credentialSubject"],
+    private_key,
+    vct="https://w3id.org/ascs-ev/simpulse-id/v1/ParticipantCredential",
+    disclosable=["credentialSubject.email", "credentialSubject.duns"],
+)
 ```
 
-Each credential type defines which claims are always disclosed vs. selectively disclosed. See individual credential type pages for mapping details:
+The credential structure (types, nesting) stays visible — only sensitive values
+(email, DUNS, etc.) are hidden behind `_sd` digests at the appropriate nesting level.
+
+See individual credential type pages for disclosure policy details:
 
 - [ParticipantCredential](../credentials/participant.md)
 - [UserCredential](../credentials/user.md)

@@ -1,10 +1,7 @@
 {
   "@context": [
     "https://w3id.org/ascs-ev/simpulse-id/v1/",
-    "https://www.w3.org/ns/did/v1",
-    {
-      "schema": "https://schema.org/"
-    }
+    "https://www.w3.org/ns/did/v1"
   ],
   "id": "did:ethr:0x14a34:0x28b9692eD6f6Bcfeb81f544acB54FB6e780a422D",
   "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",

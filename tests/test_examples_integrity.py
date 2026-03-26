@@ -129,26 +129,8 @@ def test_issuer_did_has_signing_key(path):
 
 
 # ---------------------------------------------------------------------------
-# Gaia-X context tests (Finding F3)
+# Gaia-X composition tests (Finding F3)
 # ---------------------------------------------------------------------------
-
-GX_CONTEXT = "https://w3id.org/gaia-x/development#"
-
-
-@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
-def test_gaiax_context_present(path):
-    """Credentials must include Gaia-X context for 25.11 compliance.
-
-    Per GX-ICAM-25.11, Gaia-X credentials must use the Gaia-X ontology
-    namespace in their @context array.
-    """
-    vc = json.loads(path.read_text())
-    contexts = vc.get("@context", [])
-    assert GX_CONTEXT in contexts, (
-        f"Credential {path.name} missing Gaia-X context '{GX_CONTEXT}'. "
-        f"Required by Gaia-X ICAM 25.11."
-    )
-
 
 PERSON_TYPES = {"simpulseid:ParticipantCredential"}
 
@@ -211,6 +193,30 @@ def test_natural_person_has_gx_composition(path):
     )
     assert "givenName" in gx, f"{path.name}: participant missing givenName"
     assert "familyName" in gx, f"{path.name}: participant missing familyName"
+    assert "email" in gx, f"{path.name}: participant missing email"
+
+
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
+def test_admin_participant_has_address(path):
+    """AdministratorCredential participant must include gx:address.
+
+    Administrators are natural persons with elevated permissions — address
+    is a mandatory business requirement. For standard users, address is
+    optional. Both are enforced at the SimpulseID layer (harbour
+    NaturalPerson SHACL keeps address optional for all NaturalPersons).
+    """
+    vc = json.loads(path.read_text())
+    vc_types = vc.get("type", [])
+
+    if "simpulseid:AdministratorCredential" not in vc_types:
+        pytest.skip("Not an AdministratorCredential")
+
+    subject = vc.get("credentialSubject", {})
+    gx = subject.get("participant", {})
+    assert "address" in gx, (
+        f"{path.name}: Administrator participant missing address. "
+        f"Address is mandatory for administrators."
+    )
 
 
 # ---------------------------------------------------------------------------

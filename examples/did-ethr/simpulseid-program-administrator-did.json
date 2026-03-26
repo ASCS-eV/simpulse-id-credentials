@@ -3,14 +3,13 @@
     "https://w3id.org/ascs-ev/simpulse-id/v1/",
     "https://www.w3.org/ns/did/v1",
     {
-      "schema": "https://schema.org/",
-      "url": { "@id": "sdo:url", "@type": "@id" },
-      "publisher": { "@id": "sdo:publisher", "@type": "@id" },
-      "about": "sdo:about",
-      "inLanguage": "sdo:inLanguage",
-      "datePublished": { "@id": "sdo:datePublished", "@type": "xsd:date" },
-      "termsOfService": { "@id": "sdo:termsOfService", "@type": "@id" },
-      "privacyPolicy": { "@id": "sdo:privacyPolicy", "@type": "@id" }
+      "url": { "@id": "schema:url", "@type": "@id" },
+      "publisher": { "@id": "schema:publisher", "@type": "@id" },
+      "about": "schema:about",
+      "inLanguage": "schema:inLanguage",
+      "datePublished": { "@id": "schema:datePublished", "@type": "xsd:date" },
+      "termsOfService": { "@id": "schema:termsOfService", "@type": "@id" },
+      "privacyPolicy": { "@id": "schema:privacyPolicy", "@type": "@id" }
     }
   ],
   "id": "did:ethr:0x14a34:0x34d8ED7DA77f3f522465E1A18Dd4fFe482021112",

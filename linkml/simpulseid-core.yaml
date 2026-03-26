@@ -13,7 +13,7 @@ prefixes:
   simpulseid: https://w3id.org/ascs-ev/simpulse-id/v1/
   harbour: https://w3id.org/reachhaven/harbour/core/v1/
   harbour.gx: https://w3id.org/reachhaven/harbour/gx/v1/
-  sdo: http://schema.org/
+  sdo: https://schema.org/
   didcore: https://www.w3.org/ns/did#
   gx: https://w3id.org/gaia-x/development#
   cred: https://www.w3.org/2018/credentials#
@@ -85,6 +85,57 @@ slots:
       Used here as a stable IRI for membership start dates.
     slot_uri: sdo:memberSince
     range: date
+
+  # --- Program Metadata Slots (schema.org CreativeWork properties) ---
+
+  about:
+    description: Subject matter of the program.
+    slot_uri: sdo:about
+    range: string
+
+  publisher:
+    description: Organization that publishes this program.
+    slot_uri: sdo:publisher
+    range: ProgramPublisher
+    inlined: true
+
+  inLanguage:
+    description: Primary language of the program content (BCP 47 tag).
+    slot_uri: sdo:inLanguage
+    range: string
+
+  datePublished:
+    description: Date the program was published.
+    slot_uri: sdo:datePublished
+    range: date
+
+  termsOfService:
+    description: URL of the terms of service document.
+    slot_uri: sdo:termsOfService
+    range: uri
+
+  privacyPolicy:
+    description: URL of the privacy policy document.
+    slot_uri: sdo:privacyPolicy
+    range: uri
+
+  # --- Membership Program Slots ---
+
+  articlesOfAssociation:
+    description: URL of the articles of association document.
+    slot_uri: simpulseid:articlesOfAssociation
+    range: uri
+
+  contributionRules:
+    description: URL of the contribution rules document.
+    slot_uri: simpulseid:contributionRules
+    range: uri
+
+  ecosystem:
+    description: The digital ecosystem associated with this membership program.
+    slot_uri: simpulseid:ecosystem
+    range: ProgramEcosystem
+    inlined: true
 
   # --- SimpulseID Extensions ---
 
@@ -217,3 +268,130 @@ classes:
     slot_usage:
       member: { required: true }
       baseMembershipCredential: { required: true }
+
+  # ------------------------------------------
+  # DID SERVICE TYPES
+  # ------------------------------------------
+
+  ProgramMetadataService:
+    description: >
+      DID service endpoint that resolves to program metadata.
+      Used in DID documents to publish discoverable program definitions.
+    class_uri: simpulseid:ProgramMetadataService
+    slots:
+      - serviceEndpoint
+    slot_usage:
+      serviceEndpoint:
+        range: uri
+
+  # ------------------------------------------
+  # PROGRAM METADATA (DID endpoint data)
+  # ------------------------------------------
+
+  AdministratorProgram:
+    description: >
+      Program definition for SimpulseID administrators. Modeled as a
+      schema.org CreativeWork with program-specific metadata.
+    class_uri: simpulseid:AdministratorProgram
+    mixins:
+      - ProgramEndpoint
+    slots:
+      - termsOfService
+      - privacyPolicy
+
+  UserProgram:
+    description: >
+      Program definition for standard SimpulseID users.
+    class_uri: simpulseid:UserProgram
+    mixins:
+      - ProgramEndpoint
+    slots:
+      - termsOfService
+      - privacyPolicy
+
+  BaseMembershipProgram:
+    description: >
+      Program definition for ASCS e.V. base membership.
+    class_uri: simpulseid:BaseMembershipProgram
+    slots:
+      - hostingOrganization
+      - articlesOfAssociation
+      - contributionRules
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      description:
+        slot_uri: sdo:description
+        range: string
+
+  EnvitedMembershipProgram:
+    description: >
+      Program definition for ASCS e.V. ENVITED membership.
+    class_uri: simpulseid:EnvitedMembershipProgram
+    slots:
+      - hostingOrganization
+      - articlesOfAssociation
+      - contributionRules
+      - ecosystem
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      description:
+        slot_uri: sdo:description
+        range: string
+      url:
+        slot_uri: sdo:url
+        range: uri
+
+  # ------------------------------------------
+  # PROGRAM SUPPORT TYPES
+  # ------------------------------------------
+
+  ProgramEndpoint:
+    description: >
+      Base mixin for program metadata endpoints. Maps to sdo:CreativeWork.
+      Provides common schema.org properties for program descriptions.
+    class_uri: sdo:CreativeWork
+    mixin: true
+    slots:
+      - about
+      - publisher
+      - inLanguage
+      - datePublished
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      description:
+        slot_uri: sdo:description
+        range: string
+
+  ProgramPublisher:
+    description: >
+      Organization that publishes a program. Lightweight schema.org
+      Organization with name and URL only (no contact point).
+    class_uri: sdo:Organization
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      url:
+        slot_uri: sdo:url
+        range: uri
+
+  ProgramEcosystem:
+    description: >
+      A digital ecosystem associated with a membership program.
+    class_uri: sdo:DigitalEcosystem
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      url:
+        slot_uri: sdo:url
+        range: uri
+      description:
+        slot_uri: sdo:description
+        range: string
