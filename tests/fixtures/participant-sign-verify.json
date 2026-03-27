@@ -38,9 +38,10 @@
           "type": "harbour:CredentialEvidence",
           "verifiablePresentation": {
             "@context": [
-              "https://www.w3.org/ns/credentials/v2"
+              "https://www.w3.org/ns/credentials/v2",
+              "https://w3id.org/reachhaven/harbour/core/v1/"
             ],
-            "type": ["VerifiablePresentation"],
+            "type": ["VerifiablePresentation", "HarbourVerifiablePresentation"],
             "holder": "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd",
             "nonce": "REPLACED_AT_SIGNING_TIME"
           }
