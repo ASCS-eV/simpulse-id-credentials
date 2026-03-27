@@ -128,6 +128,32 @@ Brief description of the changes.
 Closes #123
 ```
 
+## Verification Before Push
+
+**STRICT REQUIREMENT — never push without local verification.**
+
+Before pushing any branch or accepting a solution as complete, the agent **must**:
+
+1. **Run tests locally** (`make test`) in the affected repository and confirm they pass
+2. **Run validation locally** (`make validate`) when schemas or artifacts changed
+3. **Run lint locally** (`make lint`) to catch formatting issues
+4. **Regenerate artifacts** (`make generate`) when LinkML schemas changed, and
+   verify the generated output is as expected
+5. **Check submodule CI** — after pushing a submodule branch, observe the CI
+   pipeline (GitHub Actions / GitLab CI) and wait for it to go green before
+   cascading pins to the next layer. Do **not** assume CI will pass; check it.
+
+For the multi-layer submodule chain (service-characteristics → OMB →
+harbour-credentials → credentials), this means:
+
+- Fix and test at the **innermost** affected layer first
+- Push that layer, **observe its CI**, confirm green
+- Only then update the submodule pin in the next layer up
+- Repeat until all layers are green
+
+**Never skip local testing** with the assumption that CI will catch issues.
+CI is a safety net, not a substitute for local verification.
+
 ## Coding Style
 
 - Python 3.12+ with type hints
