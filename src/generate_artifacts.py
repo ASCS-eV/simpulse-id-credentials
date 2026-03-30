@@ -10,6 +10,13 @@ For SHACL, ``exclude_imports=True`` would strip *all* imports — including the
 simpulseid-credentials schema that defines our credential types.  Instead we
 generate shapes for every class, then filter the output to retain only shapes
 whose ``sh:targetClass`` is in the simpulseid namespace.
+
+NOTE: The ``publisher`` slot is named ``programPublisher`` to avoid a
+name collision with the gaia-x ``publisher`` slot (different ``from_schema``).
+Both schemas are loaded by SchemaLoader during import resolution, and
+``merge_dicts`` raises ValueError on same-name slots from different schemas.
+Renaming eliminates the conflict; ``slot_uri: sdo:publisher`` ensures the
+RDF property remains ``schema:publisher``.
 """
 
 import json
@@ -75,57 +82,6 @@ def filter_shacl_to_namespace(shacl_text: str, namespace: Namespace) -> str:
     return filtered.serialize(format="turtle")
 
 
-def _context_gen_without_harbour(gen_args: dict) -> str:
-    """Generate context JSON working around the publisher slot conflict.
-
-    Both gaia-x and simpulseid define ``publisher`` with different
-    ``from_schema`` URIs.  SchemaLoader.resolve() raises ValueError
-    on such conflicts.  We temporarily patch merge_dicts to skip
-    conflicting imported slots (target's definition wins), which is
-    correct since ``mergeimports=False`` excludes imported terms anyway.
-    """
-    import linkml.utils.mergeutils as mu
-
-    _orig_merge_dicts = mu.merge_dicts
-
-    def _lenient_merge_dicts(
-        target, source, imported_from, imported_from_uri, merge_imports
-    ):
-        """Like merge_dicts but skip conflicting slots from imports."""
-        if not merge_imports:
-            # Remove cross-schema conflicting slots from a shallow copy
-            # so the original dicts are not mutated.
-            safe = {
-                k: v
-                for k, v in source.items()
-                if k not in target
-                or not hasattr(target[k], "from_schema")
-                or not hasattr(v, "from_schema")
-                or target[k].from_schema == v.from_schema
-            }
-            return _orig_merge_dicts(
-                target, safe, imported_from, imported_from_uri, merge_imports
-            )
-        return _orig_merge_dicts(
-            target, source, imported_from, imported_from_uri, merge_imports
-        )
-
-    mu.merge_dicts = _lenient_merge_dicts
-    try:
-        ctx_gen = ContextGenerator(
-            str(SCHEMA),
-            mergeimports=False,
-            exclude_external_imports=True,
-            xsd_anyuri_as_iri=True,
-            normalize_prefixes=True,
-            deterministic=True,
-            **gen_args,
-        )
-        return ctx_gen.serialize()
-    finally:
-        mu.merge_dicts = _orig_merge_dicts
-
-
 def main() -> None:
     import_map = load_importmap()
     gen_args = dict(importmap=import_map, base_dir=str(SCHEMA.parent))
@@ -156,13 +112,16 @@ def main() -> None:
 
     # --- JSON-LD context ---
     print("Generating JSON-LD context...")
-    # Work around a SchemaLoader slot-merging conflict: both gaia-x and
-    # simpulseid define a ``publisher`` slot with different ``from_schema``
-    # values and ranges (string vs ProgramPublisher).  SchemaLoader.resolve()
-    # raises ValueError on such conflicts.  Since ``mergeimports=False``
-    # excludes imported terms from the context anyway, we strip the
-    # harbour import before passing the schema to ContextGenerator.
-    ctx_text = _context_gen_without_harbour(gen_args)
+    ctx_gen = ContextGenerator(
+        str(SCHEMA),
+        mergeimports=False,
+        exclude_external_imports=True,
+        xsd_anyuri_as_iri=True,
+        normalize_prefixes=True,
+        deterministic=True,
+        **gen_args,
+    )
+    ctx_text = ctx_gen.serialize()
 
     # Inject "type": "@type" — LinkML cannot emit this alias without declaring
     # a ``type`` slot, which would shadow the W3C VCDM v2 keyword mapping.

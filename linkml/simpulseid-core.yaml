@@ -94,7 +94,7 @@ slots:
     slot_uri: sdo:about
     range: string
 
-  publisher:
+  programPublisher:
     description: Organization that publishes this program.
     slot_uri: sdo:publisher
     range: ProgramPublisher
@@ -372,7 +372,7 @@ classes:
     mixin: true
     slots:
       - about
-      - publisher
+      - programPublisher
       - inLanguage
       - datePublished
     attributes:
