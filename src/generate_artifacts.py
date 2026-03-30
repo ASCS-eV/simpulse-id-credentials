@@ -88,20 +88,27 @@ def _context_gen_without_harbour(gen_args: dict) -> str:
 
     _orig_merge_dicts = mu.merge_dicts
 
-    def _lenient_merge_dicts(target, source, imported_from, imported_from_uri, merge_imports):
+    def _lenient_merge_dicts(
+        target, source, imported_from, imported_from_uri, merge_imports
+    ):
         """Like merge_dicts but skip conflicting slots from imports."""
         if not merge_imports:
             # Remove cross-schema conflicting slots from a shallow copy
             # so the original dicts are not mutated.
             safe = {
-                k: v for k, v in source.items()
+                k: v
+                for k, v in source.items()
                 if k not in target
                 or not hasattr(target[k], "from_schema")
                 or not hasattr(v, "from_schema")
                 or target[k].from_schema == v.from_schema
             }
-            return _orig_merge_dicts(target, safe, imported_from, imported_from_uri, merge_imports)
-        return _orig_merge_dicts(target, source, imported_from, imported_from_uri, merge_imports)
+            return _orig_merge_dicts(
+                target, safe, imported_from, imported_from_uri, merge_imports
+            )
+        return _orig_merge_dicts(
+            target, source, imported_from, imported_from_uri, merge_imports
+        )
 
     mu.merge_dicts = _lenient_merge_dicts
     try:
@@ -127,14 +134,22 @@ def main() -> None:
 
     # --- OWL ---
     print("Generating OWL ontology...")
-    owl_gen = OwlSchemaGenerator(str(SCHEMA), deterministic=True, normalize_prefixes=True, **gen_args)
+    owl_gen = OwlSchemaGenerator(
+        str(SCHEMA), deterministic=True, normalize_prefixes=True, **gen_args
+    )
     (OUT_DIR / "simpulseid-core.owl.ttl").write_text(
         owl_gen.serialize(), encoding="utf-8"
     )
 
     # --- SHACL ---
     print("Generating SHACL shapes...")
-    shacl_gen = ShaclGenerator(str(SCHEMA), closed=True, deterministic=True, normalize_prefixes=True, **gen_args)
+    shacl_gen = ShaclGenerator(
+        str(SCHEMA),
+        closed=True,
+        deterministic=True,
+        normalize_prefixes=True,
+        **gen_args,
+    )
     raw_shacl = shacl_gen.serialize()
     filtered_shacl = filter_shacl_to_namespace(raw_shacl, SIMPULSEID_NS)
     (OUT_DIR / "simpulseid-core.shacl.ttl").write_text(filtered_shacl, encoding="utf-8")
