@@ -5,7 +5,6 @@
   "harbour-core-credential": "../submodules/harbour-credentials/linkml/harbour-core-credential",
   "./w3c-vc": "../submodules/harbour-credentials/linkml/w3c-vc",
   "w3c-vc": "../submodules/harbour-credentials/linkml/w3c-vc",
-  "./simpulseid-credentials": "./simpulseid-credentials",
   "access-usage-policy": "../submodules/harbour-credentials/submodules/ontology-management-base/submodules/service-characteristics/linkml/access-usage-policy",
   "address": "../submodules/harbour-credentials/submodules/ontology-management-base/submodules/service-characteristics/linkml/address",
   "availability-zone": "../submodules/harbour-credentials/submodules/ontology-management-base/submodules/service-characteristics/linkml/availability-zone",

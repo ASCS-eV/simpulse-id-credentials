@@ -1,10 +1,10 @@
 id: https://w3id.org/ascs-ev/simpulse-id/core/v1
 name: simpulseid-core
 description: >
-  LinkML schema for SimpulseID subject types.
+  LinkML schema for SimpulseID subject and credential types.
   Domain layer on top of Harbour credentials base. Defines ASCS-specific
-  subject types (Participant, Administrator, User, Memberships) and their
-  business slots. Credential type definitions are in simpulseid-credentials.yaml.
+  subject types (Participant, Administrator, User, Memberships), their
+  business slots, and credential types that extend HarbourCredential.
   Gaia-X compliance is delegated to the Harbour baseline credential,
   referenced via harbourCredential IRI.
 
@@ -31,7 +31,6 @@ default_range: string
 imports:
   - linkml:types
   - ./harbour
-  - ./simpulseid-credentials
 
 # ==========================================
 # Slots
@@ -431,3 +430,45 @@ classes:
       description:
         slot_uri: sdo:description
         range: string
+
+  # --- Credential Types ---
+  # These extend HarbourCredential from the harbour schema.
+  # Each type needs its own class_uri so that SHACL target classes and
+  # JSON-LD type arrays correctly distinguish credential kinds.
+
+  ParticipantCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to a simpulseid:Participant (organization) identity.
+      Issued by ASCS after verifying the organization's Harbour compliance
+      credential (referenced via harbourCredential IRI on the subject).
+    class_uri: simpulseid:ParticipantCredential
+
+  AdministratorCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to a simpulseid:Administrator (person with
+      elevated permissions). Issued by ASCS.
+    class_uri: simpulseid:AdministratorCredential
+
+  UserCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to a simpulseid:User (natural person).
+      Issued by ASCS.
+    class_uri: simpulseid:UserCredential
+
+  AscsBaseMembershipCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to ASCS e.V. base membership.
+      Issued by ASCS.
+    class_uri: simpulseid:AscsBaseMembershipCredential
+
+  AscsEnvitedMembershipCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to ASCS e.V. ENVITED membership.
+      Requires a base membership (referenced via baseMembershipCredential).
+      Issued by ASCS.
+    class_uri: simpulseid:AscsEnvitedMembershipCredential
