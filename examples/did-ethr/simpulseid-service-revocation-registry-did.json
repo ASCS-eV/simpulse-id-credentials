@@ -8,9 +8,9 @@
   "service": [
     {
       "id": "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A475502346d1#service-1",
-      "type": "CRSetRevocationRegistryService",
+      "type": "harbour:CRSetRevocationRegistryService",
       "serviceEndpoint": {
-        "@type": "CRSetServiceEndpoint",
+        "@type": "harbour:CRSetServiceEndpoint",
         "registryEndpoint": "https://gatehouse.reachhaven.com/services/harbour/crset",
         "statusPurpose": "revocation",
         "contractURN": "urn:blockchain:eip155:42793:contract:0x646B92C8f21e55DF67E766047E4bD7bEdF8DfA14",

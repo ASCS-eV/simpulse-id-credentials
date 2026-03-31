@@ -3,7 +3,10 @@
     "https://w3id.org/ascs-ev/simpulse-id/v1/",
     "https://www.w3.org/ns/did/v1",
     {
-      "url": { "@id": "schema:url", "@type": "@id" }
+      "url": {
+        "@id": "schema:url",
+        "@type": "@id"
+      }
     }
   ],
   "id": "did:ethr:0x14a34:0xF84945fB99BD70Cfe527a2cb2c368DbA4fB55bC9",

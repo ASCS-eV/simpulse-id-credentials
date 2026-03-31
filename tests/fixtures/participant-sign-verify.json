@@ -41,7 +41,10 @@
               "https://www.w3.org/ns/credentials/v2",
               "https://w3id.org/reachhaven/harbour/core/v1/"
             ],
-            "type": ["VerifiablePresentation", "HarbourVerifiablePresentation"],
+            "type": [
+              "VerifiablePresentation",
+              "harbour:VerifiablePresentation"
+            ],
             "holder": "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd",
             "nonce": "REPLACED_AT_SIGNING_TIME"
           }

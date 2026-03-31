@@ -132,11 +132,11 @@ def test_issuer_did_has_signing_key(path):
 # Gaia-X composition tests (Finding F3)
 # ---------------------------------------------------------------------------
 
-PERSON_TYPES = {"ParticipantCredential"}
+PERSON_TYPES = {"simpulseid:ParticipantCredential"}
 
 NATURAL_PERSON_TYPES = {
-    "UserCredential",
-    "AdministratorCredential",
+    "simpulseid:UserCredential",
+    "simpulseid:AdministratorCredential",
 }
 
 
@@ -151,7 +151,7 @@ def test_participant_has_gx_composition(path):
     vc = json.loads(path.read_text())
     vc_types = vc.get("type", [])
 
-    if "ParticipantCredential" not in vc_types:
+    if "simpulseid:ParticipantCredential" not in vc_types:
         pytest.skip("Not a ParticipantCredential")
 
     subject = vc.get("credentialSubject", {})
@@ -208,7 +208,7 @@ def test_admin_participant_has_address(path):
     vc = json.loads(path.read_text())
     vc_types = vc.get("type", [])
 
-    if "AdministratorCredential" not in vc_types:
+    if "simpulseid:AdministratorCredential" not in vc_types:
         pytest.skip("Not an AdministratorCredential")
 
     subject = vc.get("credentialSubject", {})
@@ -238,12 +238,12 @@ def test_credential_has_required_fields(path):
 
 @pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
 def test_credential_status_is_crset(path):
-    """credentialStatus entries must be CRSetEntry."""
+    """credentialStatus entries must be harbour:CRSetEntry."""
     vc = json.loads(path.read_text())
     statuses = vc.get("credentialStatus", [])
     assert len(statuses) > 0, "credentialStatus is empty"
     for status in statuses:
-        assert status.get("type") == "CRSetEntry", (
-            f"credentialStatus type must be CRSetEntry, got {status.get('type')}"
+        assert status.get("type") == "harbour:CRSetEntry", (
+            f"credentialStatus type must be harbour:CRSetEntry, got {status.get('type')}"
         )
         assert "statusPurpose" in status, "Missing statusPurpose"
