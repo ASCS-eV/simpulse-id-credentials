@@ -154,6 +154,51 @@ harbour-credentials → credentials), this means:
 **Never skip local testing** with the assumption that CI will catch issues.
 CI is a safety net, not a substitute for local verification.
 
+## Standards Compliance
+
+**STRICT REQUIREMENT — all schemas, examples, and models must align with the
+relevant W3C, IETF, and industry specifications.**
+
+When defining or modifying LinkML schemas, JSON-LD examples, or DID documents:
+
+1. **Cross-reference the spec copy in `docs/`.**  The LinkML schema files use
+   bracketed tags (e.g. `[VCDM2]`, `[DID Core]`, `[OID4VP]`, `[SD-JWT]`) that
+   cite specific spec sections.  Before changing a slot range, class hierarchy,
+   or property definition, locate the corresponding spec document in `docs/`
+   and verify the modeling choice against the normative text.
+2. **Document the rationale in the schema.**  Every non-trivial modeling
+   decision must have a YAML comment citing the spec section and briefly
+   explaining *why* the chosen type/range/constraint is correct.  Example:
+
+   ```yaml
+   # [DID Core] §5.4 — serviceEndpoint is a URI, map, or set thereof.
+   # Base range is uri (the common case); service-specific classes
+   # override via slot_usage for structured endpoint objects.
+   serviceEndpoint:
+     slot_uri: didcore:serviceEndpoint
+     range: uri
+   ```
+
+3. **Use standard vocabulary** (DID Core, VC Data Model 2.0, OID4VP, schema.org,
+   Gaia-X Trust Framework) rather than inventing new terms.
+4. **Never use `range: Any`** in LinkML slot definitions.  `linkml:Any` produces
+   `rdfs:range linkml:Any` in OWL, which triggers closed-shape SHACL violations
+   during RDFS inference.  Always choose a spec-aligned range:
+   - `uri` for properties whose values are network addresses or identifiers
+     (e.g. DID Core `serviceEndpoint`)
+   - A named class for structured objects with a defined schema
+     (e.g. OID4VP `TransactionData`)
+5. **Validate examples against SHACL** (`make validate`) to catch inference
+   issues before they reach CI.
+
+| Spec area          | Key reference                                |
+| ------------------ | -------------------------------------------- |
+| DID documents      | W3C DID Core 1.1 (`docs/`)                   |
+| Credentials        | W3C VC Data Model 2.0 (`docs/`)              |
+| Delegated signing  | OID4VP 1.0 §8.4 (`docs/`)                    |
+| Gaia-X compliance  | Gaia-X Trust Framework (`docs/`)             |
+| Schema vocabulary  | schema.org (`imports/schema/`)               |
+
 ## Coding Style
 
 - Python 3.12+ with type hints

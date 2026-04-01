@@ -149,6 +149,8 @@ Read these before making changes:
 - ❌ Pushing without running `make test` / `make validate` locally first
 - ❌ Cascading submodule pins before the inner layer's CI is green
 - ❌ Accepting a solution as "done" without observing CI results
+- ❌ Using `range: Any` in LinkML — always choose a spec-aligned range (`uri`, named class, etc.)
+- ❌ Adding types, ranges, or properties without cross-referencing the spec in `docs/`
 
 ## Verification Before Push
 
