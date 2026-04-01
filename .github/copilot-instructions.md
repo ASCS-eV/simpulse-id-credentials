@@ -28,6 +28,10 @@ make test
 
 # Run tests with coverage
 pytest tests/ --cov=src --cov-report=html
+
+# Run GitLab CI locally (for service-characteristics CI changes)
+# Requires: npm install -g gitlab-ci-local, rsync, Docker/Podman
+gitlab-ci-local --job test-shacl
 ```
 
 ## Instruction Files

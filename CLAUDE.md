@@ -163,7 +163,22 @@ Before pushing any branch or accepting a solution as complete, the agent **must*
 3. **Run lint locally** (`make lint`) to catch formatting issues
 4. **Regenerate artifacts** (`make generate`) when LinkML schemas changed, and
    verify the generated output is as expected
-5. **Check submodule CI** — after pushing a submodule branch, observe the CI
+5. **Run GitLab CI locally** when changing `.gitlab-ci.yml` or CI-related files
+   in `service-characteristics`:
+
+   ```bash
+   # Requires: npm install -g gitlab-ci-local
+   # Requires: rsync (via msys2: pacman -S rsync, or apt: apt install rsync)
+   # Requires: Docker/Podman for container-based jobs
+   gitlab-ci-local                    # run all jobs
+   gitlab-ci-local --job test-shacl   # run a single job
+   gitlab-ci-local --list             # list available jobs
+   ```
+
+   Note: On corporate networks, Docker image pulls may require proxy
+   configuration. If `gitlab-ci-local` cannot pull images, verify the CI
+   changes are correct by inspection and note the limitation in the PR.
+6. **Check submodule CI** — after pushing a submodule branch, observe the CI
    pipeline (GitHub Actions / GitLab CI) and wait for it to go green before
    cascading pins to the next layer. Do **not** assume CI will pass; check it.
 
