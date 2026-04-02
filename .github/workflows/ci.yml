@@ -19,6 +19,9 @@ jobs:
     env:
       CI: "1"
     steps:
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
       - uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -51,11 +54,18 @@ jobs:
 
   # --- JOB 2: Generate & Validate ---
   generate-validate:
-    name: Generate & Validate
-    runs-on: ubuntu-latest
+    name: Generate & Validate (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     env:
       CI: "1"
     steps:
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
       - uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -87,6 +97,9 @@ jobs:
     env:
       CI: "1"
     steps:
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
       - uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -115,8 +128,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
+      - name: Init harbour submodule (TS only — no deep OMB/linkml chain)
+        run: git submodule update --init submodules/harbour-credentials
 
       - uses: actions/setup-node@v4
         with:
@@ -132,3 +145,33 @@ jobs:
       - name: Run TypeScript tests
         working-directory: submodules/harbour-credentials/src/typescript/harbour
         run: yarn test
+
+  # --- JOB 5: Credential Lifecycle Story ---
+  story:
+    name: Credential Story (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    needs: [generate-validate]
+    env:
+      CI: "1"
+    steps:
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Run credential storyline (generate → sign → verify → validate)
+        run: make story
