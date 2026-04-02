@@ -12,6 +12,10 @@
 
 OMB_SUBMODULE_DIR := submodules/harbour-credentials/submodules/ontology-management-base
 HARBOUR_SUBMODULE_DIR := submodules/harbour-credentials
+LINKML_SUBMODULE_DIR := $(OMB_SUBMODULE_DIR)/submodules/linkml/packages/linkml
+# Absolute path to repo root — used when cd'ing into submodules to reference
+# back to top-level paths (avoids fragile ../../../../ paths).
+REPO_ROOT := $(abspath .)
 
 # Allow callers to override the venv path/tooling.
 VENV ?= .venv
@@ -246,6 +250,14 @@ $(ACTIVATE_SCRIPT): $(VENV_PYTHON)
 
 # Setup submodules using the same active venv (pip install preferred, make -C fallback)
 _setup_submodules:
+	@echo "Setting up LinkML from OMB submodule (single source of truth)..."
+	@set -e; \
+	if [ -f "$(LINKML_SUBMODULE_DIR)/pyproject.toml" ]; then \
+		$(PIP) install -e "$(LINKML_SUBMODULE_DIR)"; \
+		echo "OK: LinkML (ASCS-eV fork) installed from submodule"; \
+	else \
+		echo "WARNING: LinkML submodule not found at $(LINKML_SUBMODULE_DIR)"; \
+	fi
 	@echo "Setting up harbour-credentials submodule..."
 	@set -e; \
 	if [ -f "$(HARBOUR_SUBMODULE_DIR)/pyproject.toml" ]; then \
@@ -304,7 +316,7 @@ _install_dev: ## Install with dev dependencies + pre-commit
 ifndef CI
 	@"$(MAKE)" --no-print-directory "$(VENV_PYTHON)"
 endif
-	@$(PIP) install -e "$(HARBOUR_SUBMODULE_DIR)[dev]" -e $(OMB_SUBMODULE_DIR) -e ".[dev]"
+	@$(PIP) install -e "$(LINKML_SUBMODULE_DIR)" -e "$(HARBOUR_SUBMODULE_DIR)[dev]" -e $(OMB_SUBMODULE_DIR) -e ".[dev]"
 ifndef CI
 	@$(PRECOMMIT) install
 endif
@@ -361,8 +373,8 @@ format:
 
 _format_default: ## Format code with ruff
 	$(call check_dev_setup)
-	@"$(PYTHON)" -m ruff format src/ tests/
 	@"$(PYTHON)" -m ruff check --fix src/ tests/
+	@"$(PYTHON)" -m ruff format src/ tests/
 
 _format_md: ## Auto-fix Markdown lint violations
 	@echo "Fixing Markdown files..."
@@ -405,7 +417,7 @@ _validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
 	@echo "Running SHACL data conformance check on SimpulseID examples..."
 	@cd "$(OMB_SUBMODULE_DIR)" && \
 		if [ -n "$(SIMPULSEID_VALIDATE_PATH)" ]; then \
-			target_path="../../../../$(SIMPULSEID_VALIDATE_PATH)" ; \
+			target_path="$(REPO_ROOT)/$(SIMPULSEID_VALIDATE_PATH)" ; \
 			if [ -d "$$target_path" ]; then \
 				json_count=$$(find "$$target_path" -maxdepth 1 -type f \( -name '*.json' -o -name '*.jsonld' \) | wc -l) ; \
 				if [ "$$json_count" -eq 0 ]; then \
@@ -424,12 +436,12 @@ _validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
 			"$(PYTHON_ABS)" -m src.tools.validators.validation_suite \
 				--run check-data-conformance \
 				--data-paths "$$target_path" \
-				--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
+				--artifacts $(REPO_ROOT)/artifacts $(REPO_ROOT)/$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
 		else \
 			"$(PYTHON_ABS)" -m src.tools.validators.validation_suite \
 				--run check-data-conformance \
-				--data-paths $(addprefix ../../../../,$(EXAMPLES)) \
-				--artifacts ../../../../artifacts ../../../../$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
+				--data-paths $(addprefix $(REPO_ROOT)/,$(EXAMPLES)) \
+				--artifacts $(REPO_ROOT)/artifacts $(REPO_ROOT)/$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
 		fi
 
 _validate_harbour: ## Run Harbour SHACL validation inside the submodule

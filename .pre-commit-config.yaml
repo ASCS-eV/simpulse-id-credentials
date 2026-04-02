@@ -21,7 +21,7 @@ repos:
         entry: python -m src.tools.validators.syntax_validator --json
         language: system
         types: [json]
-        files: \.json$
+        files: \.(json|jsonld)$
 
       - id: turtle-lint
         name: Turtle Parser
