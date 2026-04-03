@@ -13,7 +13,7 @@
   "validUntil": "2030-08-05T00:00:00Z",
   "credentialSubject": {
     "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048",
-    "type": "simpulseid:Participant",
+    "type": "SimpulseidParticipant",
     "name": "Bayerische Motoren Werke Aktiengesellschaft",
     "harbourCredential": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "legalForm": "AG",
