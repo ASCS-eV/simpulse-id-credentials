@@ -30,8 +30,11 @@ def _discover_files(directory: Path, pattern: str = "*.json") -> list[Path]:
     return sorted(directory.glob(pattern))
 
 
+DID_DIR = REPO_ROOT / "examples" / "did-ethr"
+
 VALID_FILES = _discover_files(EXAMPLES_DIR, "simpulseid-*.json")
 INVALID_FILES = _discover_files(INVALID_DIR)
+DID_FILES = _discover_files(DID_DIR)
 
 
 @pytest.fixture(scope="module")
@@ -54,6 +57,19 @@ def shacl_validator():
 )
 def test_valid_example_passes(shacl_validator, jsonld_file):
     """Valid example credentials should pass SHACL validation."""
+    result = shacl_validator.validate([jsonld_file])
+    assert result.conforms, (
+        f"{jsonld_file.name} should conform but got violations:\n{result.report_text}"
+    )
+
+
+@pytest.mark.parametrize(
+    "jsonld_file",
+    DID_FILES,
+    ids=[f.stem for f in DID_FILES],
+)
+def test_did_fixture_passes(shacl_validator, jsonld_file):
+    """DID document fixtures should pass SHACL validation individually."""
     result = shacl_validator.validate([jsonld_file])
     assert result.conforms, (
         f"{jsonld_file.name} should conform but got violations:\n{result.report_text}"

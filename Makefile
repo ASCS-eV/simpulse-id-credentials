@@ -96,6 +96,7 @@ define check_dev_setup
 endef
 
 EXAMPLES := $(wildcard examples/simpulseid-*.json)
+DID_FIXTURES := $(wildcard examples/did-ethr/*.json)
 SIMPULSEID_VALIDATE_PATH ?=
 GROUPED_COMMANDS := setup install validate lint format test story
 PRIMARY_GOAL := $(firstword $(MAKECMDGOALS))
@@ -408,15 +409,11 @@ validate:
 		*) echo "ERROR: Unknown validate subcommand '$$subcommand'"; echo "Run 'make validate help' for available options."; exit 1 ;; \
 	esac
 
-_validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
+_validate_simpulseid: ## SHACL-validate SimpulseID examples and DID fixtures
 	$(call check_dev_setup)
-	@if [ -z "$(SIMPULSEID_VALIDATE_PATH)" ] && [ -z "$(EXAMPLES)" ]; then \
-		echo "No example files found."; \
-		exit 0; \
-	fi
-	@echo "Running SHACL data conformance check on SimpulseID examples..."
-	@cd "$(OMB_SUBMODULE_DIR)" && \
-		if [ -n "$(SIMPULSEID_VALIDATE_PATH)" ]; then \
+	@if [ -n "$(SIMPULSEID_VALIDATE_PATH)" ]; then \
+		echo "Running SHACL data conformance check on $(SIMPULSEID_VALIDATE_PATH)..." ; \
+		cd "$(OMB_SUBMODULE_DIR)" && \
 			target_path="$(REPO_ROOT)/$(SIMPULSEID_VALIDATE_PATH)" ; \
 			if [ -d "$$target_path" ]; then \
 				json_count=$$(find "$$target_path" -maxdepth 1 -type f \( -name '*.json' -o -name '*.jsonld' \) | wc -l) ; \
@@ -437,12 +434,24 @@ _validate_simpulseid: ## SHACL-validate top-level SimpulseID examples
 				--run check-data-conformance \
 				--data-paths "$$target_path" \
 				--artifacts $(REPO_ROOT)/artifacts $(REPO_ROOT)/$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
-		else \
+	else \
+		if [ -n "$(EXAMPLES)" ]; then \
+			echo "Running SHACL data conformance check on credential examples..." ; \
+			cd "$(REPO_ROOT)/$(OMB_SUBMODULE_DIR)" && \
 			"$(PYTHON_ABS)" -m src.tools.validators.validation_suite \
 				--run check-data-conformance \
 				--data-paths $(addprefix $(REPO_ROOT)/,$(EXAMPLES)) \
 				--artifacts $(REPO_ROOT)/artifacts $(REPO_ROOT)/$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
-		fi
+		fi ; \
+		if [ -n "$(DID_FIXTURES)" ]; then \
+			echo "Running SHACL data conformance check on DID fixtures..." ; \
+			cd "$(REPO_ROOT)/$(OMB_SUBMODULE_DIR)" && \
+			"$(PYTHON_ABS)" -m src.tools.validators.validation_suite \
+				--run check-data-conformance \
+				--data-paths $(addprefix $(REPO_ROOT)/,$(DID_FIXTURES)) \
+				--artifacts $(REPO_ROOT)/artifacts $(REPO_ROOT)/$(HARBOUR_SUBMODULE_DIR)/artifacts ; \
+		fi ; \
+	fi
 
 _validate_harbour: ## Run Harbour SHACL validation inside the submodule
 	@echo "Running Harbour validation from root..."

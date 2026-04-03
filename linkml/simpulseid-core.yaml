@@ -226,7 +226,10 @@ classes:
       References a Harbour Gaia-X credential via harbourCredential IRI
       for the baseline of trust. The organization name lives inside the
       participant node as a gx:LegalPerson blank node.
-    class_uri: simpulseid:Participant
+      class_uri uses OrganizationParticipant (not bare Participant)
+      to avoid JSON-LD context collision with gx:Participant from
+      the Gaia-X imports.
+    class_uri: simpulseid:OrganizationParticipant
     slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, participant]
     slot_usage:
       # email and url inherit gx:email / gx:url from the Gaia-X vocabulary,

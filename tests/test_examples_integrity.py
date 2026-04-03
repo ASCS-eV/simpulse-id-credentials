@@ -3,9 +3,9 @@
 Validates that example credentials meet the requirements for a verifiable,
 auditable chain of trust per:
 - W3C VC-JOSE-COSE §3.3.2 (kid → assertionMethod resolution)
+- W3C DID-CORE §5.3, §5.4 (DID document structure)
 - W3C VCDM 2.0 §4.1 (@context completeness)
 - OID4VP §8.4 (delegation challenge nonce format)
-- SD-JWT-VC-15 §3.2.2.1 (vct URI presence)
 - Gaia-X ICAM 25.11 (gxParticipant composition)
 """
 
@@ -24,7 +24,7 @@ def _load_all_examples():
 
 
 def _load_all_did_docs():
-    """Load all DID document JSON files."""
+    """Load all DID document JSON files, keyed by DID id."""
     docs = {}
     for f in sorted(DID_ETHR_DIR.glob("*.json")):
         data = json.loads(f.read_text())
@@ -33,8 +33,36 @@ def _load_all_did_docs():
     return docs
 
 
+def _load_all_did_files():
+    """Return DID fixture paths grouped by role."""
+    return sorted(DID_ETHR_DIR.glob("*.json"))
+
+
+def _load_credential_ids():
+    """Return the set of credential ids from all example files."""
+    ids = set()
+    for f in EXAMPLES_DIR.glob("simpulseid-*.json"):
+        data = json.loads(f.read_text())
+        cred_id = data.get("id")
+        if cred_id:
+            ids.add(cred_id)
+    return ids
+
+
 EXAMPLE_FILES = _load_all_examples()
 DID_DOCS = _load_all_did_docs()
+DID_FILES = _load_all_did_files()
+CREDENTIAL_IDS = _load_credential_ids()
+
+SIGNER_DID_FILES = sorted(
+    list(DID_ETHR_DIR.glob("simpulseid-participant-*-did.json"))
+    + list(DID_ETHR_DIR.glob("simpulseid-user-*-did.json"))
+)
+RESOURCE_DID_FILES = sorted(
+    list(DID_ETHR_DIR.glob("simpulseid-program-*-did.json"))
+    + list(DID_ETHR_DIR.glob("simpulseid-service-*-did.json"))
+)
+PROGRAM_DID_FILES = sorted(DID_ETHR_DIR.glob("simpulseid-program-*-did.json"))
 
 
 # ---------------------------------------------------------------------------
@@ -247,3 +275,229 @@ def test_credential_status_is_crset(path):
             f"credentialStatus type must be harbour:CRSetEntry, got {status.get('type')}"
         )
         assert "statusPurpose" in status, "Missing statusPurpose"
+
+
+# ---------------------------------------------------------------------------
+# Cross-document IRI resolution tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
+def test_subject_did_has_document(path):
+    """Credential subjects with did: identifiers must have DID documents."""
+    vc = json.loads(path.read_text())
+    subject_id = vc.get("credentialSubject", {}).get("id", "")
+    if not subject_id.startswith("did:"):
+        pytest.skip("Subject uses urn:uuid: (membership relationship)")
+    assert subject_id in DID_DOCS, (
+        f"Subject DID {subject_id} in {path.name} has no DID document "
+        f"in examples/did-ethr/."
+    )
+
+
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
+def test_member_of_references_resolve(path):
+    """memberOf IRI references must point to known ecosystem entities."""
+    vc = json.loads(path.read_text())
+    member_of = vc.get("credentialSubject", {}).get("memberOf", [])
+    if not member_of:
+        pytest.skip("No memberOf in this credential")
+    for ref in member_of:
+        assert ref in DID_DOCS, (
+            f"memberOf reference {ref} in {path.name} has no DID document."
+        )
+
+
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
+def test_hosting_organization_resolves(path):
+    """hostingOrganization must point to a known participant DID."""
+    vc = json.loads(path.read_text())
+    host = vc.get("credentialSubject", {}).get("hostingOrganization")
+    if host is None:
+        pytest.skip("No hostingOrganization in this credential")
+    assert isinstance(host, str), (
+        f"hostingOrganization in {path.name} must be a plain URI string, "
+        f"got {type(host).__name__}"
+    )
+    assert host in DID_DOCS, (
+        f"hostingOrganization {host} in {path.name} has no DID document."
+    )
+
+
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
+def test_member_reference_resolves(path):
+    """member (schema:member) must point to a known participant DID."""
+    vc = json.loads(path.read_text())
+    member = vc.get("credentialSubject", {}).get("member")
+    if member is None:
+        pytest.skip("No member in this credential")
+    assert member in DID_DOCS, f"member {member} in {path.name} has no DID document."
+
+
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
+def test_base_membership_credential_resolves(path):
+    """baseMembershipCredential must reference a known credential id."""
+    vc = json.loads(path.read_text())
+    base_ref = vc.get("credentialSubject", {}).get("baseMembershipCredential")
+    if base_ref is None:
+        pytest.skip("No baseMembershipCredential in this credential")
+    assert base_ref in CREDENTIAL_IDS, (
+        f"baseMembershipCredential {base_ref} in {path.name} does not match "
+        f"any credential id. Known ids: {CREDENTIAL_IDS}"
+    )
+
+
+REVOCATION_REGISTRY_DID = "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A475502346d1"
+
+
+@pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
+def test_credential_status_registry_resolves(path):
+    """credentialStatus id prefix must match the revocation registry DID."""
+    vc = json.loads(path.read_text())
+    for status in vc.get("credentialStatus", []):
+        status_id = status.get("id", "")
+        assert status_id.startswith(REVOCATION_REGISTRY_DID), (
+            f"credentialStatus id '{status_id}' in {path.name} does not start "
+            f"with revocation registry DID {REVOCATION_REGISTRY_DID}"
+        )
+    assert REVOCATION_REGISTRY_DID in DID_DOCS, (
+        f"Revocation registry DID {REVOCATION_REGISTRY_DID} has no DID document."
+    )
+
+
+# ---------------------------------------------------------------------------
+# DID document structural invariant tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "path", SIGNER_DID_FILES, ids=[f.stem for f in SIGNER_DID_FILES]
+)
+def test_signer_did_has_verification_method(path):
+    """Signer DIDs (participants, users) must expose local P-256 keys.
+
+    Per DID-CORE §5.3.1, signer DIDs must have verificationMethod with
+    at least one JsonWebKey, referenced from both authentication and
+    assertionMethod. They must NOT have a controller (self-sovereign).
+    """
+    doc = json.loads(path.read_text())
+
+    assert "controller" not in doc, (
+        f"Signer DID {path.name} must not have a controller (self-sovereign)."
+    )
+
+    vms = doc.get("verificationMethod", [])
+    assert len(vms) > 0, f"Signer DID {path.name} has no verificationMethod."
+
+    p256_keys = [
+        vm
+        for vm in vms
+        if vm.get("type") == "JsonWebKey"
+        and vm.get("publicKeyJwk", {}).get("crv") == "P-256"
+    ]
+    assert len(p256_keys) > 0, f"Signer DID {path.name} has no P-256 JsonWebKey."
+
+    auth = doc.get("authentication", [])
+    assertion = doc.get("assertionMethod", [])
+    assert len(auth) > 0, f"Signer DID {path.name} has no authentication."
+    assert len(assertion) > 0, f"Signer DID {path.name} has no assertionMethod."
+
+    key_ids = {vm["id"] for vm in p256_keys}
+    assert key_ids & set(auth), (
+        f"No P-256 key referenced in authentication for {path.name}."
+    )
+    assert key_ids & set(assertion), (
+        f"No P-256 key referenced in assertionMethod for {path.name}."
+    )
+
+
+@pytest.mark.parametrize(
+    "path", RESOURCE_DID_FILES, ids=[f.stem for f in RESOURCE_DID_FILES]
+)
+def test_resource_did_has_controller(path):
+    """Resource DIDs (programs, services) must be externally controlled.
+
+    Per DID-CORE §5.1.2, resource DIDs use the controller property to
+    delegate authority. They must NOT have local verificationMethod.
+    The controller must reference a known participant DID.
+    """
+    doc = json.loads(path.read_text())
+
+    controller = doc.get("controller")
+    assert controller is not None, f"Resource DID {path.name} must have a controller."
+    assert controller in DID_DOCS, (
+        f"Controller {controller} in {path.name} has no DID document."
+    )
+
+    assert "verificationMethod" not in doc, (
+        f"Resource DID {path.name} must not have local verificationMethod "
+        f"(externally controlled)."
+    )
+
+
+@pytest.mark.parametrize(
+    "path", PROGRAM_DID_FILES, ids=[f.stem for f in PROGRAM_DID_FILES]
+)
+def test_program_did_has_metadata_service(path):
+    """Program DIDs must expose a ProgramMetadataService endpoint.
+
+    The service must have a serviceEndpoint with an @id (IRI node)
+    pointing to the program metadata URL.
+    """
+    doc = json.loads(path.read_text())
+
+    services = doc.get("service", [])
+    pms = [s for s in services if s.get("type") == "ProgramMetadataService"]
+    assert len(pms) == 1, (
+        f"Program DID {path.name} must have exactly one ProgramMetadataService, "
+        f"found {len(pms)}."
+    )
+
+    endpoint = pms[0].get("serviceEndpoint")
+    assert endpoint is not None, (
+        f"ProgramMetadataService in {path.name} has no serviceEndpoint."
+    )
+
+
+# ---------------------------------------------------------------------------
+# DID document IRI type pollution regression guard (issue #28)
+# ---------------------------------------------------------------------------
+
+
+def _walk_objects(data, path=""):
+    """Yield (json_path, obj) for every dict in the JSON tree."""
+    if isinstance(data, dict):
+        yield path, data
+        for k, v in data.items():
+            yield from _walk_objects(v, f"{path}.{k}")
+    elif isinstance(data, list):
+        for i, v in enumerate(data):
+            yield from _walk_objects(v, f"{path}[{i}]")
+
+
+@pytest.mark.parametrize("path", DID_FILES, ids=[f.stem for f in DID_FILES])
+def test_did_no_iri_type_pollution(path):
+    """DID documents must not assert @type on external DID IRIs.
+
+    An expanded JSON-LD object with both @id (pointing to another entity's
+    DID) and @type creates rdf:type triples on that external IRI. When
+    loaded into the same graph as the target entity's DID document, the
+    closed SHACL shapes on the external type reject the DID properties.
+
+    This is the exact bug fixed in issue #28.
+    """
+    doc = json.loads(path.read_text())
+    doc_id = doc.get("id", "")
+
+    for json_path, obj in _walk_objects(doc):
+        obj_id = obj.get("@id", "")
+        obj_type = obj.get("@type")
+        if not obj_id.startswith("did:"):
+            continue
+        if obj_id == doc_id:
+            continue
+        assert obj_type is None, (
+            f"{path.name} at {json_path}: object with @id={obj_id} also has "
+            f"@type={obj_type}. This pollutes the external DID's rdf:type in "
+            f"the merged graph. Use a plain URI string instead."
+        )
