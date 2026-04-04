@@ -69,7 +69,7 @@ evidence_vp_jwt = sign_vp_jose(
 )
 ```
 
-The nonce is computed as a SHA-256 hash of the issuer's payload, binding the evidence to the specific credential issuance per [OID4VP §8.4](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html).
+The nonce uses the `HARBOUR_DELEGATE` challenge format from harbour's delegation module, binding the evidence to the specific credential issuance. The challenge is `<random> HARBOUR_DELEGATE <SHA-256(TransactionData)>` with the `credential.issue` action type. This follows [EVES-009](https://github.com/ASCS-eV/EVES/blob/main/EVES/EVES-009/eves-009.md) and [OID4VP §8.4](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html).
 
 ## SD-JWT-VC Structured Selective Disclosure
 

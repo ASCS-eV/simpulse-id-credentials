@@ -3,6 +3,12 @@
 This document explains how the five SimpulseID credential types relate to each other,
 the entities they describe, and the semantic meaning of `member` vs `memberOf`.
 
+SimpulseID serves as the identity layer for the [ENVITED-X Data Space](https://staging.envited-x.net),
+operated by [ASCS e.V.](https://ascs.digital) at [identity.ascs.digital](https://identity.ascs.digital).
+The credential relationships are specified in [EVES-008 §2](https://github.com/ASCS-eV/EVES/blob/main/EVES/EVES-008/eves-008.md).
+All credentials are built on [harbour-credentials](https://github.com/reachhaven/harbour-credentials),
+which provides the Gaia-X compliance baseline via the `harbourCredential` IRI reference pattern.
+
 ## Entity Graph
 
 The ENVITED ecosystem has four kinds of entities and five credential types that

@@ -1,8 +1,8 @@
-site_name: Credentials Documentation
-site_description: Verifiable credential schemas and artifacts for the ENVITED-X ecosystem
-site_url: https://ascs-ev.github.io/credentials/
-repo_url: https://github.com/ASCS-eV/credentials
-repo_name: ASCS-eV/credentials
+site_name: SimpulseID Credentials
+site_description: Credential and identity framework for the ENVITED-X Data Space
+site_url: https://ascs-ev.github.io/simpulse-id-credentials/
+repo_url: https://github.com/ASCS-eV/simpulse-id-credentials
+repo_name: ASCS-eV/simpulse-id-credentials
 
 theme:
   name: material
@@ -53,6 +53,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Specifications: specifications.md
   - Getting Started:
       - Installation: getting-started/installation.md
       - Quick Start: getting-started/quickstart.md
@@ -62,6 +63,9 @@ nav:
       - User: credentials/user.md
       - Administrator: credentials/administrator.md
       - Membership: credentials/membership.md
+  - Architecture:
+      - Credential Relationships: credential-relationships.md
+      - DID Methods: did-methods.md
   - Examples:
       - Gallery: examples/index.md
   - Integration:

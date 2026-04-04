@@ -1,8 +1,9 @@
 # Credential Data Model
 
 This page documents how SimpulseID credential types extend the
-[Harbour Credentials](https://ascs-ev.github.io/harbour-credentials/schema/credential-model/)
-base model. For the base class hierarchy and Gaia-X composition pattern,
+[Harbour Credentials](https://reachhaven.github.io/harbour-credentials/schema/credential-model/)
+base model, as specified in [EVES-008 §3.3](https://github.com/ASCS-eV/EVES/blob/main/EVES/EVES-008/eves-008.md).
+For the base class hierarchy and Gaia-X composition pattern,
 see the harbour-credentials documentation.
 
 ## Schema File Structure
