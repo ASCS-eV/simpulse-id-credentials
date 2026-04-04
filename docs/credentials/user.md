@@ -1,6 +1,6 @@
 # UserCredential
 
-The **UserCredential** attests to a natural person's identity within the SimpulseID ecosystem. It is used for standard users such as employees, researchers, or individual participants.
+The **UserCredential** attests to a natural person's identity within the [ENVITED-X Data Space](https://staging.envited-x.net). It is used for standard users such as employees, researchers, or individual participants. Issued by [ASCS e.V.](https://ascs.digital) at [identity.ascs.digital](https://identity.ascs.digital). Specified in [EVES-008 §2.3](https://github.com/ASCS-eV/EVES/blob/main/EVES/EVES-008/eves-008.md).
 
 ## Overview
 

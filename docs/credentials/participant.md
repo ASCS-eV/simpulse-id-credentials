@@ -1,6 +1,6 @@
 # ParticipantCredential
 
-The **ParticipantCredential** attests to an organization's identity within the SimpulseID ecosystem. It is the foundational credential for legal entities such as companies, research institutions, or associations.
+The **ParticipantCredential** attests to an organization's identity within the [ENVITED-X Data Space](https://staging.envited-x.net). It is the foundational credential for legal entities such as companies, research institutions, or associations. Issued by [ASCS e.V.](https://ascs.digital) as the trust anchor, deployed at [identity.ascs.digital](https://identity.ascs.digital). Specified in [EVES-008 §2.1](https://github.com/ASCS-eV/EVES/blob/main/EVES/EVES-008/eves-008.md).
 
 ## Overview
 

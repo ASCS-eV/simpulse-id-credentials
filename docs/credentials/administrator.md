@@ -1,6 +1,6 @@
 # AdministratorCredential
 
-The **AdministratorCredential** attests to a natural person with elevated permissions within the SimpulseID ecosystem. Administrators can manage organizational credentials, approve memberships, and perform privileged operations.
+The **AdministratorCredential** attests to a natural person with elevated permissions within the [ENVITED-X Data Space](https://staging.envited-x.net). Administrators can manage organizational credentials, approve memberships, and perform privileged operations. Issued by [ASCS e.V.](https://ascs.digital) at [identity.ascs.digital](https://identity.ascs.digital). Specified in [EVES-008 §2.2](https://github.com/ASCS-eV/EVES/blob/main/EVES/EVES-008/eves-008.md).
 
 ## Overview
 
