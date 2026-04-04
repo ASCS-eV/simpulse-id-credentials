@@ -137,14 +137,14 @@ jobs:
       - name: Init harbour submodule (TS only — no deep OMB/linkml chain)
         run: git submodule update --init submodules/harbour-credentials
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: 'yarn'
           cache-dependency-path: submodules/harbour-credentials/src/typescript/harbour/yarn.lock
-
-      - name: Enable Corepack
-        run: corepack enable
 
       - name: Install dependencies
         working-directory: submodules/harbour-credentials/src/typescript/harbour

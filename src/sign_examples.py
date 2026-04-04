@@ -186,7 +186,7 @@ def main():
         sys.exit(1)
 
     print(f"Signing {len(examples)} example credentials with test P-256 key...")
-    print("  Issuer → kid mapping:")
+    print("  Issuer -> kid mapping:")
     for issuer, kid in ISSUER_KID_MAP.items():
         print(f"    {issuer} → {kid}")
 
