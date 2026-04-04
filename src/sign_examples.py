@@ -188,7 +188,7 @@ def main():
     print(f"Signing {len(examples)} example credentials with test P-256 key...")
     print("  Issuer -> kid mapping:")
     for issuer, kid in ISSUER_KID_MAP.items():
-        print(f"    {issuer} → {kid}")
+        print(f"    {issuer} -> {kid}")
 
     for path, prefix in examples:
         # Determine kid from credential issuer

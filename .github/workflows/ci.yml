@@ -137,14 +137,24 @@ jobs:
       - name: Init harbour submodule (TS only — no deep OMB/linkml chain)
         run: git submodule update --init submodules/harbour-credentials
 
-      - name: Enable Corepack
-        run: corepack enable
-
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: 'yarn'
-          cache-dependency-path: submodules/harbour-credentials/src/typescript/harbour/yarn.lock
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Get yarn cache directory
+        id: yarn-cache
+        working-directory: submodules/harbour-credentials/src/typescript/harbour
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('submodules/harbour-credentials/src/typescript/harbour/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
 
       - name: Install dependencies
         working-directory: submodules/harbour-credentials/src/typescript/harbour
