@@ -14,9 +14,7 @@ Source examples are NEVER modified.
 
 import base64
 import copy
-import hashlib
 import json
-import secrets
 import sys
 from pathlib import Path
 
@@ -25,6 +23,7 @@ from cryptography.hazmat.primitives.asymmetric.ec import (
     EllipticCurvePrivateNumbers,
     EllipticCurvePublicNumbers,
 )
+from harbour.delegation import TransactionData, create_delegation_challenge
 from harbour.signer import sign_vc_jose, sign_vp_jose
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -62,8 +61,11 @@ def sign_evidence_vp(vp: dict, private_key, kid: str, vc_payload: dict) -> str:
     """Sign an evidence VP as a VC-JOSE-COSE JWT.
 
     Takes the expanded VP object (empty VP with holder + nonce, no inner VCs)
-    and signs it. Computes a proper delegation challenge nonce from the
-    credential payload per OID4VP §8.4 and harbour delegation spec.
+    and signs it. Uses the harbour delegation module to create a proper
+    challenge nonce per EVES-009 / OID4VP §8.4.
+
+    The challenge format is: <nonce> HARBOUR_DELEGATE <sha256-hash>
+    where the hash covers the credential payload being consented to.
     """
     clean_vp = {
         "@context": vp.get("@context", ["https://www.w3.org/ns/credentials/v2"]),
@@ -73,13 +75,15 @@ def sign_evidence_vp(vp: dict, private_key, kid: str, vc_payload: dict) -> str:
     if "holder" in vp:
         clean_vp["holder"] = vp["holder"]
 
-    # Compute delegation challenge nonce:
-    # Format: "<random_hex> <sha256_of_canonical_payload>"
-    # Per harbour delegation.py — canonical JSON = sorted keys, no whitespace.
-    canonical = json.dumps(vc_payload, sort_keys=True, separators=(",", ":"))
-    payload_hash = hashlib.sha256(canonical.encode()).hexdigest()
-    random_nonce = secrets.token_hex(4)
-    nonce = f"{random_nonce} {payload_hash}"
+    # Build transaction data for the credential issuance consent
+    credential_id = vc_payload.get("id", "default")
+    tx = TransactionData.create(
+        action="credential.issue",
+        txn={"credentialId": credential_id},
+        credential_ids=[credential_id],
+        description=f"Consent to issuance of {credential_id}",
+    )
+    nonce = create_delegation_challenge(tx)
 
     return sign_vp_jose(clean_vp, private_key, kid=kid, nonce=nonce)
 
