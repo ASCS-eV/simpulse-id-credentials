@@ -1,0 +1,23 @@
+{
+  "@context": [
+    "https://w3id.org/ascs-ev/simpulse-id/v1/",
+    "https://www.w3.org/ns/did/v1"
+  ],
+  "id": "did:ethr:0x14a34:0x28b9692eD6f6Bcfeb81f544acB54FB6e780a422D",
+  "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+  "service": [
+    {
+      "id": "did:ethr:0x14a34:0x28b9692eD6f6Bcfeb81f544acB54FB6e780a422D#service-1",
+      "type": "ProgramMetadataService",
+      "serviceEndpoint": {
+        "@type": "BaseMembershipProgram",
+        "@id": "https://did.ascs.digital/programs/ascs-base-membership",
+        "name": "ASCS e.V. Base Membership",
+        "description": "Base membership program of the Automotive Solution Center for Simulation e.V. (ASCS e.V.).",
+        "hostingOrganization": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+        "articlesOfAssociation": "https://media.ascs.digital/terms/ascs_articles_of_association_2021-09-17.pdf#cidv1",
+        "contributionRules": "https://media.ascs.digital/terms/ascs_contribution_rules_2020-07-08.pdf#cidv1"
+      }
+    }
+  ]
+}

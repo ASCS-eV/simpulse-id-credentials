@@ -1,31 +1,269 @@
-# DEMIM Credentials
+# SimpulseID Credentials for the ENVITED Ecosystem
 
-## Content
-A public repository containing examples for (verifiable) credentials, associated json-ld context definitions and json manifests. The crendetials are used in the [Decentralized Digital Membership Management](https://identity.ascs.digital).
-The DID of issuers and subjects and the UUIDs of the credentials have been aligned with the content of the following example [revocation registry](https://better-call.dev/ghostnet/KT1PZFXebyGvRFG8enbuVL9nrvTi4krYqeKt/storage.)
+This repository contains the **Verifiable Credential (VC)** building blocks used by  
+[https://identity.ascs.digital/](https://identity.ascs.digital/)  
+to manage identities and memberships in the **ENVITED Ecosystem** of the  
+_Automotive Solution Center for Simulation e.V. (ASCS e.V.)_.
 
-## Examples
-There are two types of json-ld examples for the credentials. The member credentials and the user credential. The member credential is used to e.g. register a company with an application like e.g. [Simpulse](https://simpulse.de) for creating the company profile with minimal validated information. The user credential is used in asc(s ecosystem applications to set initial rights and roles.
-The examples are once given with an external context definition and also with the attributes defined inline in the credential context itself. This is necessary as third-party libraries like [didkit](https://github.com/spruceid/didkit) do not allow external context loading due to security implications.
+The repository provides:
 
-## Manifests
-The manifest files are provided to render an identity card in a SSI wallet like e.g. [altme](https://altme.io) according to the identity foundation [wallet rendering specification](https://identity.foundation/wallet-rendering/).
+- JSON-LD **contexts** for all SimpulseID credential types
+- Example **Verifiable Credentials** (VC v2, OIDC4VP-ready)
+- Example **`did:ethr` DID documents** for participants, programs, users, and admins (on Base)
+- **Wallet manifests** for card rendering in SSI wallets (e.g. Altme)
+- RDF/OWL **ontologies** and SKOS vocabularies aligning with the Gaia-X Trust Framework and ENVITED Ecosystem Specifications (EVES)
 
-## Todos
-The context json files need to be hosted at https://schema.ascs.digital/AscsUserCredential/v1.
-All terms need to be hosted as .pdf files at https://media.ascs.digital/terms/.
+All of this is intended to be **publicly hostable** and consumable by wallets, verifiers and services in the ENVITED ecosystem.
 
-## Resources
-* [Implementation Guide](https://www.w3.org/TR/vc-imp-guide/#creating-new-credential-types)
-* [w3c credentials v1](https://www.w3.org/2018/credentials/v1)
-* [w3c vc-json-schema](https://w3c.github.io/vc-json-schema/)
-* [json schema specification](https://json-schema.org/specification)
-* [public schemas](https://schema.org/)
-* [transform tools](https://transform.tools/)
-* [json-ld best practices](https://w3c.github.io/json-ld-bp/?specStatus=ED)
-* [version 4 uuid](https://www.uuidgenerator.net/version4)
-* [module: pkh-tezos](https://did.js.org/docs/api/modules/pkh_tezos/)
-* [did-pkh-method-draft](https://github.com/w3c-ccg/did-pkh/blob/main/did-pkh-method-draft.md)
-* [Multiassets](https://multiformats.io/)
-* [Content Identifier (CID)](https://docs.ipfs.tech/concepts/content-addressing/#what-is-a-cid)
-* [POC Content Identifier](https://github.com/GAIA-X4PLC-AAD/poc-ipfs-content-identifier)
+---
+
+## Cloning with submodules
+
+This repository depends on git submodules, including nested submodules pulled in
+via `submodules/harbour-credentials`, so clone and update it recursively:
+
+```bash
+# First time
+git clone --recurse-submodules https://github.com/ASCS-eV/credentials.git
+cd credentials
+
+# If you already cloned without submodules
+git submodule update --init --recursive
+
+# Pull all changes including nested submodules
+git pull
+git submodule update --init --recursive
+```
+
+---
+
+## Development setup
+
+Use the supported Makefile bootstrap instead of creating the virtual environment
+and installing editable dependencies by hand:
+
+```bash
+# Create/update .venv, install the root package and submodule deps,
+# and install the pre-commit hooks
+make setup
+
+# Optional: reinstall dev dependencies in the managed environment
+make install dev
+
+# Optional: run the hooks once across the repository
+make lint
+```
+
+`make setup` already creates `.venv/`, installs `credentials`,
+`harbour-credentials`, and `ontology-management-base` in editable mode, and
+runs `pre-commit install`.
+
+If you want to activate the managed environment in your shell after `make setup`,
+use `.\.venv\Scripts\Activate.ps1` in Windows PowerShell, or
+`source .venv/bin/activate` on macOS, Linux, and Git Bash.
+
+---
+
+## Generate, validate, and run the storyline
+
+```bash
+# Generate all LinkML-derived artifacts (Harbour + SimpulseID)
+make generate
+
+# Validate both Harbour and SimpulseID from the repository root
+make validate
+
+# Validate only the top-level SimpulseID examples through OMB
+make validate simpulseid
+
+# Validate only the Harbour examples through the submodule
+make validate harbour
+
+# See the available validate subcommands
+make validate help
+
+# Run the Harbour example storyline in the submodule:
+# - signs the Harbour examples into ignored examples/**/signed/ folders
+# - verifies the generated JWTs and evidence VPs
+# - runs SHACL validation on the Harbour examples
+make story harbour
+
+# Run only the SimpulseID storyline:
+# - generates artifacts
+# - validates the SimpulseID examples
+# - signs the SimpulseID examples into ignored examples/signed/
+# - verifies the generated JWTs and evidence VPs
+make story simpulseid
+
+# Run both storylines in sequence from the root repository
+make story
+
+# See the available storyline subcommands
+make story help
+```
+
+The storyline commands intentionally write signed artifacts into git-ignored
+folders:
+
+- root repo: `examples/signed/`
+- Harbour submodule: `submodules/harbour-credentials/examples/signed/`
+- Harbour Gaia-X examples: `submodules/harbour-credentials/examples/gaiax/signed/`
+
+That keeps the checked-in example JSON human-readable while still giving you a
+real end-to-end signing and verification run with concrete JWT outputs.
+
+---
+
+## Repository structure
+
+### `linkml/`
+
+LinkML schema definitions for SimpulseID credential types:
+
+- `simpulseid-core.yaml` — Subject types and business slots (Participant, Administrator, User, Memberships)
+- `simpulseid-credentials.yaml` — Credential type definitions (is_a: HarbourCredential)
+- `importmap.json` — Import resolution for harbour-credentials and Gaia-X schemas
+
+### `artifacts/`
+
+Generated JSON-LD contexts, OWL ontologies, and SHACL validation shapes:
+
+- `artifacts/simpulseid-core/simpulseid-core.context.jsonld` — JSON-LD context for SimpulseID terms
+- `artifacts/simpulseid-core/simpulseid-core.owl.ttl` — OWL ontology defining class hierarchy
+- `artifacts/simpulseid-core/simpulseid-core.shacl.ttl` — SHACL shapes for credential validation
+
+These files are **generated** by `make generate` from the LinkML schemas and should
+not be manually edited. They are intended to be hostable at:
+
+- `https://w3id.org/ascs-ev/simpulse-id/...`
+
+and are referenced from the example credentials via their `@context` arrays.
+
+---
+
+### `examples/`
+
+Example **Verifiable Credentials** that show how the contexts and ontologies are intended to be used.
+
+Typical credential subjects include:
+
+- **Participant** – organizational identity (e.g. BMW)
+- **ASCS Base Membership** – base membership in ASCS e.V.
+- **ASCS ENVITED Membership** – ENVITED program membership, linked to base membership
+- **Administrator** – natural person with administrative rights in ENVITED / ASCS
+- **User** – natural person with initial roles/rights in ENVITED ecosystem applications
+
+Each VC uses:
+
+- `https://www.w3.org/2018/credentials#` (VC Data Model v2)
+- SimpulseID context from this repo
+- Harbour context for `credentialStatus`
+- `harbour:CRSetEntry` + `statusPurpose: "revocation"` for revocation status
+- `gx:*` terms to stay compatible with the **Gaia-X Credential Format** and Trust Framework
+
+#### `examples/did-ethr/`
+
+Example **`did:ethr` DID documents** that correspond to identifiers used in the credentials.
+All identities are managed on-chain via a custom ERC-1056 EthereumDIDRegistry on **Base**
+(chain ID `84532` / `0x14a34` for testnet, `8453` / `0x2105` for mainnet).
+
+These demonstrate:
+
+- How participant and user DIDs expose their primary P-256 signing key as a
+  local `#controller` `JsonWebKey`
+- How optional secondary P-256 keys are exposed as `#delegate-N`
+  verification methods
+- How service and program DIDs are modelled as externally controlled resources
+  via the root DID Core `controller` property
+- How metadata endpoints are exposed as `#service-N` service entries
+
+The examples assume a project-specific Base resolver profile: the contract state
+anchors the DID, while the resolved DID document surfaces P-256 controller keys
+instead of a synthetic secp256k1 recovery method.
+
+---
+
+### `manifests/`
+
+Wallet **rendering manifests** for each credential type, following the
+[Decentralized Identity Foundation Wallet Rendering specification](https://identity.foundation/wallet-rendering/).
+
+They are used by wallets like **Altme** to:
+
+- Render credential “cards” with titles, subtitles and key properties
+- Show important fields such as:
+  - organization name, legal form, VAT ID
+  - membership program and hosting organization
+  - user/admin name, email, affiliation
+  - links to terms & conditions and privacy policies
+- Map `credentialSubject` properties and dates (`issuanceDate`, `expirationDate`) to UI elements
+
+Each manifest references:
+
+- A SimpulseID schema / type (e.g. `simpulseid:Participant`)
+- The issuer DID of the manifest (typically the ASCS `did:ethr`)
+
+---
+
+### `submodules/harbour-credentials/`
+
+Harbour credentials signing/verification library with its own LinkML schemas and
+generated artifacts. Contains the base credential envelope (HarbourCredential),
+Gaia-X compliance types, and delegation transaction types:
+
+- `artifacts/harbour-core-credential/` — VC envelope: issuer, validFrom, credentialStatus (CRSet), evidence
+- `artifacts/harbour-gx-credential/` — Gaia-X compliance: LegalPerson, NaturalPerson, ComplianceCredential
+- `artifacts/harbour-core-delegation/` — OID4VP delegation transaction types
+
+The two-layer signing architecture references harbour credentials via the
+`harbourCredential` IRI on SimpulseID credential subjects, linking to the
+Gaia-X compliance baseline.
+
+---
+
+## Intended usage within `https://identity.ascs.digital/`
+
+The artifacts in this repository are used by the **ENVITED Ecosystem identity services** to:
+
+- Issue and verify **Gaia-X compatible** Verifiable Credentials
+- Support **self-sovereign identity** login flows via the **SSI-to-OIDC bridge**
+- Provide consistent semantics for:
+  - ENVITED participants (organizations)
+  - ASCS base memberships
+  - ENVITED program memberships
+  - Administrative and user roles
+- Render credential cards in SSI wallets for a smooth UX
+
+Typical flow:
+
+1. A participant (organization) is onboarded and receives a **Participant VC**.
+2. The organization receives **ASCS base membership** and optionally **ENVITED membership** credentials.
+3. Individual administrators and users receive **Admin/User VCs**, bound to opaque `did:ethr` identifiers on Base.
+4. Wallets like Altme use the **contexts** and **manifests** from this repo to display these credentials.
+5. Services behind `identity.ascs.digital` use the **SHACL shapes** and **Gaia-X compatible structures** to perform trust and membership checks.
+
+---
+
+## References
+
+Some relevant specifications and resources:
+
+- W3C Verifiable Credentials Data Model v2
+  <https://www.w3.org/TR/vc-data-model-2.0/>
+- W3C Verifiable Credential Vocabulary (VC v2)
+  <https://www.w3.org/2018/credentials#>
+- Gaia-X Credential Format & Trust Framework (24.11)
+  <https://docs.gaia-x.eu/technical-committee/identity-credential-access-management/>
+- DIF Wallet Rendering specification
+  <https://identity.foundation/wallet-rendering/>
+- JSON-LD 1.1 & best practices
+  <https://json-ld.org/>
+  <https://w3c.github.io/json-ld-bp/>
+- JSON Schema
+  <https://json-schema.org/specification>
+- schema.org
+  <https://schema.org/>
+
+```text
+
+```

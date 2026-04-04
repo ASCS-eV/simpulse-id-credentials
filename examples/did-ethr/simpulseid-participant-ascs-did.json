@@ -1,0 +1,69 @@
+{
+  "@context": [
+    "https://w3id.org/ascs-ev/simpulse-id/v1/",
+    "https://w3id.org/reachhaven/harbour/core/v1/",
+    "https://www.w3.org/ns/did/v1",
+    {
+      "JsonWebKey": "https://w3id.org/security#JsonWebKey",
+      "publicKeyJwk": {
+        "@id": "https://w3id.org/security#publicKeyJwk",
+        "@type": "@json"
+      }
+    }
+  ],
+  "id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+  "verificationMethod": [
+    {
+      "id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#controller",
+      "type": "JsonWebKey",
+      "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "6IV8gKy5sZtpBj0cmcLMvvYQElrmSMcZ1j3YyOb_KwQ",
+        "y": "bDwerXTq4pnsPuhO0RFYhmouOeF0p8FdSBcwzMpvGU0"
+      }
+    },
+    {
+      "id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#delegate-1",
+      "type": "JsonWebKey",
+      "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+      "publicKeyJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU",
+        "y": "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
+      }
+    }
+  ],
+  "authentication": [
+    "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#controller",
+    "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#delegate-1"
+  ],
+  "assertionMethod": [
+    "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#controller",
+    "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#delegate-1"
+  ],
+  "service": [
+    {
+      "id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#service-1",
+      "type": "harbour:TrustAnchorService",
+      "serviceEndpoint": {
+        "@type": "schema:Organization",
+        "name": "Automotive Solution Center for Simulation e.V. (ASCS)",
+        "url": "https://ascs.digital/",
+        "description": "Operator of the SimpulseID / ENVITED identity infrastructure.",
+        "contactPoint": {
+          "@type": "schema:ContactPoint",
+          "contactType": "support",
+          "email": "info@ascs.digital"
+        }
+      }
+    },
+    {
+      "id": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03#service-2",
+      "type": "harbour:LinkedCredentialService",
+      "serviceEndpoint": "https://did.ascs.digital/participants/ascs/.well-known/participant-credential.jwt"
+    }
+  ]
+}

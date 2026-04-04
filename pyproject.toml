@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "credentials"
+version = "2.0.0"
+requires-python = ">=3.12"
+dependencies = [
+    "linkml-runtime>=1.9.5",
+    "pyld>=2.0.4",
+    "PyYAML>=6.0.3",
+    "click>=8.0.0, <8.2",
+    # linkml: installed from OMB submodule via make setup (single source of truth)
+    # harbour-credentials: installed from submodule via make setup (not on PyPI)
+    # ontology-management-base: installed from submodule via make setup (not on PyPI)
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.15.0",
+    "pre-commit>=4.5.1",
+    "pytest>=8.0.0",
+    "pytest-cov>=6.0",
+]
+docs = [
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.0",
+    "pymdown-extensions>=10.0",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E203", "E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["credentials"]

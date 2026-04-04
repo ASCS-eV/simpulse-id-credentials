@@ -1,0 +1,70 @@
+{
+  "_description": "Sign→verify test fixture for ParticipantCredential. The 'input' is the unsigned credential, 'signing' describes parameters, 'output' describes expected results after signing.",
+  "input": {
+    "_description": "Unsigned credential (input to sign_vc_jose)",
+    "vc": {
+      "@context": [
+        "https://www.w3.org/ns/credentials/v2",
+        "https://w3id.org/reachhaven/harbour/core/v1/",
+        "https://w3id.org/ascs-ev/simpulse-id/v1/"
+      ],
+      "type": [
+        "VerifiableCredential",
+        "simpulseid:ParticipantCredential"
+      ],
+      "id": "urn:uuid:576fbefb-35e8-4b71-bb1a-53d1803c86de",
+      "issuer": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+      "validFrom": "2025-08-06T10:15:22Z",
+      "validUntil": "2030-08-05T00:00:00Z",
+      "credentialSubject": {
+        "id": "did:ethr:0x14a34:0x9d273DCaC2f6367968d61caf69A7E3177fd81048",
+        "type": "simpulseid:Participant",
+        "name": "Bayerische Motoren Werke Aktiengesellschaft",
+        "harbourCredential": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "legalForm": "AG",
+        "duns": "313995269",
+        "email": "imprint@bmw.com",
+        "url": "https://www.bmwgroup.com/"
+      },
+      "credentialStatus": [
+        {
+          "type": "harbour:CRSetEntry",
+          "harbour:registryId": "urn:uuid:abc12345-0000-0000-0000-000000000001",
+          "harbour:index": 0
+        }
+      ],
+      "evidence": [
+        {
+          "type": "harbour:CredentialEvidence",
+          "verifiablePresentation": {
+            "@context": [
+              "https://www.w3.org/ns/credentials/v2",
+              "https://w3id.org/reachhaven/harbour/core/v1/"
+            ],
+            "type": [
+              "VerifiablePresentation",
+              "harbour:VerifiablePresentation"
+            ],
+            "holder": "did:key:z6MkkdC46uhBGjMYS2ZDLUwCrTWdaqZdTD3596sN4397oRNd",
+            "nonce": "REPLACED_AT_SIGNING_TIME"
+          }
+        }
+      ]
+    }
+  },
+  "signing": {
+    "_description": "Signing parameters",
+    "alg": "ES256",
+    "keypair": "test-keypair-p256.json"
+  },
+  "output": {
+    "_description": "Expected values in the signed JWT",
+    "decoded_header_typ": "vc+jwt",
+    "decoded_header_alg": "ES256",
+    "decoded_payload_type": [
+      "VerifiableCredential",
+      "simpulseid:ParticipantCredential"
+    ],
+    "decoded_payload_id": "urn:uuid:576fbefb-35e8-4b71-bb1a-53d1803c86de"
+  }
+}

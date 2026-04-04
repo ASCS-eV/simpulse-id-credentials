@@ -1,0 +1,57 @@
+{
+  "@context": [
+    "https://w3id.org/ascs-ev/simpulse-id/v1/",
+    "https://www.w3.org/ns/did/v1",
+    {
+      "url": {
+        "@id": "schema:url",
+        "@type": "@id"
+      },
+      "publisher": {
+        "@id": "schema:publisher",
+        "@type": "@id"
+      },
+      "about": "schema:about",
+      "inLanguage": "schema:inLanguage",
+      "datePublished": {
+        "@id": "schema:datePublished",
+        "@type": "xsd:date"
+      },
+      "termsOfService": {
+        "@id": "schema:termsOfService",
+        "@type": "@id"
+      },
+      "privacyPolicy": {
+        "@id": "schema:privacyPolicy",
+        "@type": "@id"
+      }
+    }
+  ],
+  "id": "did:ethr:0x14a34:0x34d8ED7DA77f3f522465E1A18Dd4fFe482021112",
+  "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+  "service": [
+    {
+      "id": "did:ethr:0x14a34:0x34d8ED7DA77f3f522465E1A18Dd4fFe482021112#service-1",
+      "type": "ProgramMetadataService",
+      "serviceEndpoint": {
+        "@type": [
+          "schema:CreativeWork",
+          "AdministratorProgram"
+        ],
+        "@id": "https://did.ascs.digital/programs/simpulseid-administrator",
+        "name": "SimpulseID Administrator Program",
+        "description": "Program definition for SimpulseID administrators who manage participant onboarding, user roles, and membership credentials within the ENVITED Ecosystem.",
+        "about": "Administrator-level SimpulseID credentials with elevated permissions for managing organizations and memberships.",
+        "publisher": {
+          "@type": "schema:Organization",
+          "name": "Automotive Solution Center for Simulation e.V. (ASCS)",
+          "url": "https://ascs.digital/"
+        },
+        "inLanguage": "en",
+        "datePublished": "2025-08-05",
+        "termsOfService": "https://media.ascs.digital/terms/simpulse_id_terms_2025-08-05.pdf#cidv1",
+        "privacyPolicy": "https://media.ascs.digital/terms/administrator_privacy_policy_2025-08-05.pdf#cidv1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,499 @@
+═══════════════════════════════════════════════════════════════════════════════
+COMPREHENSIVE GAIA-X CLASS DEFINITIONS IN SERVICE-CHARACTERISTICS SCHEMAS
+═══════════════════════════════════════════════════════════════════════════════
+
+SEARCH LOCATION:
+  /home/q413005/workspace/credentials/submodules/harbour-credentials/submodules/
+  ontology-management-base/submodules/service-characteristics/linkml/
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 1: CLASSES WITH EXPLICIT class_uri: gx: ENTRIES (2 TOTAL)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. EORI
+   File: legal-person.yaml (line 62)
+   Class Definition URI: gx:EORI
+   Description: A registration number class for Economic Operators Registration 
+                 and Identification in the EU
+
+2. DataAccountExport
+   File: service-offering.yaml (line 145)
+   Class Definition URI: gx:DataAccountExport
+   Description: List of methods to export data from a service account
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 2: SLOTS WITH EXPLICIT slot_uri: gx: ENTRIES (10 TOTAL)
+═══════════════════════════════════════════════════════════════════════════════
+
+File: slots.yaml
+
+1. termsAndConditions (line 1321)
+   Range: string
+   URI: gx:termsAndConditions
+   Description: A resolvable link to the Terms and Conditions applying to that service
+
+2. participantRole (line 1344)
+   Range: string
+   URI: gx:participantRole
+   Description: Unique way to identify the participant that has to sign 
+               (e.g. Provider, Consumer, Licensor, Producer)
+
+3. mandatory (line 1351)
+   Range: string
+   URI: gx:mandatory
+   Description: Whether a Signature is mandatory or Optional (Yes/No)
+
+4. legalValidity (line 1358)
+   Range: boolean
+   URI: gx:legalValidity
+   Description: Whether the Legal validity check needs to be enforced to the Signature
+
+5. loggingService (line 1363)
+   Range: string
+   URI: gx:loggingService
+   Description: Link to the Logging Service
+
+6. consumedBy (line 1369)
+   Range: string
+   URI: gx:consumedBy
+   Description: A resolvable link to the Data Consumer Declaration
+
+7. termOfUsage (line 1375)
+   Range: string
+   URI: gx:termOfUsage
+   Description: A resolvable link to the Term of Usage
+
+8. licensedBy (line 1385)
+   Range: string (multivalued)
+   URI: gx:licensedBy
+   Description: Resolvable links to Data Licensors
+
+9. dataUsageAgreementNotary (line 1391)
+   Range: string
+   URI: gx:dataUsageAgreementNotary
+   Description: A resolvable link to the Data Usage Agreement Notary
+
+10. locations (line 1420)
+    Range: string (multivalued)
+    URI: gx:location
+    Description: List of dataset storage locations
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 3: ALL CLASSES DEFINED IN SERVICE-CHARACTERISTICS SCHEMAS
+═══════════════════════════════════════════════════════════════════════════════
+
+TOTAL: 195+ classes defined across 64 YAML files
+
+By File (alphabetically):
+
+access-usage-policy.yaml (1):
+  - AccessUsagePolicy
+
+address.yaml (3):
+  - Address
+  - GPSLocation
+  - GPSUnit
+
+availability-zone.yaml (1):
+  - AvailabilityZone
+
+code-artifact.yaml (1):
+  - CodeArtifact
+
+compliance.yaml (2):
+  - CompliantCredential
+  - LabelCredential
+
+compute-function-configuration.yaml (5):
+  - ComputeFunctionConfiguration
+  - ComputeFunctionQuotas
+  - ComputeFunctionRuntime
+  - ComputeFunctionTemplate
+  - ComputeFunctionTrigger
+
+compute-function-service-offering.yaml (1):
+  - ComputeFunctionServiceOffering
+
+connectivity-configuration.yaml (9):
+  - ConnectivityConfiguration
+  - DatacenterAllocation
+  - InterconnectionPointIdentifier
+  - InternetExchangePoint
+  - InternetServiceProvider
+  - PhysicalInterconnectionPointIdentifier
+  - PointOfPresence
+  - VirtualInterconnectionPointIdentifier
+  - VLANConfiguration
+
+connectivity-service-offering.yaml (1):
+  - ConnectivityServiceOffering
+
+contact-information.yaml (1):
+  - ContactInformation
+
+container-image.yaml (2):
+  - BaseContainerImage
+  - ContainerImage
+
+container-resource-limits.yaml (1):
+  - ContainerResourceLimits
+
+cpu.yaml (1):
+  - CPU
+
+cryptography.yaml (3):
+  - CheckSum
+  - Encryption
+  - Signature
+
+customer-instructions.yaml (1):
+  - CustomerInstructions
+
+datacenter.yaml (1):
+  - Datacenter
+
+data-portability.yaml (1):
+  - DataPortability
+
+data-product-catalogue.yaml (1):
+  - DataProductCatalogue
+
+data-product.yaml (8):
+  - DataAccessPrerequisite
+  - DataLicense
+  - DataProduct
+  - DataProductConfigurationParameter
+  - DataProductDescription
+  - DataUsageAgreement
+  - DataUsageConstraint
+  - EvidenceTemplate
+
+data-protection-policy.yaml (4):
+  - BackupPolicy
+  - DataProtectionPolicy
+  - ReplicationPolicy
+  - SnapshotPolicy
+
+data-transfer.yaml (1):
+  - DataTransfer
+
+device.yaml (1):
+  - Device
+
+digital-service-offering.yaml (3):
+  - DigitalServiceOffering
+  - ServiceTermsAndConditions
+  - UsageTermsAndConditions
+
+disk.yaml (1):
+  - Disk
+
+endpoint.yaml (1):
+  - Endpoint
+
+energy-mix.yaml (1):
+  - EnergyMix
+
+energy-usage-efficiency.yaml (1):
+  - EnergyUsageEfficiency
+
+gaia-x-entity.yaml (1):
+  - GaiaXEntity
+
+gaia-x.yaml (1):
+  - GaiaX
+
+gpu.yaml (1):
+  - GPU
+
+image.yaml (2):
+  - Image
+  - MaintenanceSubscription
+
+instantiation-requirement.yaml (1):
+  - InstantiationRequirement
+
+interconnection-service-offering.yaml (1):
+  - InterconnectionServiceOffering
+
+issuer.yaml (1):
+  - Issuer
+
+legal-document.yaml (28):
+  - AccessControlManagement
+  - AssetsManagement
+  - BusinessContinuityMeasures
+  - ChangeAndConfigurationManagement
+  - ComplianceAssurance
+  - CopyrightAndIntellectualPropertyDocument
+  - CustomerAuditingRights
+  - CustomerDataAccessTerms
+  - CustomerDataProcessingTerms
+  - DataProtectionRegulationMeasures
+  - DevelopmentCycleSecurity
+  - DocumentChangeProcedures
+  - EmployeeResponsibilities
+  - EnvironmentalImpactReport
+  - GovernmentInvestigationManagement
+  - InformationSecurityOrganization
+  - InformationSecurityPolicies
+  - InformationSecurityRiskManagement
+  - LegalDocument
+  - LegallyBindingAct
+  - OperationalSecurity
+  - PhysicalSecurity
+  - ProcurementManagementSecurity
+  - ProductSecurity
+  - RoleAndResponsibilities
+  - SecurityIncidentManagement
+  - ServiceAgreementOffer
+  - UserDocumentationMaintenance
+
+legal-person.yaml (9):
+  - CountryCompanyNumber
+  - EORI **[HAS gx: class_uri]**
+  - EUID
+  - LegalPerson
+  - LeiCode
+  - LocalRegistrationNumber
+  - RegistrationNumber
+  - TaxID
+  - VatID
+
+legitimate-interest.yaml (1):
+  - LegitimateInterest
+
+link-connectivity-service-offering.yaml (1):
+  - LinkConnectivityServiceOffering
+
+measure.yaml (1):
+  - Measure
+
+memory.yaml (1):
+  - Memory
+
+meta-registry.yaml (3):
+  - Ecosystem
+  - EcoTrustScope
+  - EcoTSP
+
+network-connectivity-service-offering.yaml (1):
+  - NetworkConnectivityServiceOffering
+
+participant.yaml (1):
+  - Participant
+
+physical-connectivity-service-offering.yaml (1):
+  - PhysicalConnectivityServiceOffering
+
+pxe-image.yaml (1):
+  - PXE_Image
+
+qos.yaml (11):
+  - Availability
+  - BandWidth
+  - IOPS
+  - Jitter
+  - Latency
+  - PacketLoss
+  - QoS
+  - QoSMetric
+  - RoundTripTime
+  - TargetPercentile
+  - Throughput
+
+quantity.yaml (9):
+  - DataRate
+  - Frequency
+  - LostPackets
+  - MemorySize
+  - Power
+  - QuantityKind
+  - RetentionDuration
+  - SLATargetPercentile
+  - Time
+
+region.yaml (1):
+  - Region
+
+resource.yaml (6):
+  - Hypervisor
+  - OperatingSystem
+  - PhysicalResource
+  - Resource
+  - SoftwareResource
+  - VirtualResource
+
+server-flavor.yaml (4):
+  - ConfidentialComputing
+  - CpuCapabilities
+  - MemoryCapabilities
+  - ServerFlavor
+
+service-offering.yaml (8):
+  - BareMetalServiceOffering
+  - ComputeServiceOffering
+  - ContainerServiceOffering
+  - DataAccountExport **[HAS gx: class_uri]**
+  - InfrastructureServiceOffering
+  - ServiceOffering
+  - TermsAndConditions
+  - VirtualMachineServiceOffering
+
+standard-conformity.yaml (1):
+  - StandardConformity
+
+storage-configuration.yaml (3):
+  - BlockStorageConfiguration
+  - FileStorageConfiguration
+  - StorageConfiguration
+
+storage-service-offering.yaml (4):
+  - BlockStorageServiceOffering
+  - FileStorageServiceOffering
+  - ObjectStorageServiceOffering
+  - StorageServiceOffering
+
+sub-contractor.yaml (1):
+  - SubContractor
+
+sub-processor-data-transfer.yaml (1):
+  - SubProcessorDataTransfer
+
+third-country-data-transfer.yaml (1):
+  - ThirdCountryDataTransfer
+
+vm-image.yaml (1):
+  - VMImage
+
+water-usage-effectiveness.yaml (1):
+  - WaterUsageEffectiveness
+
+═══════════════════════════════════════════════════════════════════════════════
+PART 4: SLOT RANGES POINTING TO CLASSES (TYPED RANGES - NOT PRIMITIVES)
+═══════════════════════════════════════════════════════════════════════════════
+
+KEY CLASS DEPENDENCIES (Classes referenced by slots with range: <ClassName>):
+
+Core Data Classes:
+  - Address (range for: postalAddress in slots.yaml)
+  - ContactInformation (range for: contactInformation in slots.yaml, contact info in digital-service-offering)
+  - LegalDocument (range for: legalDocument, terms, communicationMethods in slots.yaml)
+  - LegalPerson (range for: dataController, subProcessor in slots.yaml, owner references)
+  - Participant (range for: dataController in slots.yaml, data-product.yaml)
+
+Infrastructure & Resource Classes:
+  - CPU (range for: cpuRequirements, pCPU in slots.yaml)
+  - GPU (range for: gpuRequirements in slots.yaml)
+  - Memory (range for: memoryRequirements in slots.yaml)
+  - MemorySize (range for: diskSize, gpuMemory, functionMemoryLimit, etc. in slots.yaml)
+  - Disk (range for: bootVolume, additionalVolume in slots.yaml)
+  - OperatingSystem (range slots.yaml)
+  - VirtualResource (range in slots.yaml)
+  - PhysicalResource (range in slots.yaml)
+
+Service Offering Classes:
+  - ServiceOffering (range for: triggeringService in slots.yaml)
+  - VMImage (range for: codeArtifact in service-offering.yaml)
+  - ContainerImage (range for: codeArtifact in service-offering.yaml)
+  - PXE_Image (range for: codeArtifact in service-offering.yaml)
+  - ServerFlavor (range for: instantiationReq in service-offering.yaml)
+  - ContainerResourceLimits (range for: instantiationReq in service-offering.yaml)
+
+Storage Classes:
+  - StorageConfiguration (range in slots.yaml)
+  - BlockStorageConfiguration (range in storage-service-offering.yaml)
+  - FileStorageConfiguration (range in storage-service-offering.yaml)
+
+QoS & Metric Classes:
+  - Availability (range in slots.yaml)
+  - BandWidth (range for: bandWidth in slots.yaml)
+  - Latency (range for: latency in slots.yaml)
+  - Jitter (range for: jitter in slots.yaml)
+  - PacketLoss (range for: packetLoss in slots.yaml)
+  - RoundTripTime (range for: roundTripTime in slots.yaml)
+  - Throughput (range for: throughput in slots.yaml)
+  - IOPS (range for: iops in slots.yaml)
+  - TargetPercentile (range for: targetPercentile in slots.yaml)
+  - QoS (range in slots.yaml)
+
+Data Management Classes:
+  - DataProduct (range in slots.yaml, data-product.yaml)
+  - DataProductDescription (range in data-product.yaml)
+  - DataProductConfigurationParameter (range in data-product.yaml)
+  - DataLicense (range in data-product.yaml)
+  - DataAccessPrerequisite (range in data-product.yaml)
+  - DataUsageConstraint (range in data-product.yaml)
+  - DataUsageAgreement (range in slots.yaml, data-product.yaml)
+  - EvidenceTemplate (range in data-product.yaml)
+  - DataPortability (range in slots.yaml)
+  - DataTransfer (range in slots.yaml)
+  - DataProtectionPolicy (range in slots.yaml)
+
+Connectivity Classes:
+  - ConnectivityConfiguration (range in slots.yaml)
+  - VLANConfiguration (range in slots.yaml)
+  - DatacenterAllocation (range in slots.yaml)
+  - InternetServiceProvider (range in connectivity-configuration.yaml, slots.yaml)
+  - PhysicalInterconnectionPointIdentifier (range in slots.yaml)
+  - VirtualInterconnectionPointIdentifier (range in slots.yaml)
+
+Compute Function Classes:
+  - ComputeFunctionConfiguration (range in slots.yaml)
+  - ComputeFunctionRuntime (range for: computeFunctionRuntime, computeFunctionSDK, etc.)
+  - ComputeFunctionTemplate (range for: computeFunctionLibrary in slots.yaml)
+  - ComputeFunctionTrigger (range for: computeFunctionTrigger in slots.yaml)
+  - ComputeFunctionQuotas (range for: computeFunctionQuotas in slots.yaml)
+
+Quantity & Measurement Classes:
+  - QuantityKind (range in qos.yaml, slots.yaml)
+  - DataRate (range in qos.yaml)
+  - Time (range in qos.yaml)
+  - Power (range for: thermalDesignPower in slots.yaml)
+  - Frequency (range for: baseFrequency, boostFrequency in slots.yaml)
+
+Security & Encryption Classes:
+  - Encryption (range in slots.yaml)
+  - CheckSum (range in slots.yaml)
+  - Signature (range in slots.yaml)
+
+Redundancy & Replication Classes:
+  - ReplicationPolicy (range for: backupReplication, snapshotReplication in slots.yaml)
+
+Enum/Type Classes Used:
+  - CountryNameAlpha2 (range for: applicableJurisdiction, etc. in slots.yaml)
+  - LabelLevel, MemoryClasses, DiskType, FileSystemType, BlockStorageTechnology
+  - AccessTypes, RequestTypes, ProvisionTypes, TenantSeparation
+  - Architectures, ComputeFunctionLanguage, UpdateFrequency
+  - Various enum-based type definitions
+
+═══════════════════════════════════════════════════════════════════════════════
+KEY INSIGHTS FOR HARBOUR & SIMPULSEID CROSS-REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Only 2 classes explicitly marked with class_uri: gx: entries
+   - These are the classes directly mapped to Gaia-X ontology
+   - EORI: Registration number identifier
+   - DataAccountExport: Service data export mechanism
+
+2. 10 slots have explicit slot_uri: gx: entries
+   - These are property/relationship mappings to Gaia-X
+   - Mostly found in slots.yaml (central definitions)
+   - Cover: Terms&Conditions, Roles, Signatures, Usage, Licensing, Locations
+
+3. Extensive class usage through RANGE definitions
+   - 100+ classes are referenced as range targets for slots
+   - This creates the real dependency graph
+   - Key hubs: LegalDocument (used in 28 files), ServiceOffering, LegalPerson
+
+4. Inheritance hierarchy
+   - ServiceOffering is base for multiple offering types
+   - RegistrationNumber is base for various ID types (EORI, VatID, LeiCode, etc.)
+   - Resource is base for VirtualResource, PhysicalResource, SoftwareResource
+
+5. Data Product & Data Transfer emphasis
+   - Extensive classes for data product description & licensing
+   - Multiple data transfer mechanism types
+   - Data usage agreements and constraints modeled
+
+═══════════════════════════════════════════════════════════════════════════════

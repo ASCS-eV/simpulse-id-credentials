@@ -1,0 +1,30 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/reachhaven/harbour/core/v1/"
+  ],
+  "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B",
+  "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+  "service": [
+    {
+      "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B#service-1",
+      "type": "harbour:TrustAnchorService",
+      "serviceEndpoint": {
+        "@type": "schema:Organization",
+        "name": "Automotive Solution Center for Simulation e.V. (ASCS)",
+        "url": "https://ascs.digital/",
+        "description": "Trust anchor and operator of the SimpulseID / ENVITED identity infrastructure at did.ascs.digital.",
+        "contactPoint": {
+          "@type": "schema:ContactPoint",
+          "contactType": "support",
+          "email": "info@ascs.digital"
+        }
+      }
+    },
+    {
+      "id": "did:ethr:0x14a34:0xcfD184a45d55F14cA554E4F65Bf23BF26824564B#service-2",
+      "type": "harbour:LinkedCredentialService",
+      "serviceEndpoint": "https://did.ascs.digital/.well-known/trust-anchor-credential.jwt"
+    }
+  ]
+}

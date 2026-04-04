@@ -1,0 +1,195 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # --- JOB 1: Standards & Syntax ---
+  standards-and-syntax:
+    name: Standards & Syntax
+    runs-on: ubuntu-latest
+    env:
+      CI: "1"
+    steps:
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Lint
+        run: make lint
+
+  # --- JOB 1b: Lint Markdown ---
+  lint-markdown:
+    name: Lint (Markdown)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-markdownlint-${{ runner.os }}-${{ hashFiles('.markdownlint-cli2.yaml') }}
+          restore-keys: npm-markdownlint-${{ runner.os }}-
+
+      - name: Lint Markdown
+        run: npx --yes markdownlint-cli2
+
+  # --- JOB 2: Generate & Validate ---
+  generate-validate:
+    name: Generate & Validate (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      CI: "1"
+    steps:
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Generate artifacts
+        run: make generate
+
+      - name: Validate examples
+        run: make validate
+
+  # --- JOB 3: Test Suite (Python) ---
+  test-python:
+    name: Test Suite (Python) (${{ matrix.os }}, py${{ matrix.python-version }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.12", "3.13"]
+    runs-on: ${{ matrix.os }}
+    env:
+      CI: "1"
+    steps:
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Generate artifacts
+        run: make generate
+
+      - name: Run tests
+        run: make test
+
+  # --- JOB 4: Test Suite (TypeScript) ---
+  test-ts:
+    name: Test Suite (TypeScript) (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Init harbour submodule (TS only — no deep OMB/linkml chain)
+        run: git submodule update --init submodules/harbour-credentials
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Get yarn cache directory
+        id: yarn-cache
+        working-directory: submodules/harbour-credentials/src/typescript/harbour
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('submodules/harbour-credentials/src/typescript/harbour/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
+      - name: Install dependencies
+        working-directory: submodules/harbour-credentials/src/typescript/harbour
+        run: yarn install --immutable
+
+      - name: Run TypeScript tests
+        working-directory: submodules/harbour-credentials/src/typescript/harbour
+        run: yarn test
+
+  # --- JOB 5: Credential Lifecycle Story ---
+  story:
+    name: Credential Story (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    needs: [generate-validate]
+    env:
+      CI: "1"
+    steps:
+      - name: Enable long paths (Windows)
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Run credential storyline (generate → sign → verify → validate)
+        run: make story

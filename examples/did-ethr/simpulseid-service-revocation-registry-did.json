@@ -1,0 +1,22 @@
+{
+  "@context": [
+    "https://w3id.org/reachhaven/harbour/core/v1/",
+    "https://www.w3.org/ns/did/v1"
+  ],
+  "id": "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A475502346d1",
+  "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+  "service": [
+    {
+      "id": "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A475502346d1#service-1",
+      "type": "harbour:CRSetRevocationRegistryService",
+      "serviceEndpoint": {
+        "@type": "harbour:CRSetServiceEndpoint",
+        "registryEndpoint": "https://gatehouse.reachhaven.com/services/harbour/crset",
+        "statusPurpose": "revocation",
+        "contractURN": "urn:blockchain:eip155:42793:contract:0x646B92C8f21e55DF67E766047E4bD7bEdF8DfA14",
+        "sourceRepository": "https://github.com/ASCS-eV/smart-contracts",
+        "implementation": "https://arxiv.org/abs/2501.17089"
+      }
+    }
+  ]
+}

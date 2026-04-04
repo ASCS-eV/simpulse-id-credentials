@@ -1,0 +1,477 @@
+id: https://w3id.org/ascs-ev/simpulse-id/core/v1
+name: simpulseid-core
+description: >
+  LinkML schema for SimpulseID subject and credential types.
+  Domain layer on top of Harbour credentials base. Defines ASCS-specific
+  subject types (Participant, Administrator, User, Memberships), their
+  business slots, and credential types that extend HarbourCredential.
+  Gaia-X compliance is delegated to the Harbour baseline credential,
+  referenced via harbourCredential IRI.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  simpulseid: https://w3id.org/ascs-ev/simpulse-id/v1/
+  harbour: https://w3id.org/reachhaven/harbour/core/v1/
+  harbour.gx: https://w3id.org/reachhaven/harbour/gx/v1/
+  sdo: https://schema.org/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  didcore: https://www.w3.org/ns/did#
+  gx: https://w3id.org/gaia-x/development#
+  cred: https://www.w3.org/2018/credentials#
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: simpulseid
+default_range: string
+
+# NOTE: The generated JSON-LD context uses @vocab: simpulseid: which
+# resolves bare @id values (e.g., "duns", "hash") to simpulseid:duns etc.
+# This is correct per JSON-LD 1.1 §4.1.3 when this context is the last
+# entry in the @context array, which is the standard usage pattern.
+
+imports:
+  - linkml:types
+  - ./harbour
+
+# ==========================================
+# Slots
+# ==========================================
+
+slots:
+  # --- SimpulseID Specific Business Slots ---
+
+  duns:
+    description: The Data Universal Numbering System (DUNS) number.
+    slot_uri: simpulseid:duns
+    range: string
+
+  baseMembershipCredential:
+    description: Reference to the base membership credential required for nested memberships.
+    slot_uri: simpulseid:baseMembershipCredential
+    range: uri
+
+  member:
+    description: >
+      The participant (organization or person) that holds this membership.
+      Cross-document IRI reference — range: uri gives sh:nodeKind sh:IRI
+      (SHACL) and @type: @id (JSON-LD via xsd_anyuri_as_iri flag).
+    slot_uri: sdo:member
+    range: uri
+
+  # --- Schema.org Mappings (Memberships) ---
+
+  memberOf:
+    slot_uri: sdo:memberOf
+    multivalued: true
+    range: uri
+
+  programName:
+    description: >
+      Name of the membership program. NOTE: schema.org marks programName as
+      superseded by the "program" property (linking to MemberProgram type).
+      Retained here for simplicity — membership programs are identified by
+      program DIDs, not full MemberProgram objects.
+    slot_uri: sdo:programName
+    range: string
+
+  hostingOrganization:
+    description: Reference to the organization hosting the membership program.
+    slot_uri: sdo:hostingOrganization
+    range: uri
+
+  memberSince:
+    description: >
+      Date when the member joined the program. NOTE: schema.org lists
+      memberSince in the "pending" section (not yet in the core vocabulary).
+      Used here as a stable IRI for membership start dates.
+    slot_uri: sdo:memberSince
+    range: date
+
+  # --- Program Metadata Slots (schema.org CreativeWork properties) ---
+
+  about:
+    description: Subject matter of the program.
+    slot_uri: sdo:about
+    range: string
+
+  programPublisher:
+    description: Organization that publishes this program.
+    slot_uri: sdo:publisher
+    range: ProgramPublisher
+    inlined: true
+
+  inLanguage:
+    description: Primary language of the program content (BCP 47 tag).
+    slot_uri: sdo:inLanguage
+    range: string
+
+  datePublished:
+    description: Date the program was published.
+    slot_uri: sdo:datePublished
+    range: date
+
+  termsOfService:
+    description: URL of the terms of service document.
+    slot_uri: sdo:termsOfService
+    range: uri
+
+  privacyPolicy:
+    description: URL of the privacy policy document.
+    slot_uri: sdo:privacyPolicy
+    range: uri
+
+  # --- Membership Program Slots ---
+
+  articlesOfAssociation:
+    description: URL of the articles of association document.
+    slot_uri: simpulseid:articlesOfAssociation
+    range: uri
+
+  contributionRules:
+    description: URL of the contribution rules document.
+    slot_uri: simpulseid:contributionRules
+    range: uri
+
+  ecosystem:
+    description: The digital ecosystem associated with this membership program.
+    slot_uri: simpulseid:ecosystem
+    range: ProgramEcosystem
+    inlined: true
+
+  # --- SimpulseID Extensions ---
+
+  legalForm:
+    description: The legal form of the entity (e.g., AG, GmbH).
+    slot_uri: simpulseid:legalForm
+    range: SimpulseIdLegalForm
+
+  # --- Reference Slots ---
+
+  harbourCredential:
+    description: >
+      IRI reference to the Harbour Gaia-X credential that serves as the
+      baseline of trust for this SimpulseID credential.
+    slot_uri: simpulseid:harbourCredential
+    range: uri
+    required: true
+
+  # termsAndConditions — imported from gx (slot_uri: gx:termsAndConditions).
+  # Range overridden to TermsAndConditions via slot_usage on SimpulseidParticipant.
+  # participant — inherited from harbour-gx-credential (range: Participant).
+
+# ==========================================
+# Enums
+# ==========================================
+
+enums:
+  SimpulseIdLegalForm:
+    description: Legal form of a participating organization.
+    permissible_values:
+      LLC:
+        description: Limited Liability Company (US)
+      Corporation:
+        description: Corporation (US)
+      LimitedPartnership:
+        description: Limited Partnership (US/UK)
+      NonprofitCorporation:
+        description: Nonprofit Corporation (US)
+      GmbH:
+        description: Gesellschaft mit beschränkter Haftung (DE)
+      AG:
+        description: Aktiengesellschaft (DE)
+      Einzelunternehmen:
+        description: Sole proprietorship (DE)
+      GbR:
+        description: Gesellschaft bürgerlichen Rechts (DE)
+      OHG:
+        description: Offene Handelsgesellschaft (DE)
+      KG:
+        description: Kommanditgesellschaft (DE)
+      UG:
+        description: Unternehmergesellschaft (haftungsbeschränkt) (DE)
+      SoleTrader:
+        description: Sole Trader (UK)
+      UnincorporatedAssociation:
+        description: Unincorporated Association (UK)
+      Partnership:
+        description: General Partnership (UK)
+      Trust:
+        description: Trust (UK)
+      LimitedCompany:
+        description: Limited Company (UK)
+      LLP:
+        description: Limited Liability Partnership (UK)
+      CIC:
+        description: Community Interest Company (UK)
+      CIO:
+        description: Charitable Incorporated Organisation (UK)
+      CooperativeSociety:
+        description: Co-operative Society (UK)
+      BenCom:
+        description: Community Benefit Society (UK)
+      other:
+        description: Other legal form not listed above
+
+# ==========================================
+# Classes
+# ==========================================
+
+classes:
+  # ------------------------------------------
+  # SUBJECT TYPES
+  # ------------------------------------------
+
+  SimpulseidParticipant:
+    description: >
+      An organization participating in the SimpulseID ecosystem.
+      References a Harbour Gaia-X credential via harbourCredential IRI
+      for the baseline of trust. The organization name lives inside the
+      participant node as a gx:LegalPerson blank node.
+      class_uri uses OrganizationParticipant (not bare Participant)
+      to avoid JSON-LD context collision with gx:Participant from
+      the Gaia-X imports.
+    class_uri: simpulseid:OrganizationParticipant
+    slots: [harbourCredential, legalForm, duns, email, url, termsAndConditions, participant]
+    slot_usage:
+      # email and url inherit gx:email / gx:url from the Gaia-X vocabulary,
+      # consistent with the JSON-LD context resolution (last context wins).
+      termsAndConditions:
+        range: TermsAndConditions
+        multivalued: true
+        required: false
+
+  SimpulseidAdministrator:
+    description: >
+      An administrator (natural person with elevated permissions) in the
+      SimpulseID ecosystem. Personal attributes (givenName, familyName, email)
+      live inside the participant node as a gx:NaturalPerson blank node.
+    class_uri: simpulseid:Administrator
+    slots: [harbourCredential, memberOf, participant]
+
+  SimpulseidUser:
+    description: >
+      A standard user (natural person) in the SimpulseID ecosystem.
+      Personal attributes (givenName, familyName, email) live inside the
+      participant node as a gx:NaturalPerson blank node.
+    class_uri: simpulseid:User
+    slots: [harbourCredential, memberOf, participant]
+
+  AscsBaseMembership:
+    description: >
+      ASCS e.V. base membership subject.
+    class_uri: simpulseid:AscsBaseMembership
+    slots: [member, programName, hostingOrganization, memberSince]
+    slot_usage:
+      member: { required: true }
+
+  AscsEnvitedMembership:
+    description: >
+      ASCS e.V. ENVITED membership subject (requires base membership).
+    class_uri: simpulseid:AscsEnvitedMembership
+    slots: [member, programName, hostingOrganization, memberSince, baseMembershipCredential]
+    slot_usage:
+      member: { required: true }
+      baseMembershipCredential: { required: true }
+
+  # ------------------------------------------
+  # DID SERVICE TYPES
+  # ------------------------------------------
+
+  ProgramMetadataService:
+    description: >
+      DID service endpoint that resolves to program metadata.
+      Used in DID documents to publish discoverable program definitions.
+    class_uri: simpulseid:ProgramMetadataService
+    slots:
+      - serviceEndpoint
+    slot_usage:
+      serviceEndpoint:
+        range: uri
+
+  # ------------------------------------------
+  # PROGRAM METADATA (DID endpoint data)
+  # ------------------------------------------
+
+  AdministratorProgram:
+    description: >
+      Program definition for SimpulseID administrators. Modeled as a
+      schema.org CreativeWork with program-specific metadata.
+    class_uri: simpulseid:AdministratorProgram
+    mixins:
+      - ProgramEndpoint
+    slots:
+      - termsOfService
+      - privacyPolicy
+
+  UserProgram:
+    description: >
+      Program definition for standard SimpulseID users.
+    class_uri: simpulseid:UserProgram
+    mixins:
+      - ProgramEndpoint
+    slots:
+      - termsOfService
+      - privacyPolicy
+
+  BaseMembershipProgram:
+    description: >
+      Program definition for ASCS e.V. base membership.
+    class_uri: simpulseid:BaseMembershipProgram
+    slots:
+      - hostingOrganization
+      - articlesOfAssociation
+      - contributionRules
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      label:
+        description: >-
+          A human-readable label. Entailed via RDFS inference from schema:name
+          (schema.org declares schema:name rdfs:subPropertyOf rdfs:label).
+          Declared so sh:closed SHACL shapes accept the inferred property.
+        slot_uri: rdfs:label
+        range: string
+      description:
+        slot_uri: sdo:description
+        range: string
+
+  EnvitedMembershipProgram:
+    description: >
+      Program definition for ASCS e.V. ENVITED membership.
+    class_uri: simpulseid:EnvitedMembershipProgram
+    slots:
+      - hostingOrganization
+      - articlesOfAssociation
+      - contributionRules
+      - ecosystem
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      label:
+        description: >-
+          A human-readable label. Entailed via RDFS inference from schema:name
+          (schema.org declares schema:name rdfs:subPropertyOf rdfs:label).
+          Declared so sh:closed SHACL shapes accept the inferred property.
+        slot_uri: rdfs:label
+        range: string
+      description:
+        slot_uri: sdo:description
+        range: string
+      url:
+        slot_uri: sdo:url
+        range: uri
+
+  # ------------------------------------------
+  # PROGRAM SUPPORT TYPES
+  # ------------------------------------------
+
+  ProgramEndpoint:
+    description: >
+      Base mixin for program metadata endpoints. Maps to sdo:CreativeWork.
+      Provides common schema.org properties for program descriptions.
+    class_uri: sdo:CreativeWork
+    mixin: true
+    slots:
+      - about
+      - programPublisher
+      - inLanguage
+      - datePublished
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      label:
+        description: >-
+          A human-readable label. Entailed via RDFS inference from schema:name
+          (schema.org declares schema:name rdfs:subPropertyOf rdfs:label).
+          Declared so sh:closed SHACL shapes accept the inferred property.
+        slot_uri: rdfs:label
+        range: string
+      description:
+        slot_uri: sdo:description
+        range: string
+
+  ProgramPublisher:
+    description: >
+      Organization that publishes a program. Lightweight schema.org
+      Organization with name and URL only (no contact point).
+    class_uri: sdo:Organization
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      label:
+        description: >-
+          A human-readable label. Entailed via RDFS inference from schema:name
+          (schema.org declares schema:name rdfs:subPropertyOf rdfs:label).
+          Declared so sh:closed SHACL shapes accept the inferred property.
+        slot_uri: rdfs:label
+        range: string
+      url:
+        slot_uri: sdo:url
+        range: uri
+
+  ProgramEcosystem:
+    description: >
+      A digital ecosystem associated with a membership program.
+    class_uri: sdo:DigitalEcosystem
+    attributes:
+      name:
+        slot_uri: sdo:name
+        range: string
+      label:
+        description: >-
+          A human-readable label. Entailed via RDFS inference from schema:name
+          (schema.org declares schema:name rdfs:subPropertyOf rdfs:label).
+          Declared so sh:closed SHACL shapes accept the inferred property.
+        slot_uri: rdfs:label
+        range: string
+      url:
+        slot_uri: sdo:url
+        range: uri
+      description:
+        slot_uri: sdo:description
+        range: string
+
+  # --- Credential Types ---
+  # These extend HarbourCredential from the harbour schema.
+  # Each type needs its own class_uri so that SHACL target classes and
+  # JSON-LD type arrays correctly distinguish credential kinds.
+
+  ParticipantCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to a simpulseid:Participant (organization) identity.
+      Issued by ASCS after verifying the organization's Harbour compliance
+      credential (referenced via harbourCredential IRI on the subject).
+    class_uri: simpulseid:ParticipantCredential
+
+  AdministratorCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to a simpulseid:Administrator (person with
+      elevated permissions). Issued by ASCS.
+    class_uri: simpulseid:AdministratorCredential
+
+  UserCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to a simpulseid:User (natural person).
+      Issued by ASCS.
+    class_uri: simpulseid:UserCredential
+
+  AscsBaseMembershipCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to ASCS e.V. base membership.
+      Issued by ASCS.
+    class_uri: simpulseid:AscsBaseMembershipCredential
+
+  AscsEnvitedMembershipCredential:
+    is_a: HarbourCredential
+    description: >
+      Credential attesting to ASCS e.V. ENVITED membership.
+      Requires a base membership (referenced via baseMembershipCredential).
+      Issued by ASCS.
+    class_uri: simpulseid:AscsEnvitedMembershipCredential

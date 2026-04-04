@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://w3id.org/ascs-ev/simpulse-id/v1/",
+    "https://www.w3.org/ns/did/v1",
+    {
+      "url": {
+        "@id": "https://schema.org/url",
+        "@type": "@id"
+      }
+    }
+  ],
+  "id": "did:ethr:0x14a34:0xF84945fB99BD70Cfe527a2cb2c368DbA4fB55bC9",
+  "controller": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+  "service": [
+    {
+      "id": "did:ethr:0x14a34:0xF84945fB99BD70Cfe527a2cb2c368DbA4fB55bC9#service-1",
+      "type": "ProgramMetadataService",
+      "serviceEndpoint": {
+        "@type": "EnvitedMembershipProgram",
+        "@id": "https://did.ascs.digital/programs/ascs-envited-membership",
+        "name": "ASCS e.V. ENVITED Membership",
+        "description": "ENVITED membership program of the Automotive Solution Center for Simulation e.V. (ASCS e.V.), providing access to the ENVITED ecosystem and related services.",
+        "hostingOrganization": "did:ethr:0x14a34:0x50916c8e454722d2357916d4250500102288bb03",
+        "articlesOfAssociation": "https://media.ascs.digital/terms/ascs_articles_of_association_2021-09-17.pdf#cidv1",
+        "contributionRules": "https://media.ascs.digital/terms/ascs_contribution_rules_2020-07-08.pdf#cidv1",
+        "ecosystem": {
+          "@type": "schema:DigitalEcosystem",
+          "name": "ENVITED-X Data Space",
+          "url": "https://envited-x.net/",
+          "description": "The ENVITED-X Data Space is a collaborative platform for secure data sharing and digital asset management in the ENVITED ecosystem."
+        }
+      }
+    }
+  ]
+}
