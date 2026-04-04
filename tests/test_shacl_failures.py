@@ -280,6 +280,20 @@ _MISSING_FIELD_CASES = [
         str(SIMPULSEID.harbourCredential),
         "User-missing-harbourCredential",
     ),
+    # --- UserCredential envelope ---
+    (
+        "simpulseid-user-credential.json",
+        ("validFrom",),
+        str(CRED.validFrom),
+        "User-missing-validFrom",
+    ),
+    # --- AdministratorCredential nested participant ---
+    (
+        "simpulseid-administrator-credential.json",
+        ("credentialSubject", "participant", "givenName"),
+        str(SCHEMA.givenName),
+        "Administrator-missing-givenName",
+    ),
     # --- AscsBaseMembershipCredential ---
     (
         "simpulseid-ascs-base-membership-credential.json",
@@ -544,6 +558,93 @@ class TestParticipantSubjectShape:
         assert not conforms, (
             "Should FAIL with unexpected property but conforms.\n"
             "Check that the shape has sh:closed true."
+        )
+        closed = [v for v in violations if v.constraint == "ClosedConstraintComponent"]
+        assert closed, (
+            f"Expected ClosedConstraintComponent but got:\n"
+            f"{_format_violations(violations)}\n\nFull report:\n{text}"
+        )
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# C6: Enum constraint violations  (InConstraintComponent)
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+_INVALID_ENUM_CASES = [
+    ("InvalidLegalForm", "invalid-string"),
+    ("", "empty-string"),
+]
+
+
+@_skip_no_artifacts
+class TestEnumConstraints:
+    """Setting an enum field to an invalid value must trigger InConstraintComponent."""
+
+    @pytest.mark.parametrize(
+        "bad_value, test_id",
+        _INVALID_ENUM_CASES,
+        ids=[c[1] for c in _INVALID_ENUM_CASES],
+    )
+    def test_invalid_legal_form(self, bad_value, test_id, shacl_validator):
+        """Mutating legalForm to an invalid value triggers sh:in violation."""
+        cred = _load("simpulseid-participant-credential.json")
+        mutated = _set_field(cred, bad_value, "credentialSubject", "legalForm")
+
+        conforms, violations, text = _validate(mutated, shacl_validator)
+
+        assert not conforms, (
+            f"[{test_id}] Should FAIL with legalForm='{bad_value}' "
+            f"but SHACL said it conforms."
+        )
+
+        in_constraint = [
+            v
+            for v in violations
+            if v.constraint == "InConstraintComponent"
+            and v.result_path == str(SIMPULSEID.legalForm)
+        ]
+        assert in_constraint, (
+            f"[{test_id}] Expected InConstraintComponent on "
+            f"<{SIMPULSEID.legalForm}> but got:\n"
+            f"{_format_violations(violations)}\n\nFull report:\n{text}"
+        )
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# C7: Program metadata DID mutations
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+@_skip_no_artifacts
+class TestProgramMetadataMutations:
+    """Mutation tests for program metadata embedded in DID service endpoints."""
+
+    def test_admin_program_unexpected_property(self, shacl_validator):
+        """AdministratorProgram is closed — unexpected properties caught."""
+        doc = _load("simpulseid-program-administrator-did.json")
+        doc["service"][0]["serviceEndpoint"]["bogusProperty"] = "unexpected"
+
+        conforms, violations, text = _validate(doc, shacl_validator)
+
+        assert not conforms, (
+            "Should FAIL with unexpected admin program property but conforms."
+        )
+        closed = [v for v in violations if v.constraint == "ClosedConstraintComponent"]
+        assert closed, (
+            f"Expected ClosedConstraintComponent but got:\n"
+            f"{_format_violations(violations)}\n\nFull report:\n{text}"
+        )
+
+    def test_membership_program_unexpected_property(self, shacl_validator):
+        """BaseMembershipProgram is closed — unexpected properties caught."""
+        doc = _load("simpulseid-program-ascs-base-membership-did.json")
+        doc["service"][0]["serviceEndpoint"]["bogusProperty"] = "unexpected"
+
+        conforms, violations, text = _validate(doc, shacl_validator)
+
+        assert not conforms, (
+            "Should FAIL with unexpected membership program property but conforms."
         )
         closed = [v for v in violations if v.constraint == "ClosedConstraintComponent"]
         assert closed, (

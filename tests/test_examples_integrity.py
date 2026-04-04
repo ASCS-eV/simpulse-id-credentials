@@ -459,6 +459,68 @@ def test_program_did_has_metadata_service(path):
     )
 
 
+@pytest.mark.parametrize(
+    "path", PROGRAM_DID_FILES, ids=[f.stem for f in PROGRAM_DID_FILES]
+)
+def test_program_endpoint_has_required_fields(path):
+    """Program endpoints must have @type, name, and description."""
+    doc = json.loads(path.read_text())
+    services = doc.get("service", [])
+    pms = [s for s in services if s.get("type") == "ProgramMetadataService"]
+    if not pms:
+        pytest.skip("No ProgramMetadataService")
+
+    endpoint = pms[0].get("serviceEndpoint", {})
+    assert "@type" in endpoint, f"{path.name}: program endpoint missing @type"
+    assert "name" in endpoint, f"{path.name}: program endpoint missing name"
+    assert "description" in endpoint, (
+        f"{path.name}: program endpoint missing description"
+    )
+
+
+ADMIN_USER_PROGRAM_FILES = sorted(
+    list(DID_ETHR_DIR.glob("simpulseid-program-administrator-did.json"))
+    + list(DID_ETHR_DIR.glob("simpulseid-program-user-did.json"))
+)
+
+MEMBERSHIP_PROGRAM_FILES = sorted(
+    list(DID_ETHR_DIR.glob("simpulseid-program-ascs-*-did.json"))
+)
+
+
+@pytest.mark.parametrize(
+    "path", ADMIN_USER_PROGRAM_FILES, ids=[f.stem for f in ADMIN_USER_PROGRAM_FILES]
+)
+def test_admin_user_program_has_policy_fields(path):
+    """Admin/User programs must have termsOfService and privacyPolicy."""
+    doc = json.loads(path.read_text())
+    endpoint = doc["service"][0]["serviceEndpoint"]
+    assert "termsOfService" in endpoint, (
+        f"{path.name}: Admin/User program missing termsOfService"
+    )
+    assert "privacyPolicy" in endpoint, (
+        f"{path.name}: Admin/User program missing privacyPolicy"
+    )
+
+
+@pytest.mark.parametrize(
+    "path", MEMBERSHIP_PROGRAM_FILES, ids=[f.stem for f in MEMBERSHIP_PROGRAM_FILES]
+)
+def test_membership_program_has_governance_fields(path):
+    """Membership programs must have hostingOrganization and governance documents."""
+    doc = json.loads(path.read_text())
+    endpoint = doc["service"][0]["serviceEndpoint"]
+    assert "hostingOrganization" in endpoint, (
+        f"{path.name}: membership program missing hostingOrganization"
+    )
+    assert "articlesOfAssociation" in endpoint, (
+        f"{path.name}: membership program missing articlesOfAssociation"
+    )
+    assert "contributionRules" in endpoint, (
+        f"{path.name}: membership program missing contributionRules"
+    )
+
+
 # ---------------------------------------------------------------------------
 # DID document IRI type pollution regression guard (issue #28)
 # ---------------------------------------------------------------------------

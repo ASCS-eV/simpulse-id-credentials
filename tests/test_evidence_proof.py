@@ -47,41 +47,22 @@ def _get_evidence_vp(vc: dict) -> dict | None:
 # ---------------------------------------------------------------------------
 
 
+_ALL_CREDENTIAL_FILES = sorted(EXAMPLES_DIR.glob("simpulseid-*.json"))
+
+
 class TestEvidenceVPSigning:
     """Test signing of empty evidence VPs extracted from example credentials."""
 
-    def test_sign_empty_evidence_vp(
-        self, p256_private_key, p256_public_key, p256_did_key_vm
+    @pytest.mark.parametrize(
+        "path", _ALL_CREDENTIAL_FILES, ids=[f.stem for f in _ALL_CREDENTIAL_FILES]
+    )
+    def test_sign_evidence_vp(
+        self, path, p256_private_key, p256_public_key, p256_did_key_vm
     ):
-        """Sign an empty CredentialEvidence VP and verify it."""
-        vc = _load_example("simpulseid-participant-credential.json")
+        """Sign an evidence VP from each credential type and verify it."""
+        vc = json.loads(path.read_text())
         vp = _get_evidence_vp(vc)
-        assert vp is not None, "Expected expanded evidence VP"
-
-        # Build VP for signing (only @context, type, holder)
-        signed_vp = {
-            "@context": vp["@context"],
-            "type": vp["type"],
-        }
-        if "holder" in vp:
-            signed_vp["holder"] = vp["holder"]
-
-        nonce = vp.get("nonce")
-        vp_jwt = sign_vp_jose(
-            signed_vp, p256_private_key, kid=p256_did_key_vm, nonce=nonce
-        )
-
-        # Verify VP
-        result = verify_vp_jose(vp_jwt, p256_public_key, expected_nonce=nonce)
-        assert "VerifiablePresentation" in result["type"]
-
-    def test_sign_membership_evidence_vp(
-        self, p256_private_key, p256_public_key, p256_did_key_vm
-    ):
-        """Sign a membership CredentialEvidence VP and verify it."""
-        vc = _load_example("simpulseid-ascs-base-membership-credential.json")
-        vp = _get_evidence_vp(vc)
-        assert vp is not None, "Expected expanded evidence VP"
+        assert vp is not None, f"Expected evidence VP in {path.name}"
 
         signed_vp = {
             "@context": vp["@context"],
