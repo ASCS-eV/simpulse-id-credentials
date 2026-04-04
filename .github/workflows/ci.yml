@@ -49,6 +49,12 @@ jobs:
         with:
           node-version: "22"
 
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-markdownlint-${{ runner.os }}-${{ hashFiles('.markdownlint-cli2.yaml') }}
+          restore-keys: npm-markdownlint-${{ runner.os }}-
+
       - name: Lint Markdown
         run: npx --yes markdownlint-cli2
 
@@ -134,6 +140,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: 'yarn'
+          cache-dependency-path: submodules/harbour-credentials/src/typescript/harbour/yarn.lock
 
       - name: Enable Corepack
         run: corepack enable
