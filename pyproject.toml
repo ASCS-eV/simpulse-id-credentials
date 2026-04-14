@@ -10,7 +10,7 @@ dependencies = [
     "linkml-runtime>=1.9.5",
     "pyld>=2.0.4",
     "PyYAML>=6.0.3",
-    "click>=8.0.0, <8.4",
+    "click>=8.3.2, <8.4",
     # linkml: installed from OMB submodule via make setup (single source of truth)
     # harbour-credentials: installed from submodule via make setup (not on PyPI)
     # ontology-management-base: installed from submodule via make setup (not on PyPI)
