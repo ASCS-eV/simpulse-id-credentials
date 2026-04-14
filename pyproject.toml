@@ -18,15 +18,15 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.15.0",
+    "ruff>=0.15.10",
     "pre-commit>=4.5.1",
-    "pytest>=8.0.0",
+    "pytest>=9.0.3",
     "pytest-cov>=6.0",
 ]
 docs = [
     "mkdocs>=1.6.0",
     "mkdocs-material>=9.5.0",
-    "pymdown-extensions>=10.0",
+    "pymdown-extensions>=10.21.2",
 ]
 
 [tool.ruff]
