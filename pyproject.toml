@@ -24,7 +24,7 @@ dev = [
     "pytest-cov>=6.0",
 ]
 docs = [
-    "mkdocs>=1.6.0",
+    "mkdocs>=1.6.1",
     "mkdocs-material>=9.5.0",
     "pymdown-extensions>=10.21.2",
 ]
