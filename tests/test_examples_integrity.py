@@ -352,13 +352,16 @@ REVOCATION_REGISTRY_DID = "did:ethr:0x14a34:0x4612FbF84Ef87dfBc363c6077235A47550
 
 @pytest.mark.parametrize("path", EXAMPLE_FILES, ids=[f.stem for f in EXAMPLE_FILES])
 def test_credential_status_registry_resolves(path):
-    """credentialStatus id prefix must match the revocation registry DID."""
+    """credentialStatus statusServiceOperator must match the revocation registry DID."""
     vc = json.loads(path.read_text())
     for status in vc.get("credentialStatus", []):
-        status_id = status.get("id", "")
-        assert status_id.startswith(REVOCATION_REGISTRY_DID), (
-            f"credentialStatus id '{status_id}' in {path.name} does not start "
-            f"with revocation registry DID {REVOCATION_REGISTRY_DID}"
+        operator = status.get("statusServiceOperator", "")
+        assert operator == REVOCATION_REGISTRY_DID, (
+            f"credentialStatus statusServiceOperator '{operator}' in {path.name} "
+            f"does not match revocation registry DID {REVOCATION_REGISTRY_DID}"
+        )
+        assert status.get("statusIndex"), (
+            f"credentialStatus in {path.name} is missing statusIndex"
         )
     assert REVOCATION_REGISTRY_DID in DID_DOCS, (
         f"Revocation registry DID {REVOCATION_REGISTRY_DID} has no DID document."
