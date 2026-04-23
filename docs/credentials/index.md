@@ -44,7 +44,7 @@ All credentials follow the W3C Verifiable Credentials Data Model v2.0 with three
     "type": "<subject-type>",
     "harbourCredential": "<harbour-gx-credential-urn>"
   },
-  "credentialStatus": [{"type": "harbour:CRSetEntry", "statusPurpose": "revocation"}],
+  "credentialStatus": [{"type": "harbour:CRSetEntry", "statusPurpose": "revocation", "statusServiceOperator": "<crset-operator-did>", "statusIndex": "<index>"}],
   "evidence": [{"type": ["harbour:CredentialEvidence"], "verifiablePresentation": "..."}]
 }
 ```
