@@ -51,6 +51,17 @@ jobs:
           fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
+      - name: Ensure tag exists for changelog generation
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+            git tag "$TAG"
+            echo "Created lightweight tag $TAG at $(git rev-parse HEAD)"
+          else
+            echo "Tag $TAG already exists"
+          fi
+
       - name: Generate changelog
         id: changelog
         uses: orhun/git-cliff-action@v4
@@ -60,7 +71,6 @@ jobs:
         env:
           OUTPUT: CHANGELOG.md
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
